@@ -1,0 +1,76 @@
+common:
+	parameters:
+		dbLogger: #settings for class dbLogger 
+			devOnly: TRUE #log only on development version
+
+	php:
+		date.timezone: Europe/Prague
+		session.save_path: %tempDir%/sessions
+		zlib.output_compression: yes
+
+	nette:
+		session:
+			autoStart: smart
+
+		container:
+			debugger: TRUE  
+
+		debugger:
+			strictMode: TRUE
+			maxDepht: 3
+			maxLen: 4096
+			bar:
+				- Schmutzka\Panels\Session(@session)
+				- Schmutzka\Panels\DumpMail(@session)
+				- Schmutzka\Panels\Navigation
+				- Schmutzka\Panels\Stopwatch
+				- Schmutzka\Panels\TemplateParametersPanel
+
+		database:
+			default:
+				dsn: "%database.driver%:host=%database.host%;dbname=%database.dbname%"
+				user: %database.username%
+				password: %database.password%			
+
+		security:
+			debugger: FALSE
+
+	services:
+		authenticator: Schmutzka\Security\Authenticator(@database::user())
+
+		cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
+
+		dbcache: NotORM_Cache_Include("%tempDir%/notorm.cache")
+
+		database: NotORM(@\PDO, NULL, @dbcache)
+
+		sessionStorage: Services\SessionStorage
+
+		session:
+			setup:
+				- setStorage()
+				- setSavePath("%tempDir%/session.sqlite")
+				- setExpiration(+ 14 day)
+
+	factories:
+		loginForm: Schmutzka\Forms\LoginForm
+
+		changePasswordForm: Schmutzka\Forms\ChangePasswordForm(@container)
+
+		feedbackForm: Schmutzka\Forms\FeedbackForm(@user)
+
+		remindPasswordForm: Schmutzka\Forms\RemindPasswordForm(@container)	
+
+			
+
+production < common:
+	parameters:
+		database:
+			driver: mysql
+			host: mysql5
+			dbname: 
+			username: 
+			password: 
+
+
+development < common:

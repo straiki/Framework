@@ -1,0 +1,67 @@
+{* optional rows *}
+
+<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+
+{if $activeConvert AND isset($showConverForm)}
+	{form convertForm}
+		{label newItem /}&nbsp; {input newItem} {input send}
+	{/form}
+{/if}
+
+
+%table [n:class => "table, codebook, $codeType"]
+	%tr
+		%th [width => 5%] #
+		%th [width => 50%] Název hodnoty
+		{if $withCount}
+			%th [width => 14%] Užito
+		{/if}
+
+		{if $activeDisplay}
+			%th [width => 14%] Zobraz
+		{/if}
+		{if $activeRank}
+			%th [width => 14%] Pořadí
+		{/if}
+		%th [width => 17%] Správa
+	%tr
+		{form codebookForm class => "ajax"}
+			%td &nbsp;
+			%td {input value, class => value}
+			{if $withCount}
+				%td.center - 
+			{/if}
+			{if $activeDisplay}
+				%td {input display, class => display}
+			{/if}
+			{if $activeRank}
+				%td {input rank, class => "rank"}
+			{/if}
+			%td.center {input send, class => "btn primary send"}
+		{/form}
+
+		{foreach $codeList as $row}
+			%tr
+				%td {$iterator->counter}
+				%td {$row["value"]}
+				{if $withCount}
+					%td.center [width => 14%]
+						{$row["useCount"]} ×
+				{/if}
+				{if $activeDisplay}
+					%td.center {$row["display"]|inArray:$yesNo}
+				{/if}
+				{if $activeRank}
+					%td.center {$row["rank"]|isEmpty}
+				{/if}
+				%td.center
+					<a n:href="edit, id => $row['id']" class="edit ajax" title="Upravit">&nbsp;</a> 
+					{if $activeConvert AND $row["useCount"]}
+						<a n:href="convertItem,  id => $row['id']" class="convert _ajax" title="Převést">&nbsp;</a>
+					{else}
+						<a n:href="delete!  id => $row['id']" class="delete ajax" onClick="return confirm('Opravdu smazat?')" title="Smazat">&nbsp;</a>
+					{/if}
+	
+
+	
+		{/foreach}

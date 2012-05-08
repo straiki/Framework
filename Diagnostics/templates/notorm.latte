@@ -1,0 +1,31 @@
+<div id="nette-debug-notorm">
+
+	<style>
+		
+		#nette-debug-notorm table { width: 100% ;min-width:500px}
+		#nette-debug #nette-debug-notorm a { color:#333; }
+		#nette-debug-notorm pre.nette-dump span { color:#c16549 }
+		#nette-debug-notorm td.notorm-sql { background: #FDF5CE }
+		#nette-debug-notorm .nette-alt td.notorm-sql { background: #FDF5CE }
+		#nette-debug .nette-panel .dime {text-align: right; color: #999;}
+		#nette-debug .nette-panel .right {text-align: right;}
+	</style>
+
+	<h1>NotORM - <?php echo count($queries) ?> queries (<?php echo $totalTime ?> ms)</h1>
+
+	<div class="nette-inner">
+		<table>
+			<tr><th>Time</th><th>Query</th>
+			</tr>
+			<?php foreach ($queries as $query) { ?>
+				<tr<?php if ($i++ % 2 == 0): ?> class="nette-alt"<?php endif ?>>
+					<td align="right" class="<?php echo ($query["time"] ? "right" : "dime") ?>"><nobr>
+						<?php echo ($query["time"] ? $query["time"] : "~ 0") ?> ms
+					</nobr></td>
+					<td class="notorm-sql"><code><?php echo $query["sql"] ?></code></td>
+				</tr>
+			<?php } ?>
+		</table>
+	</div>
+
+</div>

@@ -1,0 +1,4 @@
+{foreach $fields as $key => $value}{$value|iconv}{sep}{$sep}{/sep}{/foreach}
+{foreach $data as $row}
+	{foreach $row as $value}{$value|iconv}{sep};{/sep}{/foreach}
+{/foreach}
