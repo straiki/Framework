@@ -227,6 +227,15 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/* *********************** shortcuts ************************ */
 
 
+	/**
+	 * Model shortcut 
+	 */
+	final public function getModels()
+	{
+		return $this->context->models;
+	}
+
+
 	/**	
 	 * Translator shortucut
 	 */
