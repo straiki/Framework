@@ -228,7 +228,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 
 	/**
-	 * Model shortcut 
+	 * Models shortcut 
 	 */
 	final public function getModels()
 	{
