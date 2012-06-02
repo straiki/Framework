@@ -4,7 +4,6 @@
  * Base model functions
  * @dev: possible fully-cached queries
  * @dev: cache invalidation on update/insert/delete of record + it's id? or whole? could be awesome :)
- * @2DO: insert_update
  */
 
 namespace Models;
@@ -30,40 +29,18 @@ class Base extends \Nette\Object
 	}
 
 
-	/**
-	 * Get table name by class name [Pages => pages, ArticleTag => article_tag]
-	 * @param string
-	 * @return string
-	 */
-	private function tableNameByClass($className)
-	{
-		$tableName = explode("\\", $className);
-		$tableName = lcfirst(array_pop($tableName));
-
-		$replace = array(); // A => _a
-		foreach (range("A", "Z") as $letter) {
-			$replace[$letter] = "_".strtolower($letter);
-		}
-
-		return strtr($tableName, $replace); 
-	}
-
-
 	/** 
 	 * Retun records by condition
 	 * @param string
 	 * @param string
 	 */
-	public function all($key = NULL, $value = NULL)
+	public function all(array $key = array())
 	{
-		if (is_array($column)) { // array where
-			return $this->db->{$this->tableName}($key);
-		}
-		elseif ($column AND $value) { // 1 column condition
-			return $this->db->{$this->tableName}($key, $value);
+		if ($key) {
+			return $this->table($key);
 		}
 		else {
-			return $this->db->{$this->tableName};
+			return $this->table();
 		}
 	}
 
@@ -76,77 +53,56 @@ class Base extends \Nette\Object
 	 */
 	public function insert($array, $returnColumn = "id")
 	{
-		$row = $this->db->{$this->tableName}()->insert($array);
+		$row = $this->table()->insert($array);
+
 		if ($returnColumn) {
 			return $row[$returnColumn];
 		}
-		else {
-			return $row->fetchRow();
-		}
+
+		return $row->fetchRow();
 	}
 
 
 	/**
 	 * Update record
-	 * @param array/object ArrayHash
-	 * @param int/array
-	 * @param string
+	 * @param array
+	 * @param array
 	 */
-	public function update($array, $id, $columnName = "id")
+	public function update($array, array $key)
 	{
-		$array = (array) $array; // NotORM array strict
-		if(is_array($id) OR is_object($id)) { // array / arrayHash
-			$where = (array) $id;
-			return $this->db->{$this->tableName}->where($where)->update($array);	
-		}
-		else {
-			return $this->db->{$this->tableName}($columnName, $id)->update($array);
-		}
+		return $this->table($key)->update($array);	
 	}
 
 	
 	/**
 	 * Delete record
-	 * @param int
+	 * @param array
 	 * @param string
 	 */
-	public function delete($id, $columnName = "id")
+	public function delete(array $key)
 	{
-		if($record = $this->exist($id, $columnName)) {
+		if ($record = $this->exist($key)) {
 			return $record->delete();
 		}
-		else { // doesn't exist
-			return NULL;
+		else {
+			return FALSE;
 		}
 	}
 
 
 	/**
-	 * Check record existance
-	 * @param int / array / arrayHash
-	 * @param string
-	 * @param int
-	 * @param string
-	 * @return NULL/record
+	 * Check if record exists
+	 * @param array
+	 * @return array/FALSE
 	 */
-	public function exist($id, $columnName = "id", $checkId = NULL, $checkColumnName = NULL)
+	public function exist(array $key)
 	{		
-		if(is_array($id) OR is_object($id)) { // array / arrayHash
-			$where = (array) $id;
-			$record = $this->db->{$this->tableName}->where($where);	
-		}
-		else {
-			$record = $this->db->{$this->tableName}($columnName, $id);	
-		}
+		$record = $this->table()->where($key);	
 
-		if($checkId AND $checkColumnName) {
-			$record->where($checkColumnName, $checkId);
-		}
-
-		if($record->count("*")) {
+		if ($record->count("*")) {
 			return $record;
 		}
-		else { // doesn't exist
+		else {
 			return FALSE;
 		}
 	}
@@ -154,47 +110,21 @@ class Base extends \Nette\Object
 
 	/**
 	 * Get 1 item
-	 * @param int
-	 * @param string	
-	 * @param int
-	 * @param string
+	 * @param array
+	 * @return array
 	 */
-	public function item($id, $columnName = "id", $checkId = NULL, $checkColumnName = NULL)
+	public function item(array $key)
 	{
-		if(is_array($id) OR is_object($id)) { // array / arrayHash
-			$where = (array) $id;
-			if($record = $this->exist($where)) {
-				return $record->fetchRow();
-			}
-			else {
-				return FALSE;
-			}
-		}
-		elseif($record = $this->exist($id, $columnName, $checkId, $checkColumnName)) {
-			return $record->fetchRow();
-		}
-		else { // doesn't exist
-			return FALSE;
-		}
-	}
-	
+		$record = $this->exist($key);
 
-	/**
-	 * Get 1 item column by another column identification
-	 * @param mixed
-	 * @param string
-	 */
-	public function itemColumn($needle, $columnName, $return = "id")
-	{
-		$record = $this->item($needle, $columnName);
-		if($record) {
-			return $record[$return];
+		if ($record) {
+			return $record->fetchRow();
 		}
 		else {
 			return FALSE;
 		}
 	}
-
+	
 	
 	/**
 	 * Get number of table rows
@@ -203,50 +133,39 @@ class Base extends \Nette\Object
 	 */
 	public function count($where = NULL)
 	{
-		$cache = $this->cache;
-
-		if($where) {
-			$key = $this->tableName."_".md5(serialize($where));
-		}
-		else {
-			$key = $this->tableName;
-		}
+		$key = $this->tableName . ($where ?  "_" . md5(serialize($where)) : NULL);
 	
-		if(isset($cache[$key])) {
-			return (int) $cache[$key];
+		if (isset($this->cache[$key])) {
+			return (int) $this->cache[$key];
+		}
+
+		if ($where) {
+			$count = $this->table($where)->count("*");
 		}
 		else {
-			if($where) {
-				$count = $this->db->{$this->tableName}($where)->count("*");
-			}
-			else {
-				$count = $this->db->{$this->tableName}()->count("*");
-			}
-			if($count < 1000) {
-				return $count;
-			}
-			$cache->save($key, $count, array(
-			    "expire" => (int) (time() + 60 * 60 * 24 * ($count / 500000)), // Jean's magic constant
-			));
-			return $count;
+			$count = $this->table()->count("*");
 		}
+
+		if ($count > 1000) {
+			$this->cache->save($key, $count, array(
+				"expire" => (int) (time() + 60 * 60 * 24 * ($count/500000)), // Jean's magic constant
+			));
+		}
+
+		return $count;
 	}
 
 
 	/**
-	 * Get table rows as pairs (keys = IDs, values = column).
+	 * Get table rows as pairs
 	 * @param string $column
 	 * @return array
 	 */
-	public function fetchPairs($column, $id = "id", array $where = NULL)
+	public function fetchPairs($id = "id", $column = NULL, array $where = array())
 	{
-		$result = $this->db->{$this->tableName};
-		if($where) {
+		$result = $this->table();
+		if ($where) {
 			$result->where($where);
-		}
-
-		if($column == "id") {
-			return $result->fetchPairs("id");
 		}
 
 		return $result->fetchPairs($id, $column);
@@ -254,12 +173,12 @@ class Base extends \Nette\Object
 
 
 	/**
-	 * Fetch random table row.
+	 * Fetch random table row
 	 * @return array
 	 */
 	public function fetchRandom()
 	{
-		return $this->db->{$this->tableName}()->order("RAND()")->limit(1)->fetchRow();
+		return $this->table()->order("RAND()")->limit(1)->fetchRow();
 	}
 
 
@@ -271,7 +190,7 @@ class Base extends \Nette\Object
 	 */
 	public function fetchSingle($where, $column)
 	{
-		return $this->db->{$this->tableName}->where($where)->fetchSingle($column);
+		return $this->table($where)->fetchSingle($column);
 	}
 
 
@@ -284,9 +203,9 @@ class Base extends \Nette\Object
 	public function upsert($array, $recordId = NULL, $columnName = "id")
 	{
 		try {
-			return $this->db->{$this->tableName}($columnName, $recordId)->update($array);
+			return $this->table($columnName, $recordId)->update($array);
 		} catch (\Exception $e) {
-			return $this->db->{$this->tableName}->insert($array);
+			return $this->table()->insert($array);
 		}
 	}
 
@@ -312,7 +231,7 @@ class Base extends \Nette\Object
                     ->select(substr($this->tableName, 0, -1) . "_id");
 
                 try {
-                    $result = $this->db->{$this->tableName}("id", $mn);
+                    $result = $this->table("id", $mn);
                 } catch (\PDOException $e) {
                     if (false !== strpos($e->getMessage(), "Table") && false !== strpos($e->getMessage(), "doesn't exist")) {
                         // switch table name elements
@@ -320,7 +239,7 @@ class Base extends \Nette\Object
                         $mn = $this->db->{$relationTableName}($findCondition, $args[0])
                             ->select(substr($this->tableName, 0, -1) . "_id");
 
-                        $result = $this->db->{$this->tableName}("id", $mn);
+                        $result = $this->table("id", $mn);
                     } else {
                         throw $e;
                     }
@@ -330,11 +249,40 @@ class Base extends \Nette\Object
             } 
 			else {
                 // no or 1:N relation
-                return $this->db->{$this->tableName}()->where($findCondition, $args[0])->fetchRow();
+                return $this->table()->where($findCondition, $args[0])->fetchRow();
             }
         }
     }
 
 
+	/********************* shortcuts & helpers *********************/
+
+
+	/**
+	 * Table shortcut
+	 */
+	final public function table()
+	{
+		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
+	}
+
+
+	/**
+	 * Get table name by class name [Pages => pages, ArticleTag => article_tag]
+	 * @param string
+	 * @return string
+	 */
+	private function tableNameByClass($className)
+	{
+		$tableName = explode("\\", $className);
+		$tableName = lcfirst(array_pop($tableName));
+
+		$replace = array();
+		foreach (range("A", "Z") as $letter) {
+			$replace[$letter] = "_".strtolower($letter);
+		}
+
+		return strtr($tableName, $replace); 
+	}
 
 }
