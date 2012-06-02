@@ -195,18 +195,28 @@ class Base extends \Nette\Object
 
 
 	/**
-	 * Updates if id is set
-	 * @param array
-	 * @param mixed|int
+	 * Get last id
 	 * @param string
 	 */
-	public function upsert($array, $recordId = NULL, $columnName = "id")
+	public function getLastId($column = "id")
 	{
-		try {
-			return $this->table($columnName, $recordId)->update($array);
-		} catch (\Exception $e) {
-			return $this->table()->insert($array);
+		$record = $this->table()->order("$column DESC")->fetchSingle($column);
+		if (is_null($record)) {
+			return 0;
 		}
+
+		return $record;	
+	}
+
+
+	/**
+	 * Insert, update on duplicate key (
+	 * @param array
+	 * @param array
+	 */
+	public function upsert($data, $unique)
+	{
+		return $this->table()->insert_update($unique, $data, $data);
 	}
 
 
