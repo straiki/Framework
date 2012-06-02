@@ -34,6 +34,10 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public $logged = FALSE;
 
 
+	/** @var string */
+	protected $onLogoutLink = ":Front:Homepage:default";
+
+
 	public function beforeRender()
 	{
 		parent::beforeRender();
@@ -105,7 +109,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 
 	/* ************************ handlers ************************ */
-		
+
 
 	/**
 	 * Logout	
@@ -114,7 +118,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	{
 		$this->user->logout();
 		$this->flashMessage("Byli jste odhlášeni.","flash-info");
-		$this->redirect(":Front:Homepage:default");
+		$this->redirect($this->onLogoutLink);
 	} 
 
 
@@ -228,7 +232,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 
 	/**
-	 * Models shortcut 
+	 * Model shortcut 
 	 */
 	final public function getModels()
 	{
