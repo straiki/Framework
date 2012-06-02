@@ -20,6 +20,82 @@ class Time extends \Nette\Object
 
 
 	/**
+	 * Return birthdate from rc (rodné číslo)
+	 * @param string
+	 * @param bool
+	 * @return date
+	 */
+	public static function birthdateFromRC($rc, $detectGender = FALSE)
+	{
+		$female = FALSE;
+
+		$rc = strtr($rc, array("/" => NULL));
+		$y = substr($rc, 0, 2);
+		$m = substr($rc, 2, 2);
+		$d = substr($rc, 4, 2);
+		
+		if ($m >= 50) { // female
+			$female = TRUE;
+			$m -= 50;
+		}
+
+		if ($y < date("y")) { // 20xx
+			$y = "20" . $y;
+		}
+		else {
+			$y = "19" . $y;			
+		}
+
+		$date = date("Y-m-d", strtotime("$y-$m-$d"));
+
+		if ($detectGender) {
+			return array(
+				"date" => $date,
+				"gender" => ($female ? "female" : "male")
+			);
+		}
+
+		return $date;
+	}
+
+
+	/**
+	 * Parse date in misc format and return it in YYYY-MM-DD
+	 */
+	static function parse($date)
+	{
+		if (empty($date)) {
+			return null;
+		}
+
+		if (preg_match('/^([12][0-9]{3})([0-9]{2})([0-9]{2})$/', "$date", $m)) {
+			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[3], $m[1]));
+		}
+		elseif (preg_match('/^([12][0-9]{3})-([0-9]{1,2})-([0-9]{1,2})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m) OR
+			preg_match('/^([0-9]{1,2}).\s*([0-9]{1,2}).\s*([12][0-9]{3})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m)) {
+			$date = date(@$m[4] ? 'Y-m-d H:i:s' : 'Y-m-d', mktime(@$m[4], @$m[5], @$m[6], $m[2], $m[1], $m[3]));
+		}
+
+		// dd.mm.
+		elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.$/', "$date", $m)) {
+			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], date('Y')));
+		}
+		elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.([0-9]{1,2})$/', "$date", $m)) {
+			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], $m[3] < 70 ? "20{$m[3]}" : "19{$m[3]}"));
+		}
+
+		if ($time = @strtotime($date)) {
+			$date = date('Y-m-d', $time);
+			if ((int) date('His', $time)) {
+				$date .= " " . ($time = date('H:i:s', $time));
+			}
+		}
+
+		return $date;
+	}
+	
+
+	/**
 	 * Get age from birthdate
 	 * @param date format/time()
 	 */
