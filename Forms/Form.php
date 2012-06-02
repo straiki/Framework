@@ -115,7 +115,7 @@ class Form extends \Nette\Application\UI\Form
 			$this->setTranslator($this->translator);
 		}
 
-		if($presenter instanceof \Nette\Application\IPresenter) {
+		if ($presenter instanceof \Nette\Application\IPresenter) {
 			$this->attachHandlers($presenter);
 		}
 	}
@@ -130,13 +130,24 @@ class Form extends \Nette\Application\UI\Form
 		$formNameSent = lcfirst($this->getName())."Sent";
 
 		// auto callback on submit
-		if(method_exists($presenter, $formNameSent)) {
+		if (method_exists($presenter, $formNameSent)) {
 			$this->onSuccess[] = callback($presenter, $formNameSent);
 		}
 
+		// auto callback on submit (in control use)
+		if (method_exists($this->parent, $formNameSent)) {
+			$this->onSuccess[] = callback($this->parent, $formNameSent);
+		}
+
+
 		// auto callback on submit in form factory
-		if(method_exists($this, "process")) {
+		if (method_exists($this, "process")) {
 			$this->onSuccess[] = callback($this, "process");
+		}
+
+		// auto callback on submit in form factory (in control use)
+		if (method_exists($this->parent, "process")) {
+			$this->onSuccess[] = callback($this->parent, "process");
 		}
 	}
 
