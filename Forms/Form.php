@@ -440,3 +440,5 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 }
+
+\Schmutzka\Forms\Controls\AntispamControl::register();
