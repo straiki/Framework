@@ -38,4 +38,32 @@ class Utils extends \Nette\Object
 		return NULL;
 	}
 
+
+	/**
+	 * Converts icons to base64 version
+	 * @param string
+	 * @param array
+	 */
+	public static function icons2css($folder, $fileTypes = array("*.jpg", "*.gif", "*.png")) 
+	{
+		$folder = WWW_DIR . "/" . $folder;
+		if (!file_exists($folder)) {
+			throw new \Nette\InvalidStateException("Directory ". $folder . " not found");
+		}
+
+		echo "<code>";
+		foreach (Finder::findFiles($fileTypes)->in($folder) as $image) {
+			$icon = Strings::webalize(substr($image->getbaseName(), 0, strrpos($image->getbaseName(), ".")));
+			$mime = MimeTypeDetector::fromFile($image->getRealPath());
+
+			$imageContent = file_get_contents((string)$image);
+			$data = "data:" . $mime . ';base64,' . base64_encode($imageContent);
+
+			echo "." . $icon . " {background-image:url(", $data, ")}" . "<br><br>";
+		}
+		echo "</code>";
+
+		die;
+	}
+
 }
