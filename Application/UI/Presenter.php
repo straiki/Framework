@@ -34,6 +34,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public $logged = FALSE;
 
 
+	/** @var bool */
+	protected $runStopwatch = FALSE;
+
 	/** @var string */
 	protected $onLogoutLink = ":Front:Homepage:default";
 
@@ -41,8 +44,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function beforeRender()
 	{
 		parent::beforeRender();
-
-		// dependency select Json registration
 		JsonDependentSelectBox::tryJsonResponse($this->presenter);
 	}
 
@@ -312,5 +313,33 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 		return $list;
 	}
+
+
+	/********************* stopwatch *********************/
+
+
+	/**
+	 *	@use $this->stopwatchStart(__METHOD__);
+	 */
+	private function stopwatchStart($methodName)
+	{	
+		if ($this->runStopwatch) {
+			$methodName = explode("::", $methodName);
+			Stopwatch::start(array_pop($methodName));
+		}
+	}
+
+
+	/**
+	 *	@use $this->stopwatchStop(__METHOD__);
+	 */
+	private function stopwatchStop($methodName)
+	{	
+		if ($this->runStopwatch) {
+			$methodName = explode("::", $methodName);
+			Stopwatch::stop(array_pop($methodName));
+		}
+	}
+
 
 }
