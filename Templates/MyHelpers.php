@@ -3,7 +3,9 @@
 namespace Schmutzka\Templates;
 
 use Nette\Templating\FileTemplate,
-	Nette\Templating\Template;
+	Nette\Templating\Template,
+	Schmutzka\Utils\Time,
+	Nette\Utils\Html;
 
 class MyHelpers extends \Nette\Object
 {
@@ -36,6 +38,29 @@ class MyHelpers extends \Nette\Object
 		$code = "<?php ".$code;
 		$split = array('&lt;?php&nbsp;' => '');
 		return strtr(highlight_string($code,TRUE),$split);
+	}
+
+
+	/**
+	 * Timeline helper
+	 * @param int
+	 * @param int
+	 * @return html
+	 */
+	public function timeLine($time, $steps = 25) 
+	{
+		$step = floor($time/$steps);
+		$width = floor(100/$steps);
+	
+		$return = "";
+		$time = -4;
+		for ($i = 0; $i < $steps; $i++) {
+			$time += $step;
+			$return .= Html::el("td")->setHtml(Time::im($time))->width($width . "%");
+			$time += 2.1; // special constant
+		}
+
+		return $return;
 	}
 
 
@@ -95,8 +120,8 @@ class MyHelpers extends \Nette\Object
 
 	/**
 	  * Returns field from array
-	 * @param mixed
-	 * @param string
+	  * @param mixed
+	  * @param string
 	  */
 	public function inArray($value, $array, $return = "-")
 	{
@@ -111,7 +136,6 @@ class MyHelpers extends \Nette\Object
 
 	/**
 	 * Iconv
-	 * @param string
 	 * @param string
 	 * @param string
 	 * @return string
@@ -243,8 +267,7 @@ class MyHelpers extends \Nette\Object
 
 
 	/**
-	 * Formats duration in seconds to number with units.
-	 *
+	 * Formats duration in seconds to number with units
 	 * @param int $s
 	 */
 	public static function duration($s)
