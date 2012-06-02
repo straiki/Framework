@@ -20,8 +20,9 @@ class Url extends \Nette\Object
 	 * @param string
 	 * @throws \Exception
 	 */
-	public static function bitLy($url) {
-		if(Validators::isUrl($url)) {
+	public static function bitLy($url)
+	{
+		if (Validators::isUrl($url)) {
 
  			$url = urlencode($url); // makes & possible etc.
 			$ping = "http://api.bitly.com/v3/shorten?login=".self::$bitLyLogin."&apiKey=".self::$bitLyKey."&longUrl=".$url;
@@ -29,10 +30,11 @@ class Url extends \Nette\Object
 			$file  = file_get_contents($ping);
 			$data = json_decode($file);
 
-			if($data->data->url) {
+			if ($data->data->url) {
 				return $data->data->url;
 			}
-			return $url;
+
+			return urldecode($url);
 		}
 		else { // wrong type
 			throw \Exception("$url is not an url.");
