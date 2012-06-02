@@ -7,7 +7,8 @@
  * {n:id ?} <div n:id="cond ? one : two">
  * {ga ?} - google analytics code
  * {n:confirm ?} - js confirm dialog
- * {n:tooltip ?} - into  
+ * {n:tooltip ?} - into  js tooltip
+ * {n:src ?} - into <img src={$baseHref}/images/ ... >
  */
 
 namespace Schmutzka\Templates;
@@ -26,6 +27,16 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$me->addMacro("menuItem", array($me, "macroMenuItem"));
 		$me->addMacro("id", NULL, NULL, array($me, "macroId"));
 		$me->addMacro("tooltip", NULL, NULL, array($me, "macroTooltip"));
+		$me->addMacro("src", NULL, NULL, array($me, "macroSrc"));
+	}
+
+
+	/**
+	 * n:src="..."
+	 */
+	public function macroSrc(MacroNode $node, PhpWriter $writer)
+	{
+		return $writer->write('echo \' src="\' . %escape($basePath) . "/images/" . %escape(%node.word) . \'"\'');
 	}
 
 
