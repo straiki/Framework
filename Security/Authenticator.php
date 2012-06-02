@@ -29,11 +29,12 @@ class Authenticator extends Object implements IAuthenticator
         list($login, $password) = $credentials;
 		$row = $this->userTable->where(strpos($login, "@") ? "email" : "login", $login);
 
-        if (!$row) { // check existance
+        if (!$row->count("*")) { // check existance
             throw new AuthenticationException("Uživatel '$login' neexistuje.");
         }
 
-        $row = $row->fetchRow();
+		$row = $row->fetchRow();
+
         if (isset($row["auth"]) AND $row["auth"] != 1) { // check authentication
             throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
         }
