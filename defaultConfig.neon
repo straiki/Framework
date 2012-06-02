@@ -16,6 +16,7 @@ common:
 			debugger: TRUE  
 
 		debugger:
+			email: tomas.vot@gmail.com
 			strictMode: TRUE
 			maxDepht: 3
 			maxLen: 4096
@@ -60,6 +61,8 @@ common:
 		feedbackForm: Schmutzka\Forms\FeedbackForm(@user)
 
 		remindPasswordForm: Schmutzka\Forms\RemindPasswordForm(@container)	
+
+		mailingList: Components\MailingListControl(@container)
 
 			
 
