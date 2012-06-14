@@ -42,7 +42,7 @@ class Control extends \Nette\Application\UI\Control
 
 
 	/**
-	 * Automatically registers template file and all filters
+	 * Registers template file and all filters
 	 * @param string
 	 * @return Nette\Templates\FileTemplate
 	 */
@@ -54,6 +54,14 @@ class Control extends \Nette\Application\UI\Control
 		// Latte, Haml, macros
 		$this->templatePrepareFilters($template);
 		
+		// Translator
+		if ($this->context->hasService("translator")) { // translate service registered
+			if (isset($this->params["lang"])) { // set default language
+				$this->context->translator->setLang($this->params["lang"]); 
+			}
+			$template->setTranslator($this->context->translator);
+		}
+
 		// helpers
 		$helpers = new MyHelpers($this->parent->context, $this->parent->presenter);
 		$template->registerHelperLoader(array($helpers, "loader"));
