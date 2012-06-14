@@ -75,7 +75,7 @@ class DumpMail extends Object implements IBarPanel {
 	 */
 	public function getPanel() {
 		ob_start();
-		$template = new FileTemplate(__DIR__. "/templates/bar.dumpmail.panel.latte");
+		$template = new FileTemplate(__DIR__ . "/panel.latte");
 		$template->registerFilter(new Engine());
 		$template->data = $this->data;
 		$template->render();

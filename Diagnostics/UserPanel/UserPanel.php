@@ -79,7 +79,7 @@ class User extends Control implements IBarPanel
 			$form['user']->setDefaultValue('__guest');
 		}
 
-		$template->setFile(__DIR__ . '/templates/bar.user.panel.latte');
+		$template->setFile(__DIR__ . "/panel.latte");
 
 		$template->registerFilter(new Engine());
 		$template->user = $this->user;

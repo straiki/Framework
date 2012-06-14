@@ -8,15 +8,14 @@
 
 namespace Schmutzka\Panels;
 
-use Nette\Object;
-use Nette\Diagnostics\IBarPanel;
-use Nette\Diagnostics\Debugger;
-use Nette\Templating\FileTemplate;
-use Nette\Utils\Finder;
-use Nette\Utils\Strings as String;
-use Nette\Utils\SafeStream;
-use Nette\Latte\Engine;
-
+use Nette\Object,
+	Nette\Diagnostics\IBarPanel,
+	Nette\Diagnostics\Debugger,
+	Nette\Templating\FileTemplate,
+	Nette\Utils\Finder,
+	Nette\Utils\Strings as String,
+	Nette\Utils\SafeStream,
+	Nette\Latte\Engine;
 
 class Navigation extends Object implements IBarPanel
 {
@@ -41,7 +40,7 @@ class Navigation extends Object implements IBarPanel
 	function getPanel()
 	{
 		ob_start();
-		$template = new FileTemplate(dirname(__FILE__) . '/templates/bar.navigation.panel.latte');
+		$template = new FileTemplate(__DIR__ . "/panel.latte");
 		$template->registerFilter(new Engine());
 		$template->tree = $this->getPresenters();
 		$template->render();
