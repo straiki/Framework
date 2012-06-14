@@ -8,8 +8,9 @@ use Schmutzka\Forms\Form,
 
 class UserForm extends  Form
 {
-	/** @var \ModelLoader */
-	private $models;
+	/** @var \Models\User */
+	private $userModel;
+
 
 	/** @var array */
 	public $roleList = array(
@@ -29,23 +30,22 @@ class UserForm extends  Form
 	/** @var array */
 	public $regexp = array();
 
-	/**
-	 * @param int
-	 */
+
 	public function __construct($context)
 	{
 		parent::__construct();
-		$this->models = $context->modelLoader;
+		$this->userModel = $context->models->user;
 	}
 
 
-	public function startup()
+	public function build()
 	{
-		parent::startup();
+		parent::build();
 
-		if($this->id) { // editation
+		if ($this->id) { // editation
 			$this->addGroup(""); 
 		}
+
 		$this->addText("name", "Jméno:");
 		$this->addText("surname", "Příjmení:")
 			->addRule(Form::FILLED,"Zadejte příjmení");
@@ -60,27 +60,28 @@ class UserForm extends  Form
 
 		$this->addPassword("password","Heslo:", 20);
 
-		if($this->id) {
+		if ($this->id) {
 			$this->addCheckbox("changePassword", "Změnit heslo?")
 				->setDefaultValue(FALSE)
 				->addCondition(Form::FILLED)
 					->toggle("change_password");
 		}
 
-		if($this->id) {
+		if ($this->id) {
 			$this->addGroup("")->setOption('container', Html::el('fieldset')->id("change_password")->style("display:none")); 
 		}
 		$this["password"]
 			->addCondition(Form::FILLED)
 				->addRule(Form::MIN_LENGTH,"Heslo musí mít aspoň %d znaků.", $this->passwordMinLength);
-		if($this->regexp) {
+		if ($this->regexp) {
 			$this["password"]->addCondition(Form::FILLED)
 				->addRule(Form::REGEXP, $this->regexp[1], $this->regexp[0]);
 		}
 
-		if(!$this->id) {
+		if (!$this->id) {
 			$this["password"]->addRule(Form::FILLED, "Zadejte heslo");
 		}
+
 		$this->addPassword("password2","Potvrzení hesla:",20)
 			->addRule(Form::EQUAL,"Hesla se neshodují. Zadejte je znovu, prosím.", $this["password"])
 			->addCondition(Form::FILLED)
@@ -99,9 +100,8 @@ class UserForm extends  Form
 		$values = $form->values;
 		unset($values["password2"]);
 
-
-		if($this->id) { // editation
-			$userRow = $this->models->user->item($this->id);
+		if ($this->id) { // edit
+			$userRow = $this->userModel->item($this->id);
 
 			// password check
 			if(isset($values["changePassword"]) AND $values["changePassword"]) { 
@@ -113,30 +113,30 @@ class UserForm extends  Form
 			unset($values["changePassword"]);
 
 			// email collision check
-			if($this->models->user->item($values["email"], "email") AND $values["email"] != $userRow["email"]) {
+			if($this->userModel->item($values["email"], "email") AND $values["email"] != $userRow["email"]) {
 				$this->presenter->flashMessage("Tento email je již obsazený.","flash-error");
 				$this->presenter->redirect($this->redirect, array("id" => NULL));
 			}
 	
-			$this->models->user->update($values, $this->id);
+			$this->userModel->update($values, $this->id);
 		}
 		else {
 			// password check
 			$values["password"] = sha1($values["password"]);
 
 			// email collision check
-			if($this->models->user->item($values["email"], "email")) {
-				$this->presenter->flashMessage("Tento email je již obsazený.","flash-error");
-				$this->presenter->redirect($this->redirect, array("id" => NULL));
+			if($this->userModel->item($values["email"], "email")) {
+				$this->flashMessage("Tento email je již obsazený.","flash-error");
+				$this->redirect($this->redirect, array("id" => NULL));
 			}
 
 			$values["reg_time"] = new \DateTime; // time of registrartion
 
-			$this->models->user->insert($values);	
+			$this->userModel->insert($values);	
 		}
 
-		$this->presenter->flashMessage("Uloženo.","flash-success");
-		$this->presenter->redirect($this->redirect, array("id" => NULL));
+		$this->flashMessage("Uloženo.", "flash-success");
+		$this->redirect($this->redirect, array("id" => NULL));
 	}
 	
 }
