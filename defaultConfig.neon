@@ -7,10 +7,11 @@ common:
 		date.timezone: Europe/Prague
 		session.save_path: %tempDir%/sessions
 		zlib.output_compression: yes
-
+	
 	nette:
 		session:
 			autoStart: smart
+			expiration: 14 days
 
 		container:
 			debugger: TRUE  
@@ -21,11 +22,10 @@ common:
 			maxDepht: 3
 			maxLen: 4096
 			bar:
-				- Schmutzka\Panels\Session(@session)
+				- Schmutzka\Panels\SessionPanel(@application, @session)
 				- Schmutzka\Panels\DumpMail(@session)
 				- Schmutzka\Panels\Navigation
 				- Schmutzka\Panels\Stopwatch
-				- Schmutzka\Panels\TemplateParametersPanel
 
 		database:
 			default:
@@ -47,14 +47,16 @@ common:
 
 		sessionStorage: Services\SessionStorage
 
-		session:
-			setup:
-				- setStorage()
-				- setSavePath("%tempDir%/session.sqlite")
-				- setExpiration(+ 14 day)
+		# session:
+			# setup:
+				# - setStorage()
+				# - setSavePath("%tempDir%/session.sqlite")
+				# - setExpiration(+ 14 day)
 
 	factories:
 		loginForm: Schmutzka\Forms\LoginForm
+
+		registrationForm: Schmutzka\Forms\RegistrationForm(@container)
 
 		changePasswordForm: Schmutzka\Forms\ChangePasswordForm(@container)
 
@@ -63,6 +65,8 @@ common:
 		remindPasswordForm: Schmutzka\Forms\RemindPasswordForm(@container)	
 
 		mailingList: Components\MailingListControl(@container)
+
+		userForm: Schmutzka\Forms\UserForm(@container)
 
 			
 
