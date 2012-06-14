@@ -16,6 +16,7 @@ class Form extends \Nette\Application\UI\Form
 		"cancel" => "btn",
 		"return" => "btn",
 		"reset" => "btn",
+		"test" => "btn",
 		"remove" => "btn btn-danger",
 		"delete" => "btn btn-danger",
 		"next" => "btn btn-success",
@@ -24,8 +25,16 @@ class Form extends \Nette\Application\UI\Form
 	/** @var bool */
 	private $isBuilt = FALSE;
 
+
 	/** @var string */
 	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
+
+	/** @var string */
+	public $id = "";
+
+	/** @var string */
+	public $target = "";
+
 
 	/** @var \Translator */
 	protected $translator = NULL;
@@ -56,11 +65,19 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * beforeRender buildin function
+	 * beforeRender build function
 	 */
 	public function build()
 	{
 		$this->isBuilt = TRUE;
+
+		if ($this->id) {
+			$this->setId($this->id);
+		}
+
+		if ($this->target) {
+			$this->setTarget($this->target);
+		}
 	}
 
 
@@ -94,7 +111,6 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 
-
 	/**
 	 * This method will be called when the component (or component's parent)
 	 * becomes attached to a monitored object. Do not call this method yourself.
@@ -110,7 +126,7 @@ class Form extends \Nette\Application\UI\Form
 			$this->build();
 		}
 
-		if($this->getContext()->hasService("translator")) { // automatic translator
+		if ($this->getContext()->hasService("translator")) { // automatic translator
 			$this->translator = $this->getContext()->translator;
 			$this->setTranslator($this->translator);
 		}
@@ -129,25 +145,17 @@ class Form extends \Nette\Application\UI\Form
 	{
 		$formNameSent = lcfirst($this->getName())."Sent";
 
-		// auto callback on submit
-		if (method_exists($presenter, $formNameSent)) {
-			$this->onSuccess[] = callback($presenter, $formNameSent);
-		}
+		$possibleMethods = array(
+			array($presenter, $formNameSent),
+			array($this->parent, $formNameSent),
+			array($this, "process"),
+			array($this->parent, "process")
+		);
 
-		// auto callback on submit (in control use)
-		if (method_exists($this->parent, $formNameSent)) {
-			$this->onSuccess[] = callback($this->parent, $formNameSent);
-		}
-
-
-		// auto callback on submit in form factory
-		if (method_exists($this, "process")) {
-			$this->onSuccess[] = callback($this, "process");
-		}
-
-		// auto callback on submit in form factory (in control use)
-		if (method_exists($this->parent, "process")) {
-			$this->onSuccess[] = callback($this->parent, "process");
+		foreach ($possibleMethods as $method) {
+			if (method_exists($method[0], $method[1])) {
+				$this->onSuccess[] = callback($method[0], $method[1]);
+			}
 		}
 	}
 
@@ -155,15 +163,14 @@ class Form extends \Nette\Application\UI\Form
 	/**
 	 * Returns values as array
 	 * @param bool
-	 * @param bool
 	 */
-	public function getValues($removeEmpty = FALSE, $serialize = FALSE)
+	public function getValues($removeEmpty = FALSE)
 	{
 		$values = parent::getValues(TRUE);
-
+		
 		// complete empty values by httpData
-		foreach ($this->getHttpData() as $key => $value) {
-			if (empty($values[$key]) AND $value AND in_array(rtrim($key,"_"),$this->typeClass)) {
+		foreach ($this->httpData as $key => $value) {
+			if (empty($values[$key]) AND $value AND !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
 				$values[$key] = $value;
 			}
 		}
@@ -173,22 +180,40 @@ class Form extends \Nette\Application\UI\Form
 			unset($values[$key]);
 		}
 
-		// convert data object and unserialized
+		// convert date object
 		foreach ($values as $key => $value) { 
 			if (is_object($value) AND (get_class($value) == "Nette\DateTime" OR get_class($value) == "DateTime")) { // object to date
 				$values[$key] = $value->format("Y-m-d");
 			}
-			elseif (is_array($value) AND $serialize) { // serialize array to string
-				$values[$key] = serialize($value);
-			}
 		}
 
-		// removes empty/NULL values
 		if ($removeEmpty) { 
-			$values = ($serialize ? array_filter($values, "strlen") : array_filter($values)); 
+			$values = array_filter($values); 
 		}
 
 		return $values;
+	}
+
+
+	/**
+	 * Set id for the form
+	 * @param string
+	 */
+	public function setId($name)
+	{
+		$this->elementPrototype->id = $name;
+		return $this;
+	}
+
+
+	/**
+	 * Set target for the form
+	 * @param string
+	 */
+	public function setTarget($name)
+	{
+		$this->elementPrototype->target = $name;
+		return $this;
 	}
 
 
@@ -258,7 +283,10 @@ class Form extends \Nette\Application\UI\Form
 	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
 	{
 		$item = parent::addRadioList($name, $label, $items);
+
+		$sep = trim($sep, "<>");
 		$item->getSeparatorPrototype()->setName($sep);
+
 		return $item;
 	}
 
@@ -269,8 +297,10 @@ class Form extends \Nette\Application\UI\Form
 	public function addCheckboxList($name, $label = NULL, $cols = NULL, $sep = NULL)
 	{
 		$item = $this[$name] = new Controls\CheckboxList($label, $cols, NULL);
-		$sep = Html::el($sep);
-		$item->setSeparator($sep);	
+
+		$sep = trim($sep, "<>");
+		$item->setSeparator(Html::el($sep));	
+
 		return $item;
 	}
 
@@ -281,12 +311,13 @@ class Form extends \Nette\Application\UI\Form
 	 */
 	public function addSubmit($name = "send", $label = "Uložit", $class = "btn btn-primary")
 	{
-		if(isset($this->typeClass[$name])) {
+		if (isset($this->typeClass[$name])) {
 			$class = $this->typeClass[$name];
 		}
 
 		$item = parent::addSubmit($name, $label);
 		$item->setAttribute("class", $class);
+
 		return $item;
 	}
 
@@ -327,42 +358,6 @@ class Form extends \Nette\Application\UI\Form
 	public function addJSelect($name, $label = NULL, $parents = NULL, $dataCallback)
 	{
 		return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
-	}
-
-
-	/**
-	 * @return Control\Date
-	 */
-	public function addDate($name, $label = NULL, $cols = NULL)
-	{
-		return $this[$name] = new Controls\Date($label, $cols, NULL);
-	}
-
-
-	/**
-	 * @return Controls\DateTime
-	 */
-	public function addDateTime($name, $label = NULL, $cols = NULL)
-	{
-		return $this[$name] = new Controls\DateTime($label, $cols, NULL);
-	}
-
-
-	/**
-	 * @return Controls\Time
-	 */
-	public function addTime($name, $label = NULL, $cols = NULL)
-	{
-		return $this[$name] = new Controls\Time($label, $cols, NULL);
-	}
-
-
-	/** @buggy
-	 * @return Controls\MultipleFileUpload
-	 */
-	public function addMultipleUpload($name, $label = NULL)
-	{
-		return $this[$name] = new Controls\MultipleFileUpload($label);
 	}
 
 
