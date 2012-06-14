@@ -11,20 +11,21 @@ use Schmutzka\Forms\Replicator,
 	Nette\Mail\Message,
 	Components\CssLoader,
 	Components\JsLoader,
-	DependentSelectBox\JsonDependentSelectBox;
+	DependentSelectBox\JsonDependentSelectBox,
+	Nette\Http\Url;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {
-	/** @object \Panels\User */
+	/** @var \Panels\User */
 	public $userPanel;
 
-	/** @object \Nette\Caching\Cache */
+	/** @var \Nette\Caching\Cache */
 	public $cache;
 
-	/** @object \Nette\Http\SessionSection */
+	/** @var \Nette\Http\SessionSection */
 	public $mySession;
 
-	/** @object \Nette\Http\SessionSection */
+	/** @var \Nette\Http\SessionSection */
 	public $appSession;
 
 	/** @var string */
@@ -41,6 +42,10 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	protected $onLogoutLink = ":Front:Homepage:default";
 
 
+	/** @var string */	
+	private $referer;
+
+
 	public function beforeRender()
 	{
 		parent::beforeRender();
@@ -52,46 +57,47 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	{
 		parent::startup();
 
-		/* params shortcut */
 		$this->params += $this->context->parameters;
 
-		/** @var \Nette\Caching\Cache */
 		$this->cache = $this->context->cache;
 
-		/** @var \Nette\Session\Section */
-		$sectionKey = sha1($this->params["wwwDir"]);
-		$this->mySession = $this->session->getSection("mySession" . $sectionKey);
+		$sectionKey = substr(sha1($this->params["wwwDir"]), 6);
+		$this->mySession = $this->session->getSection("mySession_" . $sectionKey);
 		$this->appSession = $this->session->getSection("appSession");
 
+		$this->user->storage->setNamespace("user_ " . $sectionKey); 
 
-		/** userPanel registration */
+		/** userPanel registration - buggy */
+		/*
 		$this->userPanel = User::register($this->user, $this->session, $this->getContext());
 		$this->userPanel->setNameColumn("email")
 			->addCredentials("admin", "admin")
 			->addCredentials("user", "user");
+		*/
 
 
-		// dev mailer
-		if(!$this->params["productionMode"]) { // dev only
+		if ($this->params["debugMode"]) {
 			Message::$defaultMailer = new \Schmutzka\Diagnostics\DumpMail($this->getContext()->session); // service conflict with @nette.mail
 		}
 
-
-		/** user status and role info  */
-		if ($this->user->isLoggedIn()) {	
+		// user status and role info
+		if ($this->user->loggedIn) {	
 			$this->logged = TRUE;
-			$role = $this->user->getRoles(); // what's his role?
+			$role = $this->user->getRoles();
 			$this->role = array_shift($role);
 		}
-		elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage (where login is)
-			$this->appSession->backlink = $this->storeRequest();
+		elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
+			if (!is_array($this->signal) OR !in_array("logout", $this->signal)) { // do not save logout signal either (results in logout after login)
+				$this->appSession->backlink = $this->storeRequest();
+			}
 		}
 
 		$this->tpl($this->role);
 		$this->tpl($this->logged);
+
+		// referer
+		$this->updateReferer($this->mySession, $this->presenter->context->httpRequest);
 	}
-
-
 
 
 	/**
@@ -109,6 +115,8 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
+	
+
 	/* ************************ handlers ************************ */
 
 
@@ -118,7 +126,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function handleLogout()
 	{
 		$this->user->logout();
-		$this->flashMessage("Byli jste odhlášeni.","flash-info");
+		$this->flashMessage("Byli jste odhlášeni.", "flash-info");
 		$this->redirect($this->onLogoutLink);
 	} 
 
@@ -178,6 +186,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		return new CssLoader($this->template->basePath);
 	}
 
+
 	/**
 	 * Js component 
 	 * @return \Components\JsLoader
@@ -185,6 +194,26 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	protected function createComponentJs()
 	{
 		return new JsLoader($this->template->basePath);
+	}
+
+
+	/**
+	 * Css component for AdminModule
+	 * @return \Components\CssLoader
+	 */
+	protected function createComponentCssAdmin()
+	{
+		return new CssLoader($this->template->basePath, "cssAdmin");
+	}
+
+
+	/**
+	 * Js component for AdminModule
+	 * @return \Components\JsLoader
+	 */
+	protected function createComponentJsAdmin()
+	{
+		return new JsLoader($this->template->basePath, "jsAdmin");
 	}
 
 
@@ -205,27 +234,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	protected function createComponentFlashMessage()
 	{
 		return new \Components\FlashMessageControl;
-	}
-
-
-	/**
-	 * Logging data into db component
-	 */
-	protected function createComponentDbLogger()
-	{
-		$time = microtime(TRUE) - Debugger::$time;
-		$memory = memory_get_peak_usage();
-		
-		$mode = ($this->params["productionMode"] ? "prod" : "dev");
-		$devOnly = (isset($this->params["dbLogger"]["devOnly"]) ? $this->params["dbLogger"]["devOnly"] : FALSE);
-
-		if(!$devOnly OR $mode == "dev") { // dev or prod without devOnly
-			if(!isset($this->data)) { // pokud je chyba, nelogujeme, asi?
-				$logger = new dbLogger($this->getContext(), $time, $memory, $mode, $this->presenter);
-			}
-		}
-
-		return $logger;
 	}
 
 
@@ -253,9 +261,11 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/**
 	 * Add variable into the template
 	 * @param mixed
+	 * @2DO: improve
 	 */
-	public function tpl($var) {
-		$clear = array("this->" => ""); // předáváme jinou proměnnou ($this->)?
+	public function tpl($var)
+	{
+		$clear = array("this->" => "");
 
 		$trace = debug_backtrace();
 		$i = !isset($trace[1]['class']) && isset($trace[1]['function']) && $trace[1]['function'] === 'dump' ? 1 : 0;
@@ -279,8 +289,8 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	protected function getPresenterArrays($presenter)
 	{
 		$array = array();
-		foreach($presenter as $key => $value) {
-			if(is_array($value)) {
+		foreach ($presenter as $key => $value) {
+			if (is_array($value)) {
 				$array[$key] = $value;
 			}
 		}
@@ -294,7 +304,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	 */
 	public function listsToTemplate($array)
 	{
-		foreach($array as $key => $value)	{
+		foreach ($array as $key => $value) {
 			$this->template->{$key} = $value;
 		}	
 	}
@@ -309,13 +319,13 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function formatLayoutTemplateFiles()
 	{
 		$list = parent::formatLayoutTemplateFiles();
-		$list[] = APP_DIR."/AdminModule/templates/@layout.latte"; // admin layout
+		$list[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
 
 		return $list;
 	}
 
 
-	/********************* stopwatch *********************/
+	/********************* debugging *********************/
 
 
 	/**
@@ -341,5 +351,50 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		}
 	}
 
+	/********************* helpers *********************/
+
+
+	/**
+	 * Update referer, if changed
+	 * @param \Nette\Session\SessionSection
+	 * @param \httpRequest
+	 */
+	protected function updateReferer(&$session, $http) 
+	{
+		$previous = $session->referer;
+
+		// get this url
+		$url = new Url($http->url);
+		$url->query = NULL;
+		$url = $url->absoluteUrl;
+
+		// compare with this referer - drop shits
+		$present = new Url($http->referer);
+		$present->query = NULL;
+		$present = $present->absoluteUrl;
+
+		if ($present != $url OR empty($previous)) { // it's not the same, return new one
+			$return = $present;
+		}
+		else {
+			$return = $previous; // the same, return old one
+		}
+
+		$this->referer = $session->referer = $return;
+	}
+
+
+	/**
+	 * Update user identity data
+	 * @param array
+	 */
+	public function updateIdentity($values)
+	{
+		foreach($this->user->identity->data as $key => $value) {
+			if (array_key_exists($key, $values)) {
+				$this->user->identity->{$key} = $values[$key];
+			}
+		}
+	}
 
 }
