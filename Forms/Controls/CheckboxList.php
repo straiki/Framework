@@ -35,7 +35,7 @@ class CheckboxList extends BaseControl
 		parent::__construct($label);
 		$this->control->type = 'checkbox';
 		$this->container = Html::el();
-//		$this->separator = Html::el('br');
+
 		$this->separator = NULL;
 		if ($items !== NULL) {
 			$this->setItems($items);
@@ -130,6 +130,11 @@ class CheckboxList extends BaseControl
 		} elseif (!isset($this->items[$key])) {
 			return NULL;
 		}
+		
+		if ($separator == "<li></li>") {
+			$separatorOpen = "<li>";
+			$separatorClose = "</li>";
+		}
 
 		$control = parent::getControl();
 		$control->name .= '[]';
@@ -156,7 +161,12 @@ class CheckboxList extends BaseControl
 				return (string) $control . (string) $label;
 			}
 
-			$container->add((string) $control . (string) $label . $separator);
+			if (isset($separatorOpen) AND isset($separatorClose)) {
+				$container->add($separatorOpen . (string) $control . (string) $label . $separatorClose);
+			}
+			else {
+				$container->add((string) $control . (string) $label . $separator);
+			}
 		}
 
 		return $container;

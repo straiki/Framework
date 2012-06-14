@@ -15,9 +15,11 @@ namespace Schmutzka\Forms\Controls;
 
 use Nette,
 	Nette\Forms,
+	Nette\Forms\IControl,
 	DateTime;
 
-class DatePicker extends Forms\Controls\BaseControl {
+class DatePicker extends Forms\Controls\BaseControl
+{
 
 	/** @link    http://dev.w3.org/html5/spec/common-microsyntaxes.html#valid-date-string */
 	const W3C_DATE_FORMAT = 'Y-m-d';
@@ -171,7 +173,7 @@ class DatePicker extends Forms\Controls\BaseControl {
 	 * @param    DatePicker
 	 * @return   bool
 	 */
-	public static function validateFilled(Forms\IControl $control)
+	public static function validateFilled(IControl $control)
 	{
 		if (!$control instanceof self) throw new Nette\InvalidStateException('Unable to validate ' . get_class($control) . ' instance.');
 		$rawValue = $control->rawValue;
@@ -201,10 +203,10 @@ class DatePicker extends Forms\Controls\BaseControl {
 	 *
 	 * @author   Jan Tvrdík
 	 * @param    DatePicker
-	 * @param    array             0 => minDate, 1 => maxDate
+	 * @param   array             0 => minDate, 1 => maxDate
 	 * @return   bool
 	 */
-	public static function validateRange(self $control, array $range)
+	public static function validateRange(IControl $control, $range)
 	{
 		return ($range[0] === NULL || $control->getValue() >= $range[0]) && ($range[1] === NULL || $control->getValue() <= $range[1]);
 	}
@@ -221,6 +223,7 @@ class DatePicker extends Forms\Controls\BaseControl {
 	private function extractRangeRule(Forms\Rules $rules)
 	{
 		$controlMin = $controlMax = NULL;
+
 		foreach ($rules as $rule) {
 			if ($rule->type === Forms\Rule::VALIDATOR) {
 				if ($rule->operation === Forms\Form::RANGE && !$rule->isNegative) {
@@ -240,6 +243,7 @@ class DatePicker extends Forms\Controls\BaseControl {
 				$ruleMinMax = NULL;
 			}
 		}
+
 		return array($controlMin, $controlMax);
 	}
 
