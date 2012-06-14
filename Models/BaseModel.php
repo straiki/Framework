@@ -48,29 +48,30 @@ class Base extends \Nette\Object
 	/** 
 	 * Insert record
 	 * @param array
-	 * @param string
-	 * @return mixed
+	 * @return int
 	 */
-	public function insert($array, $returnColumn = "id")
+	public function insert($array)
 	{
-		$row = $this->table()->insert($array);
-
-		if ($returnColumn) {
-			return $row[$returnColumn];
-		}
-
-		return $row->fetchRow();
+		$this->table()->insert($array);
+		return $this->getLastId();
 	}
 
 
 	/**
 	 * Update record
 	 * @param array
-	 * @param array
+	 * @param mixed
 	 */
-	public function update($array, array $key)
+	public function update($array, $key)
 	{
-		return $this->table($key)->update($array);	
+		if (is_array($key)) {
+			$this->table($key)->update($array);	
+		}
+		else {
+			$this->table("id", $key)->update($array);	
+		}
+
+		return $this->item($key);
 	}
 
 	
@@ -79,7 +80,7 @@ class Base extends \Nette\Object
 	 * @param array
 	 * @param string
 	 */
-	public function delete(array $key)
+	public function delete($key)
 	{
 		if ($record = $this->exist($key)) {
 			return $record->delete();
@@ -95,9 +96,14 @@ class Base extends \Nette\Object
 	 * @param array
 	 * @return array/FALSE
 	 */
-	public function exist(array $key)
+	public function exist($key)
 	{		
-		$record = $this->table()->where($key);	
+		if (is_array($key)) {
+			$record = $this->table($key);		
+		}
+		else {
+			$record = $this->table("id", $key);		
+		}
 
 		if ($record->count("*")) {
 			return $record;
@@ -110,10 +116,10 @@ class Base extends \Nette\Object
 
 	/**
 	 * Get 1 item
-	 * @param array
+	 * @param mixed
 	 * @return array
 	 */
-	public function item(array $key)
+	public function item($key)
 	{
 		$record = $this->exist($key);
 
@@ -185,12 +191,17 @@ class Base extends \Nette\Object
 	/**
 	 * Fetch single
 	 * @param array
-	 * @param string
+	 * @param mixed
 	 * @return mixed
 	 */
-	public function fetchSingle($where, $column)
+	public function fetchSingle($column, $where)
 	{
-		return $this->table($where)->fetchSingle($column);
+		if (is_array($where)) {
+			return $this->table($where)->fetchSingle($column);
+		}
+		else {
+			return $this->table("id", $where)->fetchSingle($column);
+		}
 	}
 
 
@@ -212,11 +223,41 @@ class Base extends \Nette\Object
 	/**
 	 * Insert, update on duplicate key (
 	 * @param array
-	 * @param array
+	 * @param mixed
 	 */
 	public function upsert($data, $unique)
 	{
+		if (!is_array($unique)) {
+			if (!$unique) {
+				return $this->table()->insert($data);
+			}
+	
+			$unique = array("id" => $unique);
+		}
+
 		return $this->table()->insert_update($unique, $data, $data);
+	}
+
+
+	/**
+	 * Check if value in column is free
+	 * @param array
+	 * @param mixed
+	 * @return bool
+	 */
+	public function isFree(array $key, $exclude = NULL)
+	{
+		if ($exclude) { // workaround for update: exclude this record
+			if (is_array($exclude)) {
+				return !$this->table($key)->where("NOT", $exclude)->count("*");
+			}
+			else {
+				return !$this->table($key)->where("NOT id", $exclude)->count("*");
+			}
+		}
+		else {
+			return !$this->table($key)->count("*");
+		}
 	}
 
 
