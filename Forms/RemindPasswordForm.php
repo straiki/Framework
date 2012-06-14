@@ -12,8 +12,8 @@ class RemindPasswordForm extends Form
 	/** @var context */
 	private $context;
 
-	/** @var \NotORM_Result */
-	private $userTable;
+	/** @var \Models\User */
+	private $userModel;
 
 	/** @var dir */
 	private $appDir;
@@ -42,7 +42,7 @@ class RemindPasswordForm extends Form
 		parent::__construct();
 
 		$this->context = $context;
-		$this->userTable = $context->database->user;
+		$this->userModel = $context->models->user;
 		$this->appDir = $context->parameters["appDir"]."/";
 
 		$this->addText("email","Váš email:",25,60)
@@ -61,21 +61,23 @@ class RemindPasswordForm extends Form
 	public function process(Form $form)
 	{
 		$values = $form->values;
-		$record = $this->userTable->where("email", $values->email);
 
-		if($record->count("*")) { // user exists
+		$record = $this->userModel->item(array("email" => $values["email"]));
 
-			if($this->type == 1) { // reset
+		if (count($record)) { // user exists
+
+			if ($this->type == 1) { // reset only
 
 				$password = "V".substr(uniqid(),6,7);
-				$record->update(array(
-					"password" => sha1($password) // set new password
-				));
+
+				$this->userModel->update(
+					array("password" => sha1($password)
+				), $record["id"]);
 
 				// email the user
 				$mail = new Message;
 				$mail->setFrom($this->mailFrom)
-					->addTo($values->email)
+					->addTo($values["email"])
 					->setSubject($this->company." | ".$this->subject);
 		
 				$template = new \Nette\Templating\FileTemplate($this->appDir.$this->mailTemplatePath);
@@ -85,8 +87,8 @@ class RemindPasswordForm extends Form
 				$mail->setHtmlBody($template);
 				$mail->send();
 
-				$this->getPresenter()->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","pos");
-				$this->getPresenter()->redirect("this");
+				$this->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","flash-success");
+				$this->redirect("this");
 
 			}
 			/*
@@ -112,8 +114,8 @@ class RemindPasswordForm extends Form
 			*/
 		}
 		else { // user doesn't exists
-			$this->getPresenter()->flashMessage("Tento email není registrovaný.","neg");
-			$this->getPresenter()->redirect("this");
+			$this->flashMessage("Tento email není registrovaný.", "flass-error");
+			$this->redirect("this");
 		}
 	}
 	
