@@ -31,6 +31,16 @@ class MyHelpers extends \Nette\Object
 	}
 
 
+	/** 
+	 * Translate - hotfix
+	 * @param string
+	 */
+	public static function translate($s)
+	{
+		return $s;
+	}
+
+
 	/**
 	 * highlight_string without '<?php' at the beggining
 	 */
