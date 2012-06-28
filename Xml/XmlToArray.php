@@ -1,5 +1,7 @@
 <?php
 
+namespace Schmutzka\Xml;
+
 /*
  * PHP Script to convert XML to an associate array
  * ===============================================
@@ -23,11 +25,12 @@
  * Convert XML to an array
  * @abstract
  */
-class XmlToArray
+class XmlToArray extends \Nette\Object
 {
 	public $array = array();
 
-	/*
+
+	/**
 	 * Initialize
 	 * @param $xml
 	 */
@@ -94,25 +97,24 @@ class XmlToArray
 		return $this->array;
 	}
 
-	/*
+
+	/**
 	 * Remove recursion in result array
 	 * @param $array
 	 */
 	function removeRecursion(&$array)
 	{
-		if ( $array )
-		{
-			foreach ( $array as $k => $v )
-			{
-				if ( $k === '_RECURSION' )
-				{
+		if ($array) {
+			foreach ($array as $k => $v) {
+				if ($k === "_RECURSION") {
 					unset($array[$k]);
-				}
-				elseif ( is_array($array[$k]) )
-				{
+
+				} elseif (is_array($array[$k])) {
 					$this->removeRecursion($array[$k]);
+
 				}
 			}
 		}
 	}
+
 }
