@@ -2,13 +2,86 @@
 
 namespace Schmutzka\Utils;
 
-final class Arrays extends \Nette\Object
+class Arrays extends \Nette\Object
 {
 
 	/**
-	 * Switch rows and cols in two-dimensional array
+	 * Determine, if is one level array or multiple level array 
+	 * @param array
+	 * @return bool
 	 */
-	function tr2td($array) {
+	public static function hasMoreLevels($array)
+	{
+		return is_array($array[key($array)]);
+	}
+	
+
+	/**
+	 * Check if arrays has all keys
+	 * @param array
+	 * @param array
+	 */
+	public static function hasAllKeys(array $array, array $requiredKeys)
+	{
+		if (self::hasMoreLevels($array)) {
+			foreach ($array as $value) {
+				foreach($value as $key => $value2) {
+					if (!in_array($key, $requiredKeys)) {
+						return FALSE;
+					}
+				}
+			}
+			
+		} else {
+			foreach ($requiredKeys as $key) {
+				if (!array_key_exists($key, $array)) {
+					return FALSE;
+				}
+			}
+		}
+
+		return TRUE;
+	}
+
+
+	/**
+	 * Switch rows into colums order { 1 2 / 3 4 / 5 } => {1 3 / 2 4 / 5 }
+	 * @param array
+	 * @param int
+	 */
+	public static function rowsToColumns($array, $int = 2)	
+	{
+		$p = ceil(count($array)/2);
+		$m = $p - 1;
+		$k = 1;
+
+		sort($array);
+
+		$return = array();
+		for($i = 0; $i < count($array); $i++) {
+			if ($i == 0) {
+				$return[0] = $array[0];
+			}
+			elseif ($i%$int == 1) {
+				$k = $k + $p;
+				$return[$k] = $array[$i];
+			}
+			else {
+				$k = $k - $m;
+				$return[$k] = $array[$i];
+			}
+		}
+ 
+		return $return;
+	}
+
+
+	/**
+	 * Switch rows and cols in two-dimensional array
+	 * @param array
+	 */
+	public static function tr2td($array)
+	{
 		$return = array();
 		foreach ($array as $tr => $td) {
 			foreach ($td as $key => $value) {
