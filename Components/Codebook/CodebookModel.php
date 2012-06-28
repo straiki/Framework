@@ -2,11 +2,9 @@
 
 namespace Models;
 
-class CodebookControl extends Base
+class Codebook extends Base
 {
 	
-	
-
 	/**
 	 * Check table existence, create elsewhere
 	 * @var string
@@ -14,7 +12,7 @@ class CodebookControl extends Base
 	public function checkExistance($tableName)
 	{
 		try { // how to safely check existance?
-			$this->db()->{$tableName}();
+			$this->table();
 		}
 		catch (\PDOException $e) { // table does not exist -> create it
 			$createSql = file_get_contents(__DIR__."\create.sql");
@@ -31,10 +29,10 @@ class CodebookControl extends Base
 	 */
 	public function getCodesByType($type, $withCount = FALSE,  array $whereUsed = NULL)
 	{
-		$result = $this->db()->codebook("type", $type)->order("rank")->fetchPairs("id");
-		if($withCount AND $whereUsed AND is_array($whereUsed))  {
+		$result = $this->table("type", $type)->order("rank")->fetchPairs("id");
+		if ($withCount AND $whereUsed AND is_array($whereUsed)) {
 			$array = array();
-			foreach($result as $key => $value) {
+			foreach ($result as $key => $value) {
 				$array[$key] = $value;
 				$array[$key]["useCount"] = $this->getCodeUseCount($whereUsed, $key); // počet použití daného kódu
 			}
@@ -46,13 +44,40 @@ class CodebookControl extends Base
 	}
 
 
+	/** 
+	 * Get codebook list
+	 * @param string
+	 * @param bool include hidden
+	 * @param string
+	 */
+	public function getCodesByType2($type, $showAll = TRUE, $column = NULL)
+	{
+		if (!$column) {
+			return $this->table("type", $type)->order("rank")->fetchPairs("id", "value");
+		}
+
+		if ($showAll == TRUE) {
+			$result = $this->table("type", $type)->order("rank")->fetchPairs("id");
+			$array = array();
+			foreach($result as $key => $value) {
+				$array[$key] = $value;
+				$array[$key]["column"] = $column;
+				$array[$key]["useCount"] = $this->getCodeUseCount($column, $key); // počet použití daného kódu
+			}
+			return $array;
+		}
+
+		return $this->table("type", $type)->where("display", 1)->order("rank")->fetchPairs("id");
+	}
+
+
 	/**
 	 * Returns all code by type in pairs
 	 * @param string
 	 */	
 	public function getCodeListByType($type)
 	{
-			return $this->db()->codebook("type", $type)->order("rank")->fetchPairs("id", "value");
+			return $this->table("type", $type)->order("rank, value")->fetchPairs("id", "value");
 	}
 
 
@@ -63,7 +88,7 @@ class CodebookControl extends Base
 	 */
 	private function getCodeUseCount(array $whereUsed, $value)
 	{
-		return $this->db()->{$whereUsed["table"]}->where($whereUsed["column"], $value)->count("*");
+		return $this->db->{$whereUsed["table"]}->where($whereUsed["column"], $value)->count("*");
 	}
 
 
@@ -73,54 +98,13 @@ class CodebookControl extends Base
 	 */
 	public function getNextRank($codeType)
 	{
-		$last = $this->db()->codebook("type", $codeType)->order("rank DESC")->fetchSingle("rank");
-		if($last) {
+		$last = $this->table("type", $codeType)->order("rank DESC")->fetchSingle("rank");
+		if ($last) {
 			return round($last, -1) + 10;
 		}
 		else {
 			return 10;
 		}
-	}
-
-
-	/**
-	 * Insert item
-	 * @param array 
-	 */
-	public function insert($values, $returnColumn = "id")
-	{
-		return $this->db()->codebook()->insert($values);
-	}
-
-
-	/**
-	 * Update item
-	 * @param array 
-	 * @param int
-	 */
-	public function update($values, $id, $returnColumn = "id")
-	{
-		return $this->db()->codebook($returnColumn, $id)->update($values);
-	}
-
-
-	/**
-	 * Delete item
-	 * @param int
-	 */
-	public function delete($id, $column = "id")
-	{
-		return $this->db()->codebook($column, $id)->delete();
-	}
-
-
-	/**
-	 * Get an item
-	 * @param int
-	 */
-	public function item($id, $column = "id", $checkId = NULL, $checkColumnName = NULL)
-	{
-		return $this->db()->codebook($column, $id)->fetchRow();
 	}
 
 
@@ -132,7 +116,7 @@ class CodebookControl extends Base
 	 */
 	public function convert($whereUsed, $old, $new)
 	{
-		$result = $this->db()->{$whereUsed["table"]}($whereUsed["column"], $old);
+		$result = $this->db->{$whereUsed["table"]}($whereUsed["column"], $old);
 		if($result->count("*")) { // je co převádět
 			return $result->update(array($whereUsed["column"] => $new));
 		}
@@ -140,8 +124,6 @@ class CodebookControl extends Base
 			return FALSE;
 		}
 	}
-
-
 
 
 	/** 
@@ -155,29 +137,7 @@ class CodebookControl extends Base
 		$array = array(
 			$column => NULL
 		);
-		return $this->db()->{$anulTable}($column, $id)->update($array);
+		return $this->db->{$anulTable}($column, $id)->update($array);
 	}
-
-
-
-
-
-
-
-
-	/**
-	 * Uloží hodnotu číselníku
-	 * @array hodnoty
-	 */
-	public function save($values, $id = NULL)
-	{
-		if($id) {
-			return $this->db()->codebook("id", $id)->update($values);
-		}
-		else {
-			return $this->db()->codebook()->insert($values);
-		}
-	}
-
 
 }

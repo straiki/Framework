@@ -1,0 +1,492 @@
+﻿parameters:
+
+	js: 
+		jQuery: 1.7.2
+		jQueryUI: false
+		validation: true
+		liveValidation: false
+		ajax: true
+	
+	
+	bootstrap:
+		- Admin		
+	
+	database:
+		driver: mysqli
+		salt: salt22tlas
+
+	environment:
+		lang: en
+
+
+	# ======================== číselníky ========================
+
+
+	# lokalita
+	location:
+		1:
+			name: Praha # umístění obrázku: images/location/1.jpg
+			subgroup: 
+				3: Zličín
+		4: Florence # images/location/4.jpg
+		5:  # u vnořených, je potřeba rozdělit na 'name' a 'subgroup'
+			name: Václavské náměstí
+			subgroup:
+				6: Zličín
+				7:
+					name: "ul. Švermova"
+					subgroup:
+						8: "dům č. 1"
+						9: "dům č. 21"
+		2: Brno	
+		3: Ostrava
+
+
+	# kategorie zboží
+	product_category:
+		100:
+			name: "Fashion, dress, clothing" # images/product_category/100.jpg
+			subgroup:
+				110: 
+					name: Men's Clothing
+					subgroup:
+						111: Men's Nightwear
+						112: Men's Underwear
+						113: Men's Swimwear
+						114: Men's Sportswear
+						115: Men's Coats and Jackets
+						116: Men's Trousers and Jeans
+
+				120:	
+					name: Women's Clothing
+					subgroup:
+						121: Women's Nightwear
+						122: Women's Underwear
+						123: Women's Swimwear
+						124: Women's Sportswear
+						125: Women's Coats and Jackets
+						126: Women's Trousers and Jeans
+			
+				130:	
+					name: Shoes	
+					subgroup:
+						131: Men's Boots
+						132: Women's Boots
+						133: Men's Sports Shoes
+						134: Women's Sports Shoes
+
+				140:	
+					name: Bags and Luggage
+					subgroup:
+						141: Leader Bags
+						142: Laptop Bags
+						143: Sport`s Bags
+						144: Suitcases
+						145: Handbags
+
+				150:	
+					name: Fashion Accessories
+					subgroup:
+						151: Sunglasses
+						152: Umbrellas
+						153: Purses
+
+				160:	
+					name: Jewellery
+					subgroup:
+						161: Gold
+						162: Silver
+						163: Diamonds
+
+				170:	
+					name: Watches
+					subgroup:
+						171: Men´s Watches
+						173: Women´s Watches
+						174: Sport`s Watches
+	
+		200:
+			name: "Music, Movies & Books" # images/product_category/200.jpg
+			subgroup:
+				210: 
+					name: Music
+					subgroup:
+						211: Classic Music
+						212: Country
+						213: Hip-hop 
+						214: House
+						215: Jungle
+						216: Metal
+						217: Opera
+						218: Pop Music
+						219: Punk
+						220: Rave
+						221: Rock Music
+						222: Techno
+						223: Trance
+				230: 
+					name: Musical Instruments
+
+				240: 
+					name: Music Media
+					subgroup:
+						241: CD
+						242: DVD
+						243: MP3
+						244: Records
+	
+
+				250: 
+					name: Movies & Films
+					subgroup:
+						251: Action
+						252: Adventure
+						253: Comedy
+						254: Crime
+						255: Drama
+						256: Historical
+						257: Musicals
+						258: War
+						259: Sci-Fi
+						260: Western
+						261: Cartoon
+						262: 3D
+						263: Educational
+						
+
+				270: 
+					name: Books
+					subgroup:
+						271: Fiction
+						272: Hobbies and Games
+						273: "Business, Finance & Law"
+						274: Education
+						275: E-books
+	 
+		300:
+			name: Computers # images/product_category/300.jpg
+			subgroup:
+				310: 
+					name: Desktops
+					subgroup:
+						311: Acer
+						312: Dell
+						313: Hal300
+						314: HP
+						315: Lynx
+
+				320: 
+					name: "Notebooks & Laptops"
+					subgroup:
+						321: Acer 
+						322: Apple
+						323: ASUS
+						324: COMPAQ 
+						325: Dell 
+						326: Fujitsu
+						327: GIGABYTE
+						328: HP 
+						329: Lenovo
+						330: MSI
+						331: Packard Bell
+						332: Samsung
+						334: Sony
+						335: Toshiba
+		
+				340: 
+					name: Mini PC
+					subgroup:
+						341: NVIDIA 
+						342: Intel
+						343: AMD
+
+				350: 
+					name: Tablets
+					subgroup:	
+						351: Acer
+						352: Apple
+						353: Archos
+						354: ASUS
+						355: Case Logic
+						356: CISCO
+						357: Creative
+						358: Dell
+						359: Emgeton
+						360: Energy Sistem
+						361: Fujitsu
+						362: Goclever
+						363: HP
+						364: LENCO
+						365: Lenovo
+						366: MOTOROLA
+						367: Mpman
+						368: POCKETBOOK
+						369: POINT OF VIEW
+						370: PRESTIGIO
+						371: "Q.MEDIA"
+						372: Samsung
+						373: Sweex 
+						374: TECHNAXX
+						375: Toshiba
+						376: WOOKY
+						377: ZED
+			
+				380: 
+					name: Monitors
+					subgroup:
+						381: 3D LCD
+						382: LCD
+						383: Touchscreen
+
+				390: 
+					name: Printers
+					subgroup:
+						391: Inkjet Printers
+						392: Black and White Laser Printers
+						393: Color Laser Printers
+						394: Portable Printers
+						395: Dot Matrix Printers
+	
+				
+				400: 
+					name: Components
+					subgroup:
+						401: Hard Discs
+						402: Memmory
+						403: Graphic Cards
+						404: Procesors
+						405: Motherboards
+
+				410: 
+					name: Software
+					subgroup:
+						411: Business & Office
+						412: Operating Systems
+						413: CAD
+						414: Graphic Software
+						415: PC Games
+
+				420: 
+					name: Storage
+					subgroup:
+						421: CD discs
+						422: DVD discs
+						423: Flash Discs
+						424: SD cards
+						425: Memory Stick cards
+	
+				430: 
+					name: Computer Accessories
+					subgroup:
+						431: Computer Mices
+						432: Keyboards
+						433: Speakers
+						434: Cables
+
+		500:
+			name: Electronics # images/product_category/500.jpg
+			subgroup:	
+				510: 
+					name: "Televisions & TV"
+					subgroup:
+						511: LCD Televisions
+						512: LED Televisions
+						513: 3D TV
+						514: Plazma TV
+						515: Digital TV Receivers
+						516: Remote Controls
+						517: TV Tuners
+						518: Home Cinemas
+
+						
+				520: 
+					name: Phones
+					subgroup:
+						521: Desktop phones
+						522: Mobile telephones
+						523: PDA
+ 						 
+
+
+				530: 
+					name: Home Audio
+					subgroup:
+						531: "Amplifiers & Receivers"
+						532: Hi-fi systems
+						533: Speakers
+
+
+				540: 
+					name: Portable Audio
+					subgroup:
+						541: Bluetooth Headsets
+						542: Headphones
+						543: Earphones
+						544: CD Players
+
+				550: 	Car Audio
+					 
+
+				560: 
+					name: GPS
+					subgroup:
+						561: GPS Navigators
+						562: GPS Modules
+						563: GPS Accessories
+				570: 
+					name: Camdorders and Cameras
+					subgroup:
+						571: Digital cameras
+						572: Camcorders
+						573: Lenses
+		600:
+			name: Appliances # images/product_category/600.jpg
+			subgroup:
+				610: 
+					name: Kitchen Appliances
+					subgroup:
+						611: Cooktops
+						612: Dishwashers
+						613: Kitchen Ranges
+						614: Freezers
+						615: Fridge Freezers
+						616: Microwave Ovens
+						617: Ovens
+
+				620:						
+					name: Home Appliances
+					subgroup:
+						621: Air Conditioners
+						622: Fans
+						623: Heaters
+						624: Washing Machines
+						625: Vacuum Cleaners
+ 
+
+				630: 
+					name: Small Appliances
+					subgroup:
+						631: Blenders
+						632: Scales
+						633: Kettles
+						634: Grills
+
+		700:
+			name: Garden and Tools # images/product_category/700.jpg
+			subgroup:
+				710:	
+					name: Gardening Tools
+					subgroup:
+						711: Lawn Mowers
+				720:	
+					name: Tools
+					subgroup: 
+						721: Hand Tolls
+				730: Work Wear
+
+
+		800:
+			name: Health and Beauty # images/product_category/800.jpg
+			subgroup:
+				810:
+					name: Parfums
+					subgroup:
+						811: Women's Perfume
+						812: Men's Parfume
+				820: 
+					name: Cosmetics
+					subgroup:
+						821: Skin Care
+						822: Body Care
+						823: Hair Care
+						824: Sun Care
+
+
+				830: 
+					name: Health
+					subgroup:
+						811: Pharmacy
+						812: Vitamins and Supplements
+						833: Natural Products
+
+
+		900:
+			name: "Decoration & Furniture" # images/product_category/900.jpg
+			subgroup:
+				910: Home Decoration
+				920: Outdoor Decoration
+				930: Lighting
+				940: Office Supplies
+				950:	
+					name: Furniture
+					subgroup:
+						951: Bathrooms furniture
+						952: Bedroom furniture
+						953: Kitchen furniture
+						956: Living and Dining Room
+						957: Garden Furniture
+
+		1000:
+			name: Gifts # images/product_category/1000.jpg
+			subgroup:
+				1010: Flowers
+				1020: Chocolates
+				1030: Stuffed Animals
+				1040: Gift Baskets
+				1050: Gift Certificates
+	
+		1100:
+			name: "Childrens, Pets, Hobbies" # images/product_category/1100.jpg
+			subgroup:
+				1010: Toys
+				1020: Hobbies
+				1030: Baby needs
+				1040: Strollers
+				1050: Children Seats
+				1060:	
+					name: Pets
+					subgroup:
+						1061: Pet Care
+						1062: Pet Feeding
+		1200:
+			name: Sports & Outdoors # images/product_category/1200.jpg
+			subgroup:
+				1210: Baseball & Softball
+				1220: Basketball
+				1230: Combat Sports
+				1240: Cycling
+				1250: Dance
+				1260: Fishing and Hunting
+				1270: Fitness Equipment
+				1280: Football
+				1290: Hiking and Camping
+				1300: Leisure Sports
+				1310: Tennis
+				1320:	
+					name: Water Sports
+					subgroup:
+						1321: Diving Accessories
+						1322: Diving Suits
+						1323: Snorkel and Masks
+		1300:	
+			name: Motors # images/product_category/1300.jpg
+			subgroup:
+				1310: 
+					name: Cars
+					subgroup:
+						1311: Car Accessories
+						1312: Car Parts
+						1313: Car Audio
+						1314: Car Tyres
+
+				1320: 
+					name: Motorcycles
+					subgroup:
+						1321: New Motorcycles
+						1322: Motorcycle Apparel
+						1323: Motorcycle  Accessories
+				1330:	Boats
+				1340:	Tuning
+
+						
+
