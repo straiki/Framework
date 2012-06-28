@@ -2,16 +2,11 @@
 
 namespace Schmutzka\Forms;
 
-use 
-	Nette\Mail\Message;
+use Nette\Mail\Message;
 
-/**
- * Registration form
- */
 class RegistrationForm extends Form
 {
-
-	/** @var context */
+	/** @var \SystemContainer */
 	private $context;
 
 	/** @var \NotORM_Result */
@@ -20,8 +15,12 @@ class RegistrationForm extends Form
 	/** @var dir */
 	private $appDir;
 
+
+	/** @var int */
+	public $passwordMinLength = 6;
+
 	/** @var string */
-	public $company = "OurCompany";
+	public $mailCompany = "OurCompany";
 
 	/** @var string */
 	public $mailFrom = "no-reply@ourCompany.com";
@@ -30,49 +29,54 @@ class RegistrationForm extends Form
 	public $mailTemplatePath = "templates/emails/informUser.latte";
 
 	/** @var subject */
-	public $subject = "Registrační údaje";
+	public $mailSubject = "Registrační údaje";
+
+	/** @var Callback */
+	public $onProcessValues;
 
 	/** @var bool */
-	private $informUser;
+	public $informUser;
 
-	/** @var bool - experimental */
-	private $loginAfter = NULL;
+	/** @var string - experimental */
+	public $loginAfter = NULL;
+
 
 
 	/**
-	 * Build the form
-	 * @param \Container
+	* @param \Container
 	 * @param int
 	 * @param bool
 	 * @param string
 	 */
-	public function __construct(\SystemContainer $context, $passwordMinLenth = 6, $informUser = TRUE, $loginAfter = "email")
+	public function __construct(\SystemContainer $context)
 	{
 		parent::__construct();
 
 		$this->context = $context;
 		$this->userTable = $context->database->user;
-		$this->appDir = $context->parameters["appDir"]."/";
-
-		$this->loginAfter = $loginAfter;
-		$this->informUser = $informUser;
-
-		$this->addText("login","Váš login:")
-			->addRule(Form::FILLED,"Zadejte login");
-		$this->addEmail("email","Váš email:")
-			->addRule(Form::FILLED,"Vyplňte email");
-
-		$this->addPassword("password","Heslo:")
-			->addRule(Form::FILLED,"Zadejte heslo")
-			->addRule(Form::MIN_LENGTH,"Heslo musí mít aspoň %d znaků.", $passwordMinLenth);
-
-		$this->addPassword("password2","Heslo znovu:",20)
-			->addRule(Form::FILLED,"Povinné")
-			->addRule(Form::EQUAL,"Hesla se neshodují. Zadejte je znovu, prosím.", $this["password"]);
+		$this->appDir = $context->params["appDir"]."/";
+	}
 
 
-		$this->addSubmit("send","Registrovat");
-		$this->onSuccess[] = callback($this, "process");
+	public function build()
+	{
+		parent::build();
+
+		$this->addText("login","Login:")
+			->addRule(Form::FILLED,"Mandatory");
+		$this->addEmail("email","Your email:")
+			->addRule(Form::FILLED,"Mandatory");
+
+		$this->addPassword("password","Password:")
+			->addRule(Form::FILLED,"Mandatory")
+			->addRule(Form::MIN_LENGTH,"Password has to be min %d chars long.", $this->passwordMinLength);
+
+		$this->addPassword("password2","Password again:",20)
+			->addRule(Form::FILLED,"Mandatory")
+			->addRule(Form::EQUAL,"Passwords don't match.", $this["password"]);
+
+
+		$this->addSubmit("send","Register");
 	}
 
 
@@ -85,18 +89,19 @@ class RegistrationForm extends Form
 		$values = $form->values;
 
 		// 1. item's uniqueness
-		if(isset($values["email"])) {
+		if (isset($values["email"])) {
 			$emailCheck = $this->userTable->where("email", $values["email"])->count("*");
 			if($emailCheck) {
-				$this->presenter->flashMessage("Tento email je již použit.","flash-error");
-				$this->presenter->redirect("this");
+				$this->flashMessage("This email is already used.","flash-error");
+				$this->redirect("this");
 			}
 		}
-		elseif(isset($values["login"])) {
+
+		if (isset($values["login"])) {
 			$loginCheck = $this->userTable->where("login", $values["login"])->count("*");
 			if($loginCheck) {
-				$this->presenter->flashMessage("Tento login je již použit.","flash-error");
-				$this->presenter->redirect("this");
+				$this->flashMessage("This email is already used.","flash-error");
+				$this->redirect("this");
 			}
 		}
 
@@ -106,28 +111,33 @@ class RegistrationForm extends Form
 		unset($values["password2"]);
 		$values["password"] = sha1($values["password"]);
 
-		$this->userTable->insert($values);
+
+		if ($this->onProcessValues) {
+			$values = $this->onProcessValues->invokeArgs(array($values));
+		}
+		else {
+			$this->userTable->insert($values);
+		}
 
 		// email user
-		if($this->informUser) {
+		if ($this->informUser) {
 			$this->informUser($rawValues);		
 		}
 
 		// login after
 		if($this->loginAfter) {
 			$this->context->user->login($values[$this->loginAfter], $rawValues["password"], $this->loginAfter); // login user
-			$this->presenter->flashMessage("Byli jste úspěšně registrováni a přihlášeni.","flash-success");
+			$this->flashMessage("You were successfully registred and logged in.","flash-success");
 		}
 		else {
-			$this->presenter->flashMessage("Byli jste úspěšně registrováni.","flash-success");
+			$this->flashMessage("You were successfully registred.","flash-success");
 		}
 
-		$this->presenter->redirect("this");
+		$this->redirect("this");
 	}
 
 
-
-	/** #1
+	/**
 	 * Inform about account creation
 	 */
 	private function informUser($values)
@@ -135,13 +145,13 @@ class RegistrationForm extends Form
 		$mail = new Message;
 		$mail->setFrom($this->mailFrom)
 			->addTo($values["email"])
-			->setSubject($this->company." | ".$this->subject);
+			->setSubject($this->mailCompany." | ".$this->mailSubject);
 
 		$template = $this->presenter->createTemplate(); 
 		$template->setFile($this->appDir.$this->mailTemplatePath);
 
 		// values
-		$template->company = $this->company;
+		$template->company = $this->mailCompany;
 		if(isset($values["login"])) {
 			$template->login = $values["login"];
 		}
