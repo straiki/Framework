@@ -300,7 +300,7 @@ class Base extends \Nette\Object
             } 
 			else {
                 // no or 1:N relation
-                return $this->table()->where($findCondition, $args[0])->fetchRow();
+                return $this->table()->where($findCondition, $args[0]);
             }
         }
     }
