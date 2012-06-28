@@ -135,6 +135,6 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		
 		$presenterCurrent = trim($presenterCurrent);
 
-		return $writer->write('echo "<li ".%escape($_presenter->isLinkCurrent("'.$presenterCurrent.'") ? " class=active" : NULL)."><a href=".htmlSpecialChars($_control->link("'.$href.'")).">'.$name.'</a></li>"');
+		return $writer->write('echo "<li ".%escape($_presenter->isLinkCurrent("'.$presenterCurrent.'") ? " class=active" : NULL)."><a href=".htmlSpecialChars($_control->link("'.$href.'", array("id" => NULL)))."> ". %escape($template->translate("'.$name.'")) . "</a></li>"');
 	}
 }
