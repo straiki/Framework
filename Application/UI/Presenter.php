@@ -92,8 +92,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 			}
 		}
 
-		$this->tpl($this->role);
-		$this->tpl($this->logged);
+
+		$this->template->role = $this->role;
+		$this->template->logged = $this->logged;
 
 		// referer
 		$this->updateReferer($this->mySession, $this->presenter->context->httpRequest);
@@ -114,8 +115,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		return parent::flashMessage($message, $type);
 	}
 
-
-	
 
 	/* ************************ handlers ************************ */
 
@@ -254,14 +253,16 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	 */
 	public function translate($text)
 	{
-		return $this->getContext()->translator->translate($text);
+		if ($this->getContext()->hasService("translator")) {
+			return $this->getContext()->translator->translate($text);
+		}
+	
+		return $text;
 	}
-
 
 	/**
 	 * Add variable into the template
 	 * @param mixed
-	 * @2DO: improve
 	 */
 	public function tpl($var)
 	{
@@ -351,18 +352,17 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		}
 	}
 
+
 	/********************* helpers *********************/
 
 
 	/**
-	 * Update referer, if changed
-	 * @param \Nette\Session\SessionSection
+	 * Update referer, if changeds
+	 * @param string
 	 * @param \httpRequest
 	 */
-	protected function updateReferer(&$session, $http) 
+	protected function updateReferer($previous, $http) 
 	{
-		$previous = $session->referer;
-
 		// get this url
 		$url = new Url($http->url);
 		$url->query = NULL;
@@ -373,27 +373,11 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		$present->query = NULL;
 		$present = $present->absoluteUrl;
 
-		if ($present != $url OR empty($previous)) { // it's not the same, return new one
-			$return = $present;
+		if ($present != $url) { // it's not the same, return new one
+			return $present;
 		}
 		else {
-			$return = $previous; // the same, return old one
-		}
-
-		$this->referer = $session->referer = $return;
-	}
-
-
-	/**
-	 * Update user identity data
-	 * @param array
-	 */
-	public function updateIdentity($values)
-	{
-		foreach($this->user->identity->data as $key => $value) {
-			if (array_key_exists($key, $values)) {
-				$this->user->identity->{$key} = $values[$key];
-			}
+			return $previous; // the same, return old one
 		}
 	}
 
