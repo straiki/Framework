@@ -4,15 +4,12 @@ namespace Schmutzka\Application\UI;
 
 use Schmutzka\Forms\Replicator,
 	Schmutzka\Diagnostics\Panels\User,
-	Schmutzka\Diagnostics\dbLogger,
-	Schmutzka\Templates\MyHelpers,
-	Schmutzka\Templates\MyMacros,
-	Nette\Diagnostics\Debugger,
 	Nette\Mail\Message,
 	Components\CssLoader,
 	Components\JsLoader,
 	DependentSelectBox\JsonDependentSelectBox,
-	Nette\Http\Url;
+	Nette\Http\Url,
+	Schmutzka\Templates\TemplateFactory;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {
@@ -29,7 +26,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public $appSession;
 
 	/** @var string */
-	public $role = NULL;
+	public $role = "";
 
 	/** @var bool */
 	public $logged = FALSE;
@@ -67,15 +64,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 		$this->user->storage->setNamespace("user_ " . $sectionKey); 
 
-		/** userPanel registration - buggy */
-		/*
-		$this->userPanel = User::register($this->user, $this->session, $this->getContext());
-		$this->userPanel->setNameColumn("email")
-			->addCredentials("admin", "admin")
-			->addCredentials("user", "user");
-		*/
-
-
 		if ($this->params["debugMode"]) {
 			Message::$defaultMailer = new \Schmutzka\Diagnostics\DumpMail($this->getContext()->session); // service conflict with @nette.mail
 		}
@@ -91,7 +79,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 				$this->appSession->backlink = $this->storeRequest();
 			}
 		}
-
 
 		$this->template->role = $this->role;
 		$this->template->logged = $this->logged;
@@ -133,43 +120,70 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/* *********************** templates ************************ */
 
 
+
 	/**	 
-	 * Haml, helpers, language
+	 * Create template
+	 * @param string
 	 */
 	public function createTemplate($class = NULL)
 	{
 		$template = parent::createTemplate($class);
 
-		// Latte, Haml, macros
-		$this->templatePrepareFilters($template);
-		
-		// Translator
-		if ($this->context->hasService("translator")) { // translate service registered
-			if (isset($this->params["lang"])) { // set default language
-				$this->context->translator->setLang($this->params["lang"]); 
-			}
-			$template->setTranslator($this->context->translator);
-		}
-
-		// helpers
-		$helpers = new MyHelpers($this->getContext(), $this->getPresenter());
-		$template->registerHelperLoader(array($helpers, "loader"));
+		$templateFactory = $this->context->createTemplateFactory();
+		$templateFactory->configure($template);
 
 		return $template;
 	}
 
 
 	/**
-	 * Register filters
+	 * Add variable into the template
+	 * @param mixed
 	 */
-	public function templatePrepareFilters($template)
+	public function tpl($var)
 	{
-		$latte = new \Nette\Latte\Engine;
+		$clear = array("this->" => "");
 
-		MyMacros::install($latte->compiler);
+		$trace = debug_backtrace();
+		$i = !isset($trace[1]['class']) && isset($trace[1]['function']) && $trace[1]['function'] === 'dump' ? 1 : 0;
+		if (isset($trace[$i]['file'], $trace[$i]['line']) && is_file($trace[$i]['file'])) {
+			$lines = file($trace[$i]['file']);
+			preg_match('#\(\$(.*)\)#', $lines[$trace[$i]['line'] - 1], $m);
+		
+			if (isset($m[1])) {
+				$varName = strtr($m[1], $clear);
+				$this->template->$varName = $var;
+			}
+		}
+	}
 
-		$template->registerFilter(new \Nette\Templating\Filters\Haml);
-		$template->registerFilter($latte);
+
+	/**
+	 * Takes array values from presenter
+	 * @param $this
+	 * @return array
+	 */
+	protected function getPresenterArrays($presenter)
+	{
+		$array = array();
+		foreach ($presenter as $key => $value) {
+			if (is_array($value)) {
+				$array[$key] = $value;
+			}
+		}
+		return $array;
+	}
+
+
+	/**
+	 * Adds every list to the template
+	 * @param array
+	 */
+	public function listsToTemplate($array)
+	{
+		foreach ($array as $key => $value) {
+			$this->template->{$key} = $value;
+		}	
 	}
 
 
@@ -260,55 +274,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		return $text;
 	}
 
-	/**
-	 * Add variable into the template
-	 * @param mixed
-	 */
-	public function tpl($var)
-	{
-		$clear = array("this->" => "");
-
-		$trace = debug_backtrace();
-		$i = !isset($trace[1]['class']) && isset($trace[1]['function']) && $trace[1]['function'] === 'dump' ? 1 : 0;
-		if (isset($trace[$i]['file'], $trace[$i]['line']) && is_file($trace[$i]['file'])) {
-			$lines = file($trace[$i]['file']);
-			preg_match('#\(\$(.*)\)#', $lines[$trace[$i]['line'] - 1], $m); // ještě vychytat, aby to přesně sedělo
-		
-			if (isset($m[1])) {
-				$varName = strtr($m[1], $clear);
-				$this->template->$varName = $var;
-			}
-		}
-	}
 
 
-	/**
-	 * Takes array values from presenter
-	 * @param $this
-	 * @return array
-	 */
-	protected function getPresenterArrays($presenter)
-	{
-		$array = array();
-		foreach ($presenter as $key => $value) {
-			if (is_array($value)) {
-				$array[$key] = $value;
-			}
-		}
-		return $array;
-	}
 
-
-	/**
-	 * Adds every list to the template
-	 * @param array
-	 */
-	public function listsToTemplate($array)
-	{
-		foreach ($array as $key => $value) {
-			$this->template->{$key} = $value;
-		}	
-	}
 
 
 	/* ********************* modularity ********************* */
@@ -357,12 +325,14 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 
 	/**
-	 * Update referer, if changeds
-	 * @param string
+	 * Update referer, if changed
+	 * @param \Nette\Session\SessionSection
 	 * @param \httpRequest
 	 */
-	protected function updateReferer($previous, $http) 
+	protected function updateReferer(&$session, $http) 
 	{
+		$previous = $session->referer;
+
 		// get this url
 		$url = new Url($http->url);
 		$url->query = NULL;
@@ -373,12 +343,14 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		$present->query = NULL;
 		$present = $present->absoluteUrl;
 
-		if ($present != $url) { // it's not the same, return new one
-			return $present;
+		if ($present != $url OR empty($previous)) { // it's not the same, return new one
+			$return = $present;
 		}
 		else {
-			return $previous; // the same, return old one
+			$return = $previous; // the same, return old one
 		}
+
+		$this->referer = $session->referer = $return;
 	}
 
 }

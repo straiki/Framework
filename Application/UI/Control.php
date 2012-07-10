@@ -1,17 +1,63 @@
 <?php
 
-/**
- * @author   Jan Tvrdík
- * @author   Tomáš Votruba
- */
-
 namespace Schmutzka\Application\UI;
 
-use Schmutzka\Templates\MyHelpers,
-	Schmutzka\Templates\MyMacros;
+use Schmutzka\Templates\TemplateFactory;
 
 class Control extends \Nette\Application\UI\Control
 {
+
+	/**	 
+	 * Create template
+	 * @param string
+	 */
+	public function createTemplate($class = NULL)
+	{
+		$template = parent::createTemplate($class);
+
+		$templateFactory = $this->context->createTemplateFactory();
+		$templateFactory->configure($template);
+
+		if (!$template->getFile()) {
+			$template->setFile($this->getTemplateFilePath());
+		}
+
+		return $template;
+	}
+
+
+	/** 
+	 * Sets up template
+	 */
+	public function useTemplate($name)
+	{
+		$this->template->setFile($this->getTemplateFilePath($name));
+	}
+
+
+	/**
+	 * Derives template path from class name
+	 * @return string
+	 */
+	protected function getTemplateFilePath($name = "")
+	{
+		$class = $this->getReflection();
+		return dirname($class->getFileName()) . "/" . $class->getShortName() . ucfirst($name) . ".latte";
+	}
+
+
+	/********************* shortcuts *********************/
+
+
+	/**
+	 * FlashMessage component
+	 * @return \Components\FlashMessageControl
+	 */
+	protected function createComponentFlashMessage()
+	{
+		return new \Components\FlashMessageControl;
+	}
+
 
 	/**
 	 * Context shortcut
@@ -28,73 +74,6 @@ class Control extends \Nette\Application\UI\Control
 	final public function getModels()
 	{
 		return $this->context->models;
-	}
-
-
-	/**
-	 * FlashMessage component
-	 * @return \Components\FlashMessageControl
-	 */
-	protected function createComponentFlashMessage()
-	{
-		return new \Components\FlashMessageControl;
-	}
-
-
-	/**
-	 * Registers template file and all filters
-	 * @param string
-	 * @return Nette\Templates\FileTemplate
-	 */
-	protected function createTemplate($class = NULL)
-	{
-		$template = parent::createTemplate($class);
-		$template->setFile($this->getTemplateFilePath());
-
-		// Latte, Haml, macros
-		$this->templatePrepareFilters($template);
-		
-		// Translator
-		if ($this->context->hasService("translator")) { // translate service registered
-			if (isset($this->params["lang"])) { // set default language
-				$this->context->translator->setLang($this->params["lang"]); 
-			}
-			$template->setTranslator($this->context->translator);
-		}
-
-		// helpers
-		$helpers = new MyHelpers($this->parent->context, $this->parent->presenter);
-		$template->registerHelperLoader(array($helpers, "loader"));
-
-		return $template;
-	}
-
-
-	/**
-	 * Register filters
-	 */
-	public function templatePrepareFilters($template)
-	{
-		$latte = new \Nette\Latte\Engine;
-
-		MyMacros::install($latte->compiler);
-
-		$template->registerFilter(new \Nette\Templating\Filters\Haml);
-		$template->registerFilter($latte);
-	}
-
-
-	/**
-	 * Derives template path from class name
-	 * @return string
-	 */
-	protected function getTemplateFilePath()
-	{
-		$reflection = $this->getReflection();
-		$dir = dirname($reflection->getFileName());
-		$filename = $reflection->getShortName() . ".latte";
-
-		return $dir . \DIRECTORY_SEPARATOR . $filename;
 	}
 
 }
