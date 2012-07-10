@@ -12,15 +12,30 @@ class Filer extends \Nette\Utils\Neon
 	 * @param \Nette\Http\FileUpload
 	 * @param array
 	 */
-	public static function checkImage(\Nette\Http\FileUpload $file, $allowed = array("jpg", "png"))
+	public static function checkFile(\Nette\Http\FileUpload $file, $allowed, $image = FALSE)
 	{
+		if ($image AND !$file->isImage()) {
+			return FALSE;
+		}
+
 		$suffix = Name::suffix($file->name);
 
-		if ($file->isOk() AND $file->isImage() AND in_array($suffix, $allowed)) {
+		if ($file->isOk() AND in_array($suffix, $allowed)) {
 			return $suffix;
 		}
 
 		return FALSE;
+	}
+
+
+	/**
+	 * Check file if image
+	 * @param \Nette\Http\FileUpload
+	 * @param array
+	 */
+	public static function checkImage(\Nette\Http\FileUpload $file, $allowed = array("jpg", "png"))
+	{
+		return self::checkFile($file, $allowed, TRUE);
 	}
 
 
