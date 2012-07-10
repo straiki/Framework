@@ -45,7 +45,11 @@ common:
 
 		database: NotORM(@\PDO, NULL, @dbcache)
 
+		nette.database.defaultConnectionPanel: Schmutzka\Panels\ConnectionPanel
+
 		sessionStorage: Services\SessionStorage
+
+		user:  Schmutzka\Security\User
 
 		# session:
 			# setup:
@@ -67,6 +71,8 @@ common:
 		mailingList: Components\MailingListControl(@container)
 
 		userForm: Schmutzka\Forms\UserForm(@container)
+
+		templateFactory: Schmutzka\Templates\TemplateFactory(@container)
 
 			
 
