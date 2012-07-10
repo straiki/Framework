@@ -1,7 +1,7 @@
 <?php
 
 // Load and init Nette Framework
-if(!defined('NETTE')) {
+if (!defined('NETTE')) {
 	require_once __DIR__ . "/../Nette/loader.php";
 }
 
