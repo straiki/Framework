@@ -4,8 +4,7 @@ namespace Schmutzka\Forms;
 
 use Schmutzka\Forms\Controls,
 	Nette\Utils\Html,
-	DependentSelectBox\JsonDependentSelectBox,
-	DependentSelectBox\DependentSelectBox;
+	DependentSelectBox\JsonDependentSelectBox;
 
 class Form extends \Nette\Application\UI\Form
 {
@@ -51,16 +50,6 @@ class Form extends \Nette\Application\UI\Form
 		if ($this->csrfProtection) {
 			$this->addProtection($this->csrfProtection);
 		}
-	}
-
-
-	/**
-	 * @deprecated
-	 * Application form constructor
-	 * @see: https://github.com/Venne/Venne-CMS/blob/master/Venne/Application/UI/Form.php#L34
-	 */
-	public function startup()
-	{
 	}
 
 
@@ -112,10 +101,30 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * This method will be called when the component (or component's parent)
-	 * becomes attached to a monitored object. Do not call this method yourself.
-	 * @param  Nette\Application\IComponent
-	 * @return void
+	 * Flash message error
+	 */
+	public function addError($message)
+	{
+		$this->valid = FALSE;
+
+		if ($message !== NULL) {
+			$messagePresent = FALSE;
+			foreach ($this->parent->template->flashes as $value) {
+				if ($message == $value->message) {
+					$messagePresent = TRUE;
+				}
+			}
+
+			if (!$messagePresent) {
+				$this->flashMessage($message,"flash-error");
+			}
+		}
+	}
+
+
+	/**
+	 * Will be called when the component becomes attached to a monitored object
+	 * @param Nette\Application\IComponent
 	 */
 	protected function attached($presenter)
 	{
@@ -139,7 +148,7 @@ class Form extends \Nette\Application\UI\Form
 
 	/**
 	 * Automatically attach methods
-	 * @see: https://github.com/Kdyby/Framework/blob/master/libs/Kdyby/Application/UI/Form.php#L76
+	 * @param \Nette\Application\UI\Presenter
 	 */
 	protected function attachHandlers($presenter)
 	{
@@ -168,19 +177,18 @@ class Form extends \Nette\Application\UI\Form
 	{
 		$values = parent::getValues(TRUE);
 		
-		// complete empty values by httpData
+
 		foreach ($this->httpData as $key => $value) {
 			if (empty($values[$key]) AND $value AND !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
 				$values[$key] = $value;
 			}
 		}
 
-		// unset submit buttons
-		foreach ($this->typeClass as $key => $value) {
+		foreach ($this->typeClass as $key => $value) { 
 			unset($values[$key]);
 		}
 
-		// convert date object
+
 		foreach ($values as $key => $value) { 
 			if (is_object($value) AND (get_class($value) == "Nette\DateTime" OR get_class($value) == "DateTime")) { // object to date
 				$values[$key] = $value->format("Y-m-d");
@@ -268,16 +276,6 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * Adds a range input control to the form.
-	 */
-	public function addRange($name, $label = NULL, $step = 1, $min = NULL, $max = NULL)
-	{
-		$item = $this->addNumber($name, $label, $step, $min, $max);
-		return $item->setAttribute('type', "range");
-	}
-
-
-	/**
 	 * Adds a radio list
 	 */
 	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
@@ -343,14 +341,6 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 
-	/**
-	 * @return DependentSelectBox
-	 */
-	public function addDSelect($name, $label = NULL, $parents = NULL, $dataCallback)
-	{
-		return $this[$name] = new DependentSelectBox($label, $parents, $dataCallback);
-	}
-
 
 	/**
 	 * @return JsonDependentSelectBox
@@ -370,22 +360,6 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 
-	/**
-	 * @param array
-	 * @throws \Nette\InvalidStateException
-	 */
-	public function processErrors(array $errors)
-	{
-		foreach ($errors as $name => $messages) {
-			if (!isset($this[$name])) {
-				throw new \Nette\InvalidStateException("Invalid value '$name' with messages '" . implode("', '", $messages) . "'");
-			}
-			foreach ($messages as $error) {
-				$this[$name]->addError($error);
-			}
-		}
-	}
-
 
 	/* ************************** shortcuts ************************ */
 
@@ -396,6 +370,15 @@ class Form extends \Nette\Application\UI\Form
 	protected function getContext()
 	{
 		return $this->getPresenter()->context;
+	}
+
+
+	/**
+	 * Models shortcut
+	 */
+	public function getModels()
+	{
+		return $this->context->models;
 	}
 
 
@@ -435,5 +418,3 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 }
-
-\Schmutzka\Forms\Controls\AntispamControl::register();
