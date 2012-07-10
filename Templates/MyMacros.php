@@ -9,6 +9,7 @@
  * {n:confirm ?} - js confirm dialog
  * {n:tooltip ?} - into  js tooltip
  * {n:src ?} - into <img src={$baseHref}/images/ ... >
+ * {n:current ?}  class="$presenter->isLinkCurrent() ? $node>
  */
 
 namespace Schmutzka\Templates;
@@ -28,6 +29,20 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$me->addMacro("id", NULL, NULL, array($me, "macroId"));
 		$me->addMacro("tooltip", NULL, NULL, array($me, "macroTooltip"));
 		$me->addMacro("src", NULL, NULL, array($me, "macroSrc"));
+		$me->addMacro("current", NULL, NULL, array($me, "macroCurrent"));
+		$me->addMacro("not-empty", "ob_start()", 'if ($iterations) ob_end_flush(); else ob_end_clean()');
+		$me->addMacro("empty", 'if (!$iterations):', "endif");
+	}
+
+
+
+	/**
+	 * n:current="..."
+	 */
+	public function macroCurrent(MacroNode $node, PhpWriter $writer)
+	{
+		$node = $node->args;
+		return $writer->write('if ($_l->tmp = array_filter(array($presenter->isLinkCurrent() ? "'. $node .'" :null))) echo \' class="\' . %escape(implode(" ", array_unique($_l->tmp))) . \'"\'');
 	}
 
 
