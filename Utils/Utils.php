@@ -2,6 +2,7 @@
 
 namespace Schmutzka;
 
+use Nette\Utils\MimeTypeDetector;
 class Utils extends \Nette\Object
 {
 
@@ -9,7 +10,7 @@ class Utils extends \Nette\Object
 	 * Return first set argument
 	 * @param ... mixed
 	 */
-	static public function getFirstSet()
+	public static function getFirstSet()
 	{
 		foreach (func_get_args() as $value) {
 			if (!empty($value) AND !is_null($value) AND $value) {
