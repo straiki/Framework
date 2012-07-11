@@ -1,26 +1,31 @@
 <?php
 
-namespace Schmutzka\Panels;
+namespace Schmutzka\Diagnostics\Panels;
 
-class SessionPanel extends \Nette\Application\UI\Control implements \Nette\Diagnostics\IBarPanel
+class SessionPanel extends \Schmutzka\Application\UI\Control implements \Nette\Diagnostics\IBarPanel
 {
 
 	/** @var \Nette\Http\Session $session */
 	private $session;
 
+	/** @var \Nette\DI\Context */
+	public $context;
+
 	/** @var array $hiddenSection */
 	private $hiddenSections = array(
-		"Nette.Http.UserStorage/",
 		"Nette.Forms.Form/CSRF",
 		"Nette.Application/requests"
 	);
 
 
-	public function __construct(\Nette\Application\Application $application, \Nette\Http\Session $session)
+	public function __construct(\Nette\Application\Application $application, \Nette\Http\Session $session, \Nette\DI\Container $context)
 	{
-		parent::__construct($application->getPresenter(), $this->getId());
 		$this->session = $session;
+		$this->context = $context;
+
+		parent::__construct($application->getPresenter(), "SessionPanel");
 	}
+
 
 	/**
 	 * Add section name in list of hidden
@@ -31,14 +36,6 @@ class SessionPanel extends \Nette\Application\UI\Control implements \Nette\Diagn
 		$this->hiddenSections[] = $sectionName;
 	}
 
-	/**
-	 * Return panel ID
-	 * @return string
-	 */
-	public function getId()
-	{
-		return __CLASS__;
-	}
 
 	/**
 	 * Html code for DebugerBar Tab
@@ -46,9 +43,9 @@ class SessionPanel extends \Nette\Application\UI\Control implements \Nette\Diagn
 	 */
 	public function getTab()
 	{
-		$template = $this->getFileTemplate(__DIR__ . "/templates/tab.latte");
-		return $template;
+		return "<img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAMRJREFUeNpiZCAT2Orr6QOpAhYyNdcDqQAgdmAhw9YFQKwAxAaHL176yESirRegmh2Amh+CxFlIsNUAKpQA1HwRJs9EpK3Imjciq2Eh0lYQmADUvBBdLRMRtoLAAqDmQmyWERuIBlBXYQBmdIFHL18elJcQ3wBkWgCxBFQYRGcAxcHyxLjgAQ4xDHFGHAG4ARrfMI0N2AIQwwCgZnuoZgFCGjGiEag5Hhp1II0FhDSiGADU3A/NHAnEakSJd6jtZAGAAAMA89NIrMVVIPoAAAAASUVORK5CYII='>";
 	}
+
 
 	/**
 	 * Html code for DebugerBar Panel
@@ -56,42 +53,11 @@ class SessionPanel extends \Nette\Application\UI\Control implements \Nette\Diagn
 	 */
 	public function getPanel()
 	{
-		$template = $this->getFileTemplate(__DIR__ . "/templates/panel.latte");
+		$template = parent::createTemplate();
 		$template->session = $this->session;
 		$template->hiddenSections = $this->hiddenSections;
+
 		return $template;
-	}
-
-	/**
-	 * Load template file path with aditional macros and variables
-	 * @param string $templateFilePath
-	 * @return \Nette\Templating\FileTemplate
-	 */
-	private function getFileTemplate($templateFilePath)
-	{
-		if (file_exists($templateFilePath)) {
-			$template = new \Nette\Templating\FileTemplate($templateFilePath);
-			$template->onPrepareFilters[] = callback($this, "templatePrepareFilters");
-			$template->registerHelperLoader("Nette\Templating\Helpers::loader");
-			$template->basePath = realpath(__DIR__);
-			return $template;
-		}
-		else {
-			throw new \Nette\FileNotFoundException("Requested template file is not exist.");
-		}
-	}
-
-	/**
-	 * Load latte and set aditional macros
-	 * @param \Nette\Templating\Template $template
-	 */
-	public function templatePrepareFilters($template)
-	{
-		$template->registerFilter($latte = new \Nette\Latte\Engine());
-		$set = \Nette\Latte\Macros\MacroSet::install($latte->getCompiler());
-		$set->addMacro('src', NULL, NULL, 'echo \'src="\'.\Nette\Templating\Helpers::dataStream(file_get_contents(%node.word)).\'"\'');
-		$set->addMacro('stylesheet','echo \'<style type="text/css">\'.file_get_contents(%node.word).\'</style>\'');
-		$set->addMacro('clickableDump','echo \Nette\Diagnostics\Helpers::clickableDump(%node.word)');
 	}
 
 }

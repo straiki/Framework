@@ -4,14 +4,15 @@
  * Dumps sessioned mails into the panel
  */
 
-namespace Schmutzka\Panels;
+namespace Schmutzka\Diagnostics\Panels;
 
 use Nette\Latte\Engine,
 	Nette\Templating\FileTemplate,
 	Nette\Object,
 	Nette\Diagnostics\IBarPanel;
 
-class DumpMail extends Object implements IBarPanel {
+class DumpMail extends Object implements IBarPanel
+{
 
 
 	/** @var \Session */
@@ -21,7 +22,7 @@ class DumpMail extends Object implements IBarPanel {
 	private $data = array();
 
 
-	public function __construct($session = NULL)
+	public function __construct(\Nette\Http\Session $session = NULL)
 	{
 		$this->session = $session->getSection("dumpMail");
 	}
