@@ -9,17 +9,14 @@ use Nette\Templating\FileTemplate,
 
 class MyHelpers extends \Nette\Object
 {
+
 	/** @var \SystemContainer */
 	private $context;
 
-	/** @var \Presenter */
-    private $presenter;
 
-
-    public function __construct($context, $presenter)
-    {
+	public function __construct($context)
+	{
 		$this->context = $context;
-		$this->presenter = $presenter;
 	}
 
 
@@ -31,14 +28,27 @@ class MyHelpers extends \Nette\Object
 	}
 
 
-	/** 
-	 * Translate - hotfix
+	/**
+	 * Localized month
+	 * @param mixed
 	 * @param string
+	 * @return string
 	 */
-	public static function translate($s)
+	public static function monthLoc($date, $lang)
 	{
-		return $s;
+		$month = (is_int($date) ? $date : date("n", strtotime($date)));
+	
+		if ($lang == "en") {
+			return date("F", strtotime($month));
+		}
+
+		static $monthNames = array(
+			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
+		);
+
+		return $monthNames[$lang][$month];
 	}
+
 
 
 	/**
@@ -84,15 +94,17 @@ class MyHelpers extends \Nette\Object
 		$args = func_get_args();
 		$data = array_shift($args);
 		
-		$temp = "";
+		$sep = $args[0];
 
-		foreach($args[0] as $key) {
+		$temp = "";
+		foreach($args[1] as $key) {
+
 			if (isset($data[$key])) {
-				$temp .= $data[$key]." ";
+				$temp .= $data[$key] . $sep;
 			}
 		}
 
-		return trim($temp); 
+		return trim($temp, $sep); 
 	}
 
 

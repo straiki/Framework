@@ -10,6 +10,7 @@
  * {n:tooltip ?} - into  js tooltip
  * {n:src ?} - into <img src={$baseHref}/images/ ... >
  * {n:current ?}  class="$presenter->isLinkCurrent() ? $node>
+ * {clickableDump}
  */
 
 namespace Schmutzka\Templates;
@@ -32,9 +33,20 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$me->addMacro("current", NULL, NULL, array($me, "macroCurrent"));
 		$me->addMacro("not-empty", "ob_start()", 'if ($iterations) ob_end_flush(); else ob_end_clean()');
 		$me->addMacro("empty", 'if (!$iterations):', "endif");
+		$me->addMacro("phref", NULL, NULL, array($me, "macroPhref"));
+		$me->addMacro("clickableDump","echo \Nette\Diagnostics\Helpers::clickableDump(%node.word)");
 	}
 
 
+
+	/**
+	 * n:phref="..."
+	 */
+	public function macroPhref(MacroNode $node, PhpWriter $writer)
+	{
+		return $writer->write('echo \' href="\' . %escape($_presenter->link(%node.word, %node.array?)) . \'"\'');
+
+	}
 
 	/**
 	 * n:current="..."
