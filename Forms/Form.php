@@ -333,6 +333,15 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
+	 * @return TimeControl
+	 */
+	public function addTime($name, $label = NULL, $cols = NULL)
+	{
+		return $this[$name] = new Controls\TimeControl($label, $cols, NULL);
+	}
+
+
+	/**
 	 * @return AntispamControl
 	 */
 	public function addAntispam($name = "antispam", $label = "Toto pole vymažte.", $msg = "Byl detekován pokus o spam")
