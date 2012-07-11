@@ -1,21 +1,22 @@
 <?php
 
 /**
- * Base model functions
- * @dev: possible fully-cached queries
- * @dev: cache invalidation on update/insert/delete of record + it's id? or whole? could be awesome :)
+ * @dev: possible fully-cached queries;,
+ * cache invalidation on update/insert/delete of record + it's id? or whole? could be awesome :)
  */
 
 namespace Models;
 
+use Schmutzka\Utils\Name;
+
 class Base extends \Nette\Object
 {
 
-    /** @var \Notorm */
-    protected $db;
+	/** @var \Notorm */
+	protected $db;
 
-    /** @var \Nette\Caching\Cache */
-    protected $cache;
+	/** @var \Nette\Caching\Cache */
+	protected $cache;
 
 	/** @var string */
 	protected $tableName;
@@ -25,7 +26,7 @@ class Base extends \Nette\Object
 	{
 		$this->db = $notorm;
 		$this->cache = $cache;
-		$this->tableName = $this->tableNameByClass(get_class($this));
+		$this->tableName = Name::tableFromClass(get_class($this));
 	}
 
 
@@ -74,7 +75,39 @@ class Base extends \Nette\Object
 		return $this->item($key);
 	}
 
-	
+
+	/**
+	 * Duplicates record
+	 * @param mixed
+	 * @param array
+	 */
+	public function duplicate($key, $change = array())
+	{
+		if (is_array($key)) {
+			$result = $this->all($key);
+		}
+		else {
+			$row = $this->item($key);
+			unset($row["id"]);
+			return $this->insert($row);
+		}
+
+		foreach($result as $row) {
+			unset($row["id"]);
+
+			if ($change) {
+				foreach ($change as $keyChange => $valueChange) {
+					if (isset($row[$keyChange])) {
+						$row[$keyChange] = $valueChange;
+					}
+				}
+			}
+
+			$this->insert($row);
+		}
+	}
+
+
 	/**
 	 * Delete record
 	 * @param array
@@ -245,15 +278,10 @@ class Base extends \Nette\Object
 	 * @param mixed
 	 * @return bool
 	 */
-	public function isFree(array $key, $exclude = NULL)
+	public function isFree(array $key, $id = NULL)
 	{
-		if ($exclude) { // workaround for update: exclude this record
-			if (is_array($exclude)) {
-				return !$this->table($key)->where("NOT", $exclude)->count("*");
-			}
-			else {
-				return !$this->table($key)->where("NOT id", $exclude)->count("*");
-			}
+		if ($id) {
+			return !$this->table($key)->where("NOT id", $id)->count("*");
 		}
 		else {
 			return !$this->table($key)->count("*");
@@ -267,7 +295,7 @@ class Base extends \Nette\Object
 	 * @howtouse: http://pla.nette.org/cs/jednoduchy-model-s-notorm#toc-relacie-1-n
 	 */
 	public function __call($name, $args)
-        {
+	{
         if (strpos($name, "findBy") !== FALSE) {
             $cammelCaseSplit = preg_split("~(?<=\\w)(?=[A-Z])~", str_replace("findBy", "", $name));
             $loweredCammels = array_map(function($in) {
@@ -306,34 +334,12 @@ class Base extends \Nette\Object
     }
 
 
-	/********************* shortcuts & helpers *********************/
-
-
 	/**
 	 * Table shortcut
 	 */
 	final public function table()
 	{
 		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
-	}
-
-
-	/**
-	 * Get table name by class name [Pages => pages, ArticleTag => article_tag]
-	 * @param string
-	 * @return string
-	 */
-	private function tableNameByClass($className)
-	{
-		$tableName = explode("\\", $className);
-		$tableName = lcfirst(array_pop($tableName));
-
-		$replace = array();
-		foreach (range("A", "Z") as $letter) {
-			$replace[$letter] = "_".strtolower($letter);
-		}
-
-		return strtr($tableName, $replace); 
 	}
 
 }
