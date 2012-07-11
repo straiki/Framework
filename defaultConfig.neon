@@ -22,10 +22,9 @@ common:
 			maxDepht: 3
 			maxLen: 4096
 			bar:
-				- Schmutzka\Panels\SessionPanel(@application, @session)
-				- Schmutzka\Panels\DumpMail(@session)
-				- Schmutzka\Panels\Navigation
-				- Schmutzka\Panels\Stopwatch
+				- Schmutzka\Diagnostics\Panels\SessionPanel
+				- Schmutzka\Diagnostics\Panels\DumpMail
+				- Schmutzka\Diagnostics\Panels\Stopwatch
 
 		database:
 			default:
