@@ -8,14 +8,58 @@ class Time extends \Nette\Object
 {
 
 	/**
+	 * Find week borders
+	 * @param date
+	 * @param int
+	 * @param string
+	 */
+	public static function weekStartEnd($year, $week, $type = NULL)
+	{
+		$year = date("Y", strtotime($year));
+		--$week; // why? :/
+
+		$time = strtotime("1 January $year", time());
+		$day = date("w", $time);
+		$time += ((7*$week)+1-$day)*24*3600;
+		$return[0] = date("Y-m-d", $time);
+		$time += 6*24*3600;
+		$return[1]= date("Y-m-d", $time);
+
+		if ($type == "start") {
+			return $return[0];
+		}
+		elseif ($type == "end") {
+			return $return[1];
+		}
+
+		return $return;
+	}
+
+
+	/**
 	 * Return difference between 2 timestamp in sec
 	 * @param datetime
 	 * @param datetime
+	 * @param string
 	 * @return int
 	 */
-	public static function timestampDiff($timestamp1, $timestamp2)
+	public static function timestampDiff($timestamp1, $timestamp2 = NULL, $format = "d", $floor = TRUE)
 	{
-		return (int) abs(strtotime($timestamp1) - strtotime($timestamp2));
+		$seconds = (int) abs(strtotime($timestamp1) - strtotime($timestamp2));
+
+		switch($format) {
+			case "d":
+				$return = $seconds / (60 * 60 * 24);
+				break;
+			default:
+				$return = $seconds;
+		}
+
+		if ($floor) {
+			return (int) floor($return);
+		}
+
+		return (int) $return;
 	}
 
 
