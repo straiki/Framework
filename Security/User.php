@@ -55,8 +55,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
             throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
         }
 
-		// password		
-        if($row["password"] !== sha1($password)) {
+        if ($row["password"] !== sha1($password)) {
             throw new AuthenticationException("Chybné heslo.");
         }
 
