@@ -13,13 +13,28 @@
 
 use Nette\Callback,
 	Nette\Diagnostics\Debugger,
-	Nette\Diagnostics\Helpers;
+	Nette\Diagnostics\Helpers,
+	Nette\Utils\MimeTypeDetector;
+
+/**
+ * Converts file to base64
+ * @param string
+ */
+function base64($image) 
+{
+	$mime = MimeTypeDetector::fromFile($image);
+	$imageContent = file_get_contents((string)$image);
+	echo "data:" . $mime . ';base64,' . base64_encode($imageContent);
+
+	die;
+}
 
 
 /**	
  * @shortens dump 
  */
-function d() {
+function d()
+{
 	foreach(func_get_args() as $var) {
 		dump($var);
 	}
@@ -29,7 +44,8 @@ function d() {
 /**
  * @shortens dump;die;
  */
-function dd() {
+function dd()
+{
 	foreach(func_get_args() as $var) {
 		dump($var);
 	}
