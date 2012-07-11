@@ -1,28 +1,10 @@
 <?php
 
-/**
- * Nette Framework Extras
- *
- * This source file is subject to the New BSD License.
- *
- * For more information please see http://extras.nettephp.com
- *
- * @copyright  Copyright (c) 2009 David Grudl
- * @license    New BSD License
- * @link       http://extras.nettephp.com
- * @package    Nette Extras
- * @version    $Id: VisualPaginator.php 4 2009-07-14 15:22:02Z david@grudl.com $
- */
-
-use Nette\Application\UI\Control,
+use Schmutzka\Application\UI\Control,
 	Nette\Utils\Paginator;
 
 /**
- * Visual paginator control.
- *
- * @author     David Grudl
- * @copyright  Copyright (c) 2009 David Grudl
- * @package    Nette Extras
+ * @author David Grudl
  */
 class VisualPaginator extends Control
 {
@@ -31,6 +13,7 @@ class VisualPaginator extends Control
 
 	/** @persistent */
 	public $page = 1;
+
 
 	/**
 	 * @return Nette\Paginator
@@ -44,18 +27,14 @@ class VisualPaginator extends Control
 	}
 
 
-
-	/**
-	 * Renders paginator.
-	 * @return void
-	 */
 	public function render()
 	{
 		$paginator = $this->getPaginator();
 		$page = $paginator->page;
 		if ($paginator->pageCount < 2) {
 			$steps = array($page);
-		} else {
+		}	
+		else {
 			$arr = range(max($paginator->firstPage, $page - 2), min($paginator->lastPage, $page + 2));
 			$count = 2;
 			$quotient = ($paginator->pageCount - 1) / $count;
@@ -68,10 +47,9 @@ class VisualPaginator extends Control
 
 		$this->template->steps = $steps;
 		$this->template->paginator = $paginator;
-		$this->template->setFile(dirname(__FILE__) . '/VisualPaginator.latte');
+	
 		$this->template->render();
 	}
-
 
 
 	/**
