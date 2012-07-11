@@ -3,7 +3,7 @@
 namespace Schmutzka\Application\UI;
 
 use Schmutzka\Forms\Replicator,
-	Schmutzka\Diagnostics\Panels\User,
+	Schmutzka\Diagnostics\Panels\UserPanel,
 	Nette\Mail\Message,
 	Components\CssLoader,
 	Components\JsLoader,
@@ -62,11 +62,14 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		$this->mySession = $this->session->getSection("mySession_" . $sectionKey);
 		$this->appSession = $this->session->getSection("appSession");
 
-		$this->user->storage->setNamespace("user_ " . $sectionKey); 
-
+		
 		if ($this->params["debugMode"]) {
 			Message::$defaultMailer = new \Schmutzka\Diagnostics\DumpMail($this->getContext()->session); // service conflict with @nette.mail
 		}
+
+		$this->userPanel = UserPanel::register($this->user, $this->session, $this->context);
+	
+		$this->user->storage->setNamespace("user_ " . $sectionKey); 
 
 		// user status and role info
 		if ($this->user->loggedIn) {	
