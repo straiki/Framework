@@ -1,0 +1,61 @@
+%h1 User panel
+
+.nette-inner
+
+	{form loginForm}
+		{input user, style => "border:1px solid #DDD;"}
+	{/form}
+
+	%br
+
+	<table n:if="$user" style="width: 100%;max-width:450px">
+		<tr>
+			<th colspan="2">Data</th>
+		</tr>
+
+		<tr n:if="$user->roles">
+			<td>role</td>
+			<td>{=implode(', ', $user->roles)}</td>
+		</tr>
+
+		<tr n:foreach="$data as $key => $value">
+			<td>{$key}</td>
+			{if is_scalar($value)}
+			<td>{$value}</td>
+			{else}
+			<td style="font-style: italic;">
+				{if is_object($value)} {=get_class($value)}
+					{elseif is_array($value)} Array
+					{elseif is_null($value)} NULL 
+					{else} -
+				{/if}
+			</td>
+			{/if}
+		</tr>
+
+		<tr n:if="isset($userSession['authTime']) OR isset($userSession['expireTime'])">
+			<th colspan="2">Session</th>
+		</tr>
+		<tr n:ifset="$userSession['authTime']">
+			<td>logged on</td>
+			<td>{$userSession['authTime']|date:"Y-m-d H:i:s"}</td>
+		</tr>
+		<tr n:ifset="$userSessio['expireTime']">
+			<td>will expire on</td>
+			<td>{$userSession['expireTime']|date:"Y-m-d H:i:s"}</td>
+		</tr>
+
+
+
+	</table>
+
+
+
+
+<script type="text/javascript">
+	$(function () {
+			$(".onChangeSubmit").change(function () {
+					$(this).closest("form").submit();
+			});
+	});
+</script>
