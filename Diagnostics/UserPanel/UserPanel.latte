@@ -40,7 +40,7 @@
 			<td>logged on</td>
 			<td>{$userSession['authTime']|date:"Y-m-d H:i:s"}</td>
 		</tr>
-		<tr n:ifset="$userSessio['expireTime']">
+		<tr n:ifset="$userSession['expireTime']">
 			<td>will expire on</td>
 			<td>{$userSession['expireTime']|date:"Y-m-d H:i:s"}</td>
 		</tr>
