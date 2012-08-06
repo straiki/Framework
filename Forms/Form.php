@@ -40,25 +40,15 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * @param \Nette\ComponentModel\IContainer
-	 * @param string
-	 */
-	public function __construct(\Nette\ComponentModel\IContainer $parent = NULL, $name = NULL)
-	{
-		parent::__construct($parent, $name);
-
-		if ($this->csrfProtection) {
-			$this->addProtection($this->csrfProtection);
-		}
-	}
-
-
-	/**
 	 * beforeRender build function
 	 */
 	public function build()
 	{
 		$this->isBuilt = TRUE;
+
+		if ($this->csrfProtection) {
+			$this->addProtection($this->csrfProtection);
+		}
 
 		if ($this->id) {
 			$this->setId($this->id);
@@ -129,7 +119,6 @@ class Form extends \Nette\Application\UI\Form
 	protected function attached($presenter)
 	{
 		parent::attached($presenter);
-		$this->startup(); // bc compatbiltiy
 
 		if (!$this->isBuilt) {
 			$this->build();
