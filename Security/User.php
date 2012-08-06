@@ -2,17 +2,16 @@
 
 namespace Schmutzka\Security;
 
-use Nette\Security\IUserStorage,
-	Nette\Security\Identity,
-	Nette\Security\AuthenticationException;
+use Nette\Security\AuthenticationException;
 
 class User extends \Nette\Security\User implements \Nette\Security\IAuthenticator
 {
+
 	/** @var \NotORM_Result */
 	private $userModel;
 
 	
-	public function __construct(IUserStorage $storage, \Nette\DI\Container $context)
+	public function __construct(\Nette\Security\IUserStorage $storage, \Nette\DI\Container $context)
 	{
 		parent::__construct($storage, $context);
 		$this->userModel = $context->models->user;
@@ -37,21 +36,20 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 	 * Performs an authentication
 	 * @param array
 	 * @return IdentityEntity
-	 * @throws \Nette\Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{
         list($login, $password) = $credentials;
 
 		$key[strpos($login, "@") ? "email" : "login"] = $login;
+		
 		$row = $this->userModel->item($key);
 
-
-        if (!$row) { // check existance
+        if (!$row) {
             throw new AuthenticationException("Uživatel '$login' neexistuje.");
         }
 
-        if (isset($row["auth"]) AND $row["auth"] != 1) { // check authentication
+        if (isset($row["auth"]) AND $row["auth"] != 1) {
             throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
         }
 
@@ -59,11 +57,19 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
             throw new AuthenticationException("Chybné heslo.");
         }
 
-		unset($row["password"], $row["remindHash"], $row["role"]);
+		unset($row["password"], $row["remindHash"]);
 
 		return new Identity($row["id"], (isset($row["role"]) ? $row["role"] : "user"), $row);
 	}
 
 
+	/**
+	 * Get user role
+	 */
+	public function getRole()
+	{
+		$roles = $this->roles;
+		return array_pop($roles);
+	}
 	
 }
