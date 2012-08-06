@@ -40,21 +40,17 @@ class Filer extends \Nette\Utils\Neon
 
 
 	/**
-	 * Simple image move to location
+	 * Simple file move to location
 	 * @param \Nette\Http\FileUpload
 	 * @param string
 	 * @param string
 	 * @param array
-	 * @param string
 	 */
-	public static function moveImage(\Nette\Http\FileUpload $file, $folder, $name, $allowedTypes = array("jpg", "png"))
+	public static function moveFile(\Nette\Http\FileUpload $file, $folder, $name, $suffix)
 	{
-		if ($suffix = self::checkImage($file, $allowedTypes)) {
-
-			$fileName = $name . "." . $suffix;
-			if ($file->move($folder . "/" . $fileName)) {
-				return $fileName;
-			}
+		$fileName = $name . "." . $suffix;
+		if ($file->move($folder . "/" . $fileName)) {
+			return $fileName;
 		}
 
 		return FALSE;
