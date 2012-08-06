@@ -1,13 +1,13 @@
 common:
 	parameters:
-		dbLogger: #settings for class dbLogger 
-			devOnly: TRUE #log only on development version
+ 
 
 	php:
 		date.timezone: Europe/Prague
 		session.save_path: %tempDir%/sessions
 		zlib.output_compression: yes
 	
+
 	nette:
 		session:
 			autoStart: smart
@@ -35,10 +35,12 @@ common:
 		security:
 			debugger: FALSE
 
+
 	services:
-		authenticator: Schmutzka\Security\Authenticator(@database::user())
 
 		cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
+
+		customEmailSender: Services\CustomEmailSender
 
 		dbcache: NotORM_Cache_Include("%tempDir%/notorm.cache")
 
@@ -48,32 +50,29 @@ common:
 
 		sessionStorage: Services\SessionStorage
 
+		template: Schmutzka\Templates\TemplateService
+
 		user:  Schmutzka\Security\User
 
-		# session:
-			# setup:
-				# - setStorage()
-				# - setSavePath("%tempDir%/session.sqlite")
-				# - setExpiration(+ 14 day)
 
 	factories:
+
+		customEmail: Components\CustomEmailControl
+
+		changePasswordForm: Schmutzka\Forms\ChangePasswordForm
+
+		feedbackForm: Schmutzka\Forms\FeedbackForm
+
 		loginForm: Schmutzka\Forms\LoginForm
 
-		registrationForm: Schmutzka\Forms\RegistrationForm(@container)
+		mailingList: Components\MailingListControl
 
-		changePasswordForm: Schmutzka\Forms\ChangePasswordForm(@container)
+		registrationForm: Schmutzka\Forms\RegistrationForm
 
-		feedbackForm: Schmutzka\Forms\FeedbackForm(@user)
+		remindPassword: Components\RemindPasswordControl
 
-		remindPasswordForm: Schmutzka\Forms\RemindPasswordForm(@container)	
+		userForm: Schmutzka\Forms\UserForm
 
-		mailingList: Components\MailingListControl(@container)
-
-		userForm: Schmutzka\Forms\UserForm(@container)
-
-		templateFactory: Schmutzka\Templates\TemplateFactory(@container)
-
-			
 
 production < common:
 	parameters:
