@@ -1,0 +1,62 @@
+%style [n:syntax => off]
+	\#nette-debug-panel-MailPanel {text-align: left;overflow: auto;max-height: 920px;}
+	\.dumpmail {width:500px;background:blue}
+	\.dumpmail strong, .dumpmail b {font-weight:bold;font-weight: bold !important;}
+
+
+%h1 Sent mails
+
+
+.nette-inner.dumpmail
+
+	<table n:foreach="$data as $mail" width="100%" {sep}style="margin-bottom:6px"{/sep}>
+
+		%tr [n:if => $mail["subject"]]
+			%th [width => 30%] Subject
+			%td {$mail["subject"]}
+
+
+		%tr [n:if => $mail["from"]]
+			%th From
+			%td {include #emails, emailList => $mail['from']}
+
+
+		%tr
+			%th To
+			%td {include #emails, emailList => $mail['to']}
+
+
+		%tr [n:if => $mail["bcc"]]
+			%th Bcc
+			%td {include #emails, emailList => $mail['bcc']}
+
+
+		{if $mail["bodyHtml"]}
+			%tr 
+				%th [colspan => 2] Html version
+			%tr 
+				%td [colspan => 2]
+					{!$mail["bodyHtml"]}
+			%tr 
+				%th [colspan => 2] Raw html
+			%tr 
+				%td [colspan => 2]
+					{$mail["bodyHtml"]}
+		{else}
+			%tr 
+				%th [colspan => 2] Text version
+			%tr 
+				%td [colspan => 2]
+					{$mail["body"]}
+		{/if}
+
+	</table>
+
+
+{define #emails}
+{foreach $emailList as $key => $value}
+	<a href="mailto:{$key}">
+		{if isset($value)}{$value}{else}{$key}{/if}
+	</a>{sep}, {/sep}
+{/foreach}
+{/define}
