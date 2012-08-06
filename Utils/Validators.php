@@ -23,7 +23,7 @@ final class Validators extends \Nette\Utils\Validators
 	 * Check date form
 	 * @return bool
 	 */
-	function isDate($date)
+	public function static isDate($date)
 	{  
 		$dateArray = explode("-", $date); //explode the date into date,month and year 
 		if (count($dateArray) == 3) {
