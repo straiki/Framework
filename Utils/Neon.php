@@ -27,7 +27,7 @@ class Neon extends \Nette\Utils\Neon
 			return $fileDecoded[$part];
 		}
 
-		return array_shift($fileDecoded);
+		return $fileDecoded;
 	}
 
 }
