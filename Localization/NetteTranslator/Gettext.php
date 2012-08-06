@@ -1,57 +1,27 @@
 <?php
-/*
- * Copyright (c) 2010 Patrik VotoËek <patrik@votocek.cz>
- *
- * Permission is hereby granted, free of charge, to any person
- * obtaining a copy of this software and associated documentation
- * files (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use,
- * copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following
- * conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
 
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
- * OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
- * HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
 namespace NetteTranslator;
 
-require_once __DIR__ . '/shortcuts.php';
+require_once __DIR__ . "/shortcuts.php";
 
 use Nette,
 	Nette\Utils\Strings;
 
 /**
- * Gettext translator.
+ * Gettext translator
  * This solution is partitionaly based on Zend_Translate_Adapter_Gettext (c) Zend Technologies USA Inc. (http://www.zend.com), new BSD license
- *
- * @author     Roman Sklen·¯
- * @author	   Miroslav Smetana
- * @author	   Patrik VotoËek <patrik@votocek.cz>
- * @author	   Vaclav Vrbka <gmvasek@php-info.cz>
- * @copyright  Copyright (c) 2009 Roman Sklen·¯ (http://romansklenar.cz)
- * @license    New BSD License
- * @example    http://addons.nettephp.com/gettext-translator
- * @package    NetteTranslator\Gettext
- * @version    0.5
- *
- * @todo refactor (according to Nella Project by Vrtak-CZ)
+ * @author Roman Sklen√°≈ô
+ * @author Miroslav Smetana
+ * @author Patrik Votoƒçek <patrik@votocek.cz>
+ * @author Vaclav Vrbka <gmvasek@php-info.cz>
  */
 class Gettext extends Nette\Object implements IEditable
 {
+
 	const SESSION_NAMESPACE = 'NetteTranslator-Gettext';
 	const CACHE_ENABLE = TRUE;
 	const CACHE_DISABLE = FALSE;
+
 
 	/** @var array */
 	protected $files = array();
@@ -71,7 +41,7 @@ class Gettext extends Nette\Object implements IEditable
 	/** @var bool */
 	public static $cacheMode = self::CACHE_DISABLE;
 
-	/** @var Nette\DI\IContainer */
+	/** @var Nette\DI\Container */
 	protected $container;
 
 	/** @var Nette\Http\Session */
@@ -82,12 +52,10 @@ class Gettext extends Nette\Object implements IEditable
 
 
 	/**
-	 * Constructor
-	 *
 	 * @param array $files
 	 * @param string $lang
 	 */
-	public function __construct(Nette\DI\IContainer $container, array $files = NULL, $lang = NULL)
+	public function __construct(Nette\DI\Container $container, array $files = NULL, $lang = NULL)
 	{
 		$this->container = $container;
 		$this->session = $storage = $container->session->getSection(static::SESSION_NAMESPACE);
@@ -100,7 +68,7 @@ class Gettext extends Nette\Object implements IEditable
 		}
 
 		if(empty($lang))
-			$lang = $container->params['lang'];
+			$lang = $container->params["lang"];
 		$this->lang = $lang;
 		if (empty($this->lang))
 			throw new Nette\InvalidStateException('Language must be defined.');
@@ -166,9 +134,9 @@ class Gettext extends Nette\Object implements IEditable
 		}
 	}
 
+
 	/**
 	 * Parse dictionary file
-	 *
 	 * @param string $file file path
 	 */
 	protected function parseFile($file, $identifier)
@@ -232,9 +200,9 @@ class Gettext extends Nette\Object implements IEditable
 		}
 	}
 
+
 	/**
 	 * Metadata parser
-	 *
 	 * @param string $input
 	 */
 	private function parseMetadata($input, $identifier)
@@ -249,9 +217,9 @@ class Gettext extends Nette\Object implements IEditable
 		}
 	}
 
+
 	/**
 	 * Translates the given string.
-	 *
 	 * @param string $message
 	 * @param int $form plural form (positive number)
 	 * @return string
@@ -310,9 +278,9 @@ class Gettext extends Nette\Object implements IEditable
 		return $message;
 	}
 
+
 	/**
 	 * Get count of plural forms
-	 *
 	 * @return int
 	 */
 	public function getVariantsCount()
@@ -326,9 +294,9 @@ class Gettext extends Nette\Object implements IEditable
 		return 1;
 	}
 
+
 	/**
 	 * Get translations strings
-	 *
 	 * @return array
 	 */
 	public function getStrings($file = NULL)
@@ -357,8 +325,7 @@ class Gettext extends Nette\Object implements IEditable
 			}
 		}
 
-
-		if($file) {
+		if ($file) {
 			return array_merge($newStrings, $result);
 		} else {
 			foreach($this->getFiles() as $identifier => $path)
@@ -383,9 +350,9 @@ class Gettext extends Nette\Object implements IEditable
 		return $this->files;
 	}
 
+
 	/**
 	 * Set translation string(s)
-	 *
 	 * @param string|array $message original string(s)
 	 * @param string|array $string translation string(s)
 	 */
@@ -401,6 +368,7 @@ class Gettext extends Nette\Object implements IEditable
 		$this->dictionary[is_array($message) ? $message[0] : $message]['translation'] = (array) $string;
 		$this->dictionary[is_array($message) ? $message[0] : $message]['file'] = $file;
 	}
+
 
 	/**
 	 * Save dictionary
@@ -429,9 +397,9 @@ class Gettext extends Nette\Object implements IEditable
 		}
 	}
 
+
 	/**
 	 * Generate gettext metadata array
-	 *
 	 * @return array
 	 */
 	private function generateMetadata($identifier)
@@ -465,14 +433,10 @@ class Gettext extends Nette\Object implements IEditable
 		else
 			$result[] = "Content-Transfer-Encoding: 8bit";
 
-		// creation fix - enables all 3 forms
-		$result[] = "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4 ? 1 : 2));\n";
-		/*
 		if (isset($this->metadata[$identifier]['Plural-Forms']))
 			$result[] = "Plural-Forms: ".$this->metadata[$identifier]['Plural-Forms'];
 		else
-			$result[] = "Plural-Forms: ";
-		*/
+			$result[] = "Plural-Forms: nplurals=3; plural=((n==1) ? 0 : (n>=2 && n<=4 ? 1 : 2));\n";
 
 		if (isset($this->metadata[$identifier]['X-Poedit-Language']))
 			$result[] = "X-Poedit-Language: ".$this->metadata[$identifier]['X-Poedit-Language'];
@@ -485,6 +449,7 @@ class Gettext extends Nette\Object implements IEditable
 
 		return $result;
 	}
+
 
 	/**
 	 * Build gettext MO file
@@ -531,6 +496,7 @@ class Gettext extends Nette\Object implements IEditable
 
 		file_put_contents($file, $po);
 	}
+
 
 	/**
 	 * Build gettext MO file
@@ -580,14 +546,15 @@ class Gettext extends Nette\Object implements IEditable
 		file_put_contents($file, $mo.$ids.$strings);
 	}
 
+
 	/**
 	 * Get translator
 	 *
-	 * @param Nette\DI\IContainer $container
+	 * @param Nette\DI\Container $container
 	 * @param array|Nette\ArrayHash $options
 	 * @return NetteTranslator\Gettext
 	 */
-	public static function getTranslator(Nette\DI\IContainer $container, $options = NULL)
+	public static function getTranslator(Nette\DI\Container $container, $options = NULL)
 	{
 		return new static($container, isset($options['files']) ? (array) $options['files'] : NULL);
 	}
@@ -601,19 +568,22 @@ class Gettext extends Nette\Object implements IEditable
 		return $this->lang;
 	}
 
+
 	/**
 	 * Sets a new language
 	 */
 	public function setLang($lang)
 	{
-		if($this->lang === $lang)
+		if ($this->lang === $lang)
 			return;
 
 		$this->lang = $lang;
 		$this->dictionary = array();
 		$this->loaded = FALSE;
 
+
 		// Lazy load
 		// $this->loadDictonary();
 	}
+
 }
