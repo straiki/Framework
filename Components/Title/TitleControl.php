@@ -3,41 +3,38 @@
 namespace Components;
 
 use Nette\Utils\Html,
-	Nette\Utils\Arrays;
+	Nette\Utils\Arrays,
+	Schmutzka\Utils\Name,
+	Schmutzka\Utils\Neon;
 
-/**
- * Title component for static use (only, so far)
- * Controls all titles
- * @2DO/idea: combine wtih translate table (FILTER_TABLE = $this->container->params["..."])
- * @2DO: dynamic - http://forum.nette.org/cs/9871-reseni-title-stranky-z-jednoho-mista
- */
 class TitleControl extends \Nette\Application\UI\Control
 {
+
 	/** @var array */
 	private $titles;
 
-	/** @var string */
-	private $sep = " | ";
+	/** @var array */
+	private $context;
 
 	/** @var bool */
-	private $debug;
+	private $isHomepage = FALSE;
 
 
-	public function __construct($debug = FALSE)
+	public function __construct(\Nette\DI\Container $context)
 	{
 		parent::__construct();
-		$this->debug = $debug;
 
-		if (!file_exists(APP_DIR."/config/titles.neon")) {
+		if (!file_exists(APP_DIR . "/config/titles.neon")) {
 			throw new \Exception("Missing 'config/titles.neon'.");
 		}
 
-		$titlesFile = file_get_contents(APP_DIR."/config/titles.neon");
-		$this->titles = \Nette\Utils\Neon::decode($titlesFile);
+		$this->titles = Neon::loadConfigPart("titles.neon");
 
-		if(isset($this->titles["sep"])) {
-			$this->sep = " ".trim($this->titles["sep"])." ";
+		if (!isset($this->titles["sep"])) {
+			throw new \Exception("Separator parameter 'sep' missing.");
 		}
+
+		$this->context = $context;
 	}
 
 
@@ -49,8 +46,14 @@ class TitleControl extends \Nette\Application\UI\Control
 	 * @param string
 	 * @return array
 	 */
-	protected function createTitle($titles, $module, $presenter, $view)
+	protected function createTitle($titles, $presenter)
 	{
+		list($module, $presenter, $view) = Name::mpv($presenter);
+		if ($presenter == "Homepage" AND $view == "default") {
+			$this->isHomepage = TRUE;
+		}
+
+
 		if (isset($titles[$module]["main"])) {
 			$titleArray[] = $titles[$module]["main"];
 		}
@@ -78,57 +81,17 @@ class TitleControl extends \Nette\Application\UI\Control
 		}
 		
 
-
 		if (isset($titleArray["h1"]) AND is_array($titleArray["h1"])) {
 			if (isset($titleArray["h1"]["logged"]) AND isset($titleArray["h1"]["unlogged"])) {
 				$titleArray["h1"] = ($this->parent->user->loggedIn ? $titleArray["h1"]["logged"] : $titleArray["h1"]["unlogged"]);
 			}
-			else {
-
-			}
 		}
 
-		// clear
 		if (empty($titleArray["h1"]) OR is_array($titleArray["h1"])) {
 			unset($titleArray["h1"]);
 		}
 
-
-		if(!isset($titleArray["h1"]) AND $this->debug) { // debug active
-			throw new \Exception("Missing title for ".$presenter.":".$view." in config.neon");
-		}
-
 		return $titleArray;
-	}
-
-
-	/**
-	 * Get title from presenter
-	 * @param string
-	 * @param array
-	 * @return array
-	 */
-	private function titleFromPresenter($presenter, $titles)
-	{
-		list($module, $presenter, $view) = $this->mpv($presenter);
-		return $this->createTitle($titles, $module, $presenter, $view);
-	}
-
-
-	/**
-	 * Get module, presenter and view
-	 * @var presenter
-	 */
-	private function mpv($activePresenter)
-	{
-		$module = NULL;
-		$presenter = $activePresenter->name;
-		if(strpos($presenter, ":")) {
-			list($module, $presenter) = explode(":", $presenter);
-		}
-		$view = $activePresenter->view;
-	
-		return array($module, $presenter, $view);
 	}
 
 
@@ -137,10 +100,16 @@ class TitleControl extends \Nette\Application\UI\Control
 	 */
 	public function render()
 	{
-		$title = $this->titleFromPresenter($this->parent->presenter, $this->titles);
+		$title = $this->createTitle($this->titles, $this->parent->presenter);
 
-		$title = implode($this->sep, $title);
-		echo Html::el("title")->setHtml($title);
+		if (!$this->isHomepage AND isset($this->titles["subOnly"]) AND $this->titles["subOnly"] == TRUE) {
+			$title = array_pop($title);
+		}
+		else {
+			$title = implode(" " . $this->titles["sep"]. " ", $title);
+		}
+
+		echo Html::el("title")->setHtml($this->translate($title));
 	}
 
 
@@ -149,12 +118,26 @@ class TitleControl extends \Nette\Application\UI\Control
 	 */
 	public function renderH1($wrapper = NULL)
 	{
-		$title = $this->titleFromPresenter($this->parent->presenter, $this->titles);
+		$title = $this->createTitle($this->titles, $this->parent->presenter);
 
 		if (isset($title["h1"])) {
-			echo Html::el($wrapper)->setHtml($title["h1"]);
+			echo Html::el($wrapper)->setHtml($this->translate($title["h1"]));
 		}
-		// $title = (isset($title["h1"]) ? $title["h1"] : array_shift($title));
+	}
+
+
+	/**
+	 * Translate function
+	 * @param string
+	 * @2DO: move to control
+	 */
+	public function translate($string)
+	{
+		if ($this->context->hasService("translator")) {
+			return $this->context->translator->translate($string);
+		}
+
+		return $string;
 	}
 
 
