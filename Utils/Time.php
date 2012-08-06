@@ -199,6 +199,19 @@ class Time extends \Nette\Object
 	}
 
 
+	/**
+	 * Convert time
+	 * @param int
+	 */
+	public static function im($time)
+	{
+		$h = floor(($time)/60);
+		$m = $time - ($h * 60);
+	
+		return $h . ":" . $m;
+	}
+
+
 	/********************* 2DO *********************/
 
 
