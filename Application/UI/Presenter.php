@@ -74,10 +74,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		// user status and role info
 		if ($this->user->loggedIn) {	
 			$this->logged = TRUE;
-			$role = $this->user->getRoles();
-			$this->role = array_shift($role);
-		}
-		elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
+			$this->role = this->user->getRole();
+
+		} elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
 			if (!is_array($this->signal) OR !in_array("logout", $this->signal)) { // do not save logout signal either (results in logout after login)
 				$this->appSession->backlink = $this->storeRequest();
 			}
@@ -98,7 +97,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	 */
 	public function flashMessage($message, $type = "flash-success")
 	{		
-		if($this->getContext()->hasService("translator")) { // automatic translator! cool
+		if ($this->getContext()->hasService("translator")) {
 			$message = $this->getContext()->translator->translate($message);
 		}
 
@@ -123,7 +122,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/* *********************** templates ************************ */
 
 
-
 	/**	 
 	 * Create template
 	 * @param string
@@ -131,11 +129,75 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function createTemplate($class = NULL)
 	{
 		$template = parent::createTemplate($class);
-
-		$templateFactory = $this->context->createTemplateFactory();
-		$templateFactory->configure($template);
-
+		$this->context->template->configure($template, $this->lang);
 		return $template;
+	}
+
+
+	/* *********************** components ************************ */
+	
+
+	/**
+	 * Css component
+	 * @return \Components\CssLoader
+	 */
+	protected function createComponentCss()
+	{
+		return new CssLoader($this->template->basePath);
+	}
+
+
+	/**
+	 * Js component 
+	 * @return \Components\JsLoader
+	 */
+	protected function createComponentJs()
+	{
+		return new JsLoader($this->template->basePath);
+	}
+
+
+	/**
+	 * Handles requests to create component / form?
+	 * @param string
+	 */
+	protected function createComponent($name)
+	{
+		$component = parent::createComponent($name);
+
+		if ($component === NULL) {
+			$componentClass = "Components\\" . $name . "Control";
+			if (class_exists($componentClass)) {
+				$component = new $componentClass;
+			}
+		}
+
+		return $component;
+	}
+
+
+	/* *********************** shortcuts ************************ */
+
+
+	/**
+	 * Model shortcut 
+	 */
+	final public function getModels()
+	{
+		return $this->context->models;
+	}
+
+
+	/**	
+	 * Translator shortucut
+	 */
+	public function translate($text)
+	{
+		if ($this->getContext()->hasService("translator")) {
+			return $this->getContext()->translator->translate($text);
+		}
+	
+		return $text;
 	}
 
 
@@ -190,98 +252,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
-	/* *********************** components ************************ */
-	
-
-	/**
-	 * Css component
-	 * @return \Components\CssLoader
-	 */
-	protected function createComponentCss()
-	{
-		return new CssLoader($this->template->basePath);
-	}
-
-
-	/**
-	 * Js component 
-	 * @return \Components\JsLoader
-	 */
-	protected function createComponentJs()
-	{
-		return new JsLoader($this->template->basePath);
-	}
-
-
-	/**
-	 * Css component for AdminModule
-	 * @return \Components\CssLoader
-	 */
-	protected function createComponentCssAdmin()
-	{
-		return new CssLoader($this->template->basePath, "cssAdmin");
-	}
-
-
-	/**
-	 * Js component for AdminModule
-	 * @return \Components\JsLoader
-	 */
-	protected function createComponentJsAdmin()
-	{
-		return new JsLoader($this->template->basePath, "jsAdmin");
-	}
-
-
-	/**
-	 * Title component
-	 * @return \Components\TitleControl
-	 */
-	protected function createComponentTitle()
-	{
-		return new \Components\TitleControl;
-	}
-
-
-	/**
-	 * FlashMessage component
-	 * @return \Components\FlashMessageControl
-	 */
-	protected function createComponentFlashMessage()
-	{
-		return new \Components\FlashMessageControl;
-	}
-
-
-	/* *********************** shortcuts ************************ */
-
-
-	/**
-	 * Model shortcut 
-	 */
-	final public function getModels()
-	{
-		return $this->context->models;
-	}
-
-
-	/**	
-	 * Translator shortucut
-	 */
-	public function translate($text)
-	{
-		if ($this->getContext()->hasService("translator")) {
-			return $this->getContext()->translator->translate($text);
-		}
-	
-		return $text;
-	}
-
-
-
-
-
-
 	/* ********************* modularity ********************* */
 
 
@@ -294,33 +264,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		$list[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
 
 		return $list;
-	}
-
-
-	/********************* debugging *********************/
-
-
-	/**
-	 *	@use $this->stopwatchStart(__METHOD__);
-	 */
-	private function stopwatchStart($methodName)
-	{	
-		if ($this->runStopwatch) {
-			$methodName = explode("::", $methodName);
-			Stopwatch::start(array_pop($methodName));
-		}
-	}
-
-
-	/**
-	 *	@use $this->stopwatchStop(__METHOD__);
-	 */
-	private function stopwatchStop($methodName)
-	{	
-		if ($this->runStopwatch) {
-			$methodName = explode("::", $methodName);
-			Stopwatch::stop(array_pop($methodName));
-		}
 	}
 
 
