@@ -3,14 +3,15 @@
 /**
  * My macros
  *
- * {menuItem ? ?} <li n:class='$presenter->isCurrentLink("Homepage:*") ? active'><a n:href="Homepage:default">Test lists</a></li>
+ * {menuItem ? ?} - <li n:class='$presenter->isCurrentLink("Homepage:*") ? active'><a n:href="Homepage:default">Test lists</a></li>
  * {n:id ?} <div n:id="cond ? one : two">
  * {ga ?} - google analytics code
  * {n:confirm ?} - js confirm dialog
- * {n:tooltip ?} - into  js tooltip
+ * {n:tooltip ?} - into js tooltip
  * {n:src ?} - into <img src={$baseHref}/images/ ... >
- * {n:current ?}  class="$presenter->isLinkCurrent() ? $node>
+ * {n:current ?} - class="$presenter->isLinkCurrent() ? $node>
  * {clickableDump}
+ * {label ?} 
  */
 
 namespace Schmutzka\Templates;
@@ -21,8 +22,9 @@ use Nette\Latte\MacroNode,
 
 class MyMacros extends \Nette\Latte\Macros\MacroSet
 {
+
 	public static function install(\Nette\Latte\Compiler $compiler)
-    {
+	{
 		$me = new static($compiler);
 		$me->addMacro("confirm", NULL, NULL, array($me, "macroConfirm"));
 		$me->addMacro("ga", array($me, "macroGa"));
@@ -35,8 +37,21 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$me->addMacro("empty", 'if (!$iterations):', "endif");
 		$me->addMacro("phref", NULL, NULL, array($me, "macroPhref"));
 		$me->addMacro("clickableDump","echo \Nette\Diagnostics\Helpers::clickableDump(%node.word)");
+		$me->addMacro("label", array($me, "macroLabel"));
 	}
 
+
+	/**
+	 * uncripled label
+	 */
+	public function macroLabel(MacroNode $node, PhpWriter $writer)
+	{
+		if (substr($node->args, -1) === "/") {
+			$node->setArgs(substr($node->args, 0, -1));
+		}
+
+		return $writer->write('if ($_label = $_form[%node.word]->getLabel()) echo $_label->addAttributes(%node.array)');
+	}
 
 
 	/**
@@ -101,7 +116,7 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$node = Html::el("script")->setText("
 			var _gaq = _gaq || [];
 			_gaq.push(['_setAccount', '" . $code . "']);" .
-			($subdomains ?  "_gaq.push(['_setDomainName', '".$subdomains."']);" : NULL) . 
+			($subdomains ? "_gaq.push(['_setDomainName', '".$subdomains."']);" : NULL) . 
 			"_gaq.push(['_trackPageview']);
 
 			(function() {
@@ -164,4 +179,5 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 
 		return $writer->write('echo "<li ".%escape($_presenter->isLinkCurrent("'.$presenterCurrent.'") ? " class=active" : NULL)."><a href=".htmlSpecialChars($_control->link("'.$href.'", array("id" => NULL)))."> ". %escape($template->translate("'.$name.'")) . "</a></li>"');
 	}
+
 }
