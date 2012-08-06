@@ -5,7 +5,7 @@ namespace Schmutzka\Application\UI;
 class AdminPresenter extends \BasePresenter
 {
 
-	/** @var redirect unlogged */
+	/** @var string */
 	public $unloggedRedirect = ":Front:Homepage:default";
 
 
