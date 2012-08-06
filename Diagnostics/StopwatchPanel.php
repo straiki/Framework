@@ -6,7 +6,7 @@
  * @copyright Maxipes Fík
  */
 
-namespace Schmutzka\Panels;
+namespace Schmutzka\Diagnostics\Panels;
 
 use Nette;
 

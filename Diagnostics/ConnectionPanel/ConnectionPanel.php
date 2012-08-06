@@ -2,7 +2,8 @@
 
 namespace Schmutzka\Panels;
 
-use Nette\Database\Helpers;
+use Nette\Database\Helpers,
+	Nette\Diagnostics\Debugger;
 
 class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel 
 {
