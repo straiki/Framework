@@ -50,6 +50,23 @@ final class Name extends \Nette\Object
 
 
 	/**
+	 * Modul/presenter/view
+	 * @param Presenter
+	 */
+	public static function mpv($activePresenter)
+	{
+		$module = NULL;
+		$presenter = $activePresenter->name;
+		if (strpos($presenter, ":")) {
+			list($module, $presenter) = explode(":", $presenter, 2);
+		}
+		$view = $activePresenter->view;
+	
+		return array($module, $presenter, $view);
+	}
+
+
+	/**
 	 * Get suffix
 	 * @param string
 	 * @return string
