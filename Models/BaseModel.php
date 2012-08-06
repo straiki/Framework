@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @dev: possible fully-cached queries;,
- * cache invalidation on update/insert/delete of record + it's id? or whole? could be awesome :)
- */
-
 namespace Models;
 
 use Schmutzka\Utils\Name;
@@ -21,11 +16,19 @@ class Base extends \Nette\Object
 	/** @var string */
 	protected $tableName;
 
+	/** @var string */
+	protected $lang;
 
-	public function __construct(\NotORM $notorm, \Nette\Caching\Cache $cache)
+
+	public function __construct(\NotORM $notorm, \Nette\Caching\Cache $cache, \Nette\DI\Container $context)
 	{
 		$this->db = $notorm;
 		$this->cache = $cache;
+
+		if (isset($context->params["activeLang"])) {
+			$this->lang = $context->params["activeLang"];
+		}
+
 		$this->tableName = Name::tableFromClass(get_class($this));
 	}
 
@@ -340,6 +343,16 @@ class Base extends \Nette\Object
 	final public function table()
 	{
 		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
+	}
+
+
+	/**
+	 * Set up language
+	 * @param string
+	 */
+	public function setLang($lang)
+	{
+		$this->lang = $lang;
 	}
 
 }
