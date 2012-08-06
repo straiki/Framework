@@ -67,13 +67,12 @@ class CalendarControl extends Control
 	**/
 	public function renderMini()
 	{
+		parent::userTemplate("mini");
+
 		$monthData = $this->monthData($this->activeMonth);
 
-		$template = $this->template;
-		$template->setFile(dirname(__FILE__) . "/renderMini.latte");
 		$template = $this->fillInTemplate($template);
 		$template->monthArray = $monthData;
-
 		$template->render();
 	}
 
@@ -85,8 +84,6 @@ class CalendarControl extends Control
 	{
 		$monthData = $this->monthData($this->activeMonth);
 
-		$template = $this->template;
-		$template->setFile(dirname(__FILE__) . "/render.latte");
 		$template = $this->fillInTemplate($template);
 		$template->monthArray = $monthData;
 
@@ -99,11 +96,13 @@ class CalendarControl extends Control
 	**/
 	public function renderMiniNav()
 	{
+		parent::useTemplate("miniNav");
+
 		$monthData = $this->monthData($this->activeMonth);
 
 		$template = $this->template;
 		$template->showNavigation = TRUE;
-		$template->setFile(dirname(__FILE__) . "/renderMini.latte");
+
 		$template = $this->fillInTemplate($template);
 		$template->monthArray = $monthData;
 
@@ -119,7 +118,7 @@ class CalendarControl extends Control
 	private function monthData($activeMonth)
 	{
 		// data pro tento měsíc
-		$records = $this->presenter->models->calendar->getMonthData($activeMonth);
+		$records = $this->presenter->models->calendarControl->getMonthData($activeMonth);
 
 		// ohraničení měsíce a základní proměnné
 		$monthStartTime = $activeMonth."-01 00:00:00";
