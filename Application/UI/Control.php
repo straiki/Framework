@@ -2,8 +2,6 @@
 
 namespace Schmutzka\Application\UI;
 
-use Schmutzka\Templates\TemplateFactory;
-
 class Control extends \Nette\Application\UI\Control
 {
 
@@ -11,14 +9,13 @@ class Control extends \Nette\Application\UI\Control
 	 * Create template
 	 * @param string
 	 */
-	public function createTemplate($class = NULL)
+	public function createTemplate($class = NULL, $autosetFile = TRUE)
 	{
 		$template = parent::createTemplate($class);
 
-		$templateFactory = $this->context->createTemplateFactory();
-		$templateFactory->configure($template);
+		$this->context->template->configure($template);
 
-		if (!$template->getFile()) {
+		if ($autosetFile && !$template->getFile()) {
 			$template->setFile($this->getTemplateFilePath());
 		}
 
@@ -32,6 +29,19 @@ class Control extends \Nette\Application\UI\Control
 	public function useTemplate($name)
 	{
 		$this->template->setFile($this->getTemplateFilePath($name));
+	}
+
+
+	/**
+	 * Create template from file
+	 * @param string
+	 */	
+	public function createTemplateFromFile($file)
+	{	
+		$template = $this->createTemplate(NULL, FALSE);
+		$template->setFile($file);
+
+		return $template;
 	}
 
 
@@ -74,6 +84,38 @@ class Control extends \Nette\Application\UI\Control
 	final public function getModels()
 	{
 		return $this->context->models;
+	}
+
+
+	/**
+	 * Handles requests to create component / form?
+	 * @param string
+	 */
+	protected function createComponent($name)
+	{
+		$component = parent::createComponent($name);
+
+		if ($component === NULL) {
+			$componentClass = "Components\\" . $name . "Control";
+			if (class_exists($componentClass)) {
+				$component = new $componentClass;
+			}
+		}
+
+		return $component;
+	}
+
+
+	/**
+	 * Translate shortcut 
+	 */
+	public function translate($string)
+	{
+		if ($this->context->hasService("translator")) {
+			return $this->context->translator->translate($string);
+		}		
+
+		return $string;
 	}
 
 }
