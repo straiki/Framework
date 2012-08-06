@@ -29,6 +29,17 @@ class MyHelpers extends \Nette\Object
 
 
 	/**
+	 * Get suffix
+	 * @param string
+	 */
+	public static function suffix($file)
+	{
+		$temp = explode(".", $file);
+		return array_pop($temp);
+	}
+
+
+	/**
 	 * Localized month
 	 * @param mixed
 	 * @param string
@@ -48,7 +59,6 @@ class MyHelpers extends \Nette\Object
 
 		return $monthNames[$lang][$month];
 	}
-
 
 
 	/**
@@ -92,13 +102,11 @@ class MyHelpers extends \Nette\Object
 	public function combineFields()
 	{
 		$args = func_get_args();
-		$data = array_shift($args);
-		
+		$data = array_shift($args);	
 		$sep = $args[0];
 
 		$temp = "";
 		foreach($args[1] as $key) {
-
 			if (isset($data[$key])) {
 				$temp .= $data[$key] . $sep;
 			}
