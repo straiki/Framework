@@ -165,8 +165,7 @@ class Form extends \Nette\Application\UI\Form
 	public function getValues($removeEmpty = FALSE)
 	{
 		$values = parent::getValues(TRUE);
-		
-
+	
 		foreach ($this->httpData as $key => $value) {
 			if (empty($values[$key]) AND $value AND !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
 				$values[$key] = $value;
@@ -176,7 +175,6 @@ class Form extends \Nette\Application\UI\Form
 		foreach ($this->typeClass as $key => $value) { 
 			unset($values[$key]);
 		}
-
 
 		foreach ($values as $key => $value) { 
 			if (is_object($value) AND (get_class($value) == "Nette\DateTime" OR get_class($value) == "DateTime")) { // object to date
@@ -240,31 +238,6 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * Adds a number input control to the form.
-	 */
-	public function addNumber($name, $label = NULL, $step = 1, $min = 0, $max = NULL)
-	{
-		$item = $this->addText($name, $label);
-		$item->setAttribute('step', $step)->setAttribute('type', "number")
-			->addCondition(self::FILLED)->addRule(self::NUMERIC);
-		$range = array(NULL, NULL);
-		if ($min !== NULL) {
-			$item->setAttribute('min', $min);
-			$range[0] = $min;
-		}
-		if ($max !== NULL) {
-			$item->setAttribute('max', $max);
-			$range[1] = $max;
-		}
-		if ($range != array(NULL, NULL)) {
-			$item->addCondition(self::FILLED)->addRule(self::RANGE, NULL, $range);
-		}
-
-		return $item;
-	}
-
-
-	/**
 	 * Adds a radio list
 	 */
 	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
@@ -323,6 +296,7 @@ class Form extends \Nette\Application\UI\Form
 
 	/**
 	 * @return TimeControl
+	 * @2DO: add MyRules
 	 */
 	public function addTime($name, $label = NULL, $cols = NULL)
 	{
@@ -337,7 +311,6 @@ class Form extends \Nette\Application\UI\Form
 	{
 		return $this[$name] = new Controls\AntispamControl($label, NULL, NULL, $msg);
 	}
-
 
 
 	/**
@@ -357,6 +330,14 @@ class Form extends \Nette\Application\UI\Form
 		return $this[$name] = new Controls\Replicator($factory, $createDefault);
 	}
 
+
+	/**
+	 * @return \GMapFormControl	
+	 */
+	public function addGmap($name, $label, $options = NULL)
+	{
+		return $this[$name] = new \GMapFormControl($label, $options);
+	}
 
 
 	/* ************************** shortcuts ************************ */
