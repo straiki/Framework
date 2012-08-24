@@ -27,8 +27,8 @@ class Time extends \Nette\Object
 
 		if ($type == "start") {
 			return $return[0];
-		}
-		elseif ($type == "end") {
+
+		} elseif ($type == "end") {
 			return $return[1];
 		}
 
@@ -85,8 +85,8 @@ class Time extends \Nette\Object
 
 		if ($y < date("y")) { // 20xx
 			$y = "20" . $y;
-		}
-		else {
+
+		} else {
 			$y = "19" . $y;			
 		}
 
@@ -114,17 +114,15 @@ class Time extends \Nette\Object
 
 		if (preg_match('/^([12][0-9]{3})([0-9]{2})([0-9]{2})$/', "$date", $m)) {
 			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[3], $m[1]));
-		}
-		elseif (preg_match('/^([12][0-9]{3})-([0-9]{1,2})-([0-9]{1,2})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m) OR
+
+		} elseif (preg_match('/^([12][0-9]{3})-([0-9]{1,2})-([0-9]{1,2})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m) OR
 			preg_match('/^([0-9]{1,2}).\s*([0-9]{1,2}).\s*([12][0-9]{3})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m)) {
 			$date = date(@$m[4] ? 'Y-m-d H:i:s' : 'Y-m-d', mktime(@$m[4], @$m[5], @$m[6], $m[2], $m[1], $m[3]));
-		}
 
-		// dd.mm.
-		elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.$/', "$date", $m)) {
+		} elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.$/', "$date", $m)) { // dd.mm.
 			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], date('Y')));
-		}
-		elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.([0-9]{1,2})$/', "$date", $m)) {
+
+		} elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.([0-9]{1,2})$/', "$date", $m)) {
 			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], $m[3] < 70 ? "20{$m[3]}" : "19{$m[3]}"));
 		}
 
@@ -181,16 +179,16 @@ class Time extends \Nette\Object
 		if (Validators::isTime($time)) {
 			list($h, $m) = explode(":", $time);
 
-			if($type == 1) {
+			if ($type == 1) {
 				return (int) $h;
-			}
-			elseif ($type == 2) {
+
+			} elseif ($type == 2) {
 				return (60 * $h + $m);
-			}
-			elseif ($type == 3) {
+
+			} elseif ($type == 3) {
 				return ($h . ":00");
-			}
-			elseif ($type == 4) {
+
+			} elseif ($type == 4) {
 				return sprintf("%02d:%02d", floor($time/60), $time%60);
 			}
 		}
@@ -199,17 +197,6 @@ class Time extends \Nette\Object
 	}
 
 
-	/**
-	 * Convert time
-	 * @param int
-	 */
-	public static function im($time)
-	{
-		$h = floor(($time)/60);
-		$m = $time - ($h * 60);
-	
-		return $h . ":" . $m;
-	}
 
 
 	/********************* 2DO *********************/
@@ -240,10 +227,10 @@ class Time extends \Nette\Object
 
 
 		foreach ($hourDistribution as $key => $value) {
-			if($key < 6 OR $key >= 18) {
+			if ($key < 6 OR $key >= 18) {
 				$midnighter += count($value);
-			}
-			else {
+
+			} else {
 				$nooner += count($value);
 			}
 		}
@@ -257,8 +244,8 @@ class Time extends \Nette\Object
 			foreach($data as $value) {
 				$timeSum += self::ex($value, 2);
 			}
-		}
-		else {
+
+		} else {
 			foreach($data as $value) {
 				$mins = self::ex($value, 2);
 				if($mins < (12*60)) { // 12 je klíčové číslo!!!!!!!!!!!
@@ -276,4 +263,64 @@ class Time extends \Nette\Object
 		return self::im($timeMean); 
 	}
 
+
+	/**
+	 * Converts time to seconds
+	 * @param mixed
+
+	 * @param string
+	 */
+	public static function inSeconds($time, $inputFormat = NULL)
+	{
+		$h = $m = $s = 0;
+		$list = explode(":", $time);
+
+		if (count($list) == 3) {
+			list ($h, $m, $s) = $list;
+
+		} elseif (count($list) == 2) {
+			if ($inputFormat == "H:i") {
+				list ($h, $m) = $list;
+
+			} elseif ($inputFormat == "i:s") {
+				list ($m, $s) = $list;
+			}
+		}
+
+		$secodns = $h * 60 * 60 + $m * 60 + $s;
+		return $secodns;
+
+
+	}
+
+
+	/**
+	 * Convert time
+
+
+
+
+
+
+
+	 * @param int
+	 * @param int
+	 */
+	public static function im($time, $type = 1)
+	{
+		$h = floor(($time)/60);
+		$m = $time - ($h * 60);
+
+		if ($type == 1) {
+			return $h . ":" . $m;
+
+		} elseif ($type == 2) { 
+			if ($h) {
+				return $h . ":" . ($m < 10 ?  ("0" . $m) : $m) . " hod.";			
+
+			} else {
+				return $m . " min.";			
+			}
+		}	
+	}
 }

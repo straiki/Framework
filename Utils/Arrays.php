@@ -45,6 +45,23 @@ class Arrays extends \Nette\Object
 
 
 	/**
+	 * Fill empty with value
+	 * @param array
+	 * @param string
+	 */
+	public static function fillEmpty($array, $emptyValue = "-")
+	{
+		foreach ($array as $key => $value) {
+			if (empty($value)) {
+				$array[$key] = $emptyValue;
+			}
+		}
+
+		return $array;
+	}
+
+
+	/**
 	 * Switch rows into colums order { 1 2 / 3 4 / 5 } => {1 3 / 2 4 / 5 }
 	 * @param array
 	 * @param int

@@ -23,13 +23,13 @@ final class Validators extends \Nette\Utils\Validators
 	 * Check date form
 	 * @return bool
 	 */
-	public function static isDate($date)
+	public static function isDate($date)
 	{  
 		$dateArray = explode("-", $date); //explode the date into date,month and year 
 		if (count($dateArray) == 3) {
 			list($y, $m, $d) = $dateArray; 
 
-			if (checkdate($m, $d, $y) && strtotime("$y-$m-$d") && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', "$d-$m-$y")) { 
+			if (checkdate((int) $m,(int) $d,(int) $y) && strtotime("$y-$m-$d") && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', "$d-$m-$y")) { 
 				return TRUE; 
 			}  
 		}
