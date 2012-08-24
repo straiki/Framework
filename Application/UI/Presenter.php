@@ -74,7 +74,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		// user status and role info
 		if ($this->user->loggedIn) {	
 			$this->logged = TRUE;
-			$this->role = this->user->getRole();
+			$this->role = $this->user->getRole();
 
 		} elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
 			if (!is_array($this->signal) OR !in_array("logout", $this->signal)) { // do not save logout signal either (results in logout after login)
