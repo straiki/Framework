@@ -52,7 +52,7 @@ common:
 
 		template: Schmutzka\Templates\TemplateService
 
-		user:  Schmutzka\Security\User
+		user: Schmutzka\Security\User
 
 
 	factories:
