@@ -2,19 +2,15 @@
 
 namespace Schmutzka\Templates;
 
-use Nette\Templating\FileTemplate,
-	Nette\Templating\Template,
-	Schmutzka\Utils\Time,
-	Nette\Utils\Html;
+use Schmutzka\Utils\Time;
 
 class MyHelpers extends \Nette\Object
 {
-
 	/** @var \SystemContainer */
 	private $context;
 
 
-	public function __construct($context)
+	public function __construct(\SystemContainer $context)
 	{
 		$this->context = $context;
 	}
@@ -28,6 +24,42 @@ class MyHelpers extends \Nette\Object
 	}
 
 
+	/** 
+	 * Joins two datetimes as term (from - to)
+	 * @param string/DibiDateTime
+	 * @param string/DibiDateTime
+	 */
+	public static function term($from, $to)
+	{
+		$from = new \Nette\DateTime($from);
+		$to = new \Nette\DateTime($to);
+
+		if ($from->format('Y-m-d H:i') == $to->format('Y-m-d H:i')) {
+			return $from;
+		}
+		
+		$dayFrom = $from->format('j. n. Y');
+		$dayTo = $to->format('j. n. Y');
+		$timeFrom = $from->format('H:i');
+		$timeTo = $to->format('H:i');
+
+		if ($from->format('Y') == $to->format('Y')) { // same year
+
+			if ($dayFrom == $dayTo) { // same day
+				$term = $dayFrom . ' ' . $timeFrom . ' - ' . $timeTo;
+				
+			} else { // different day
+				$term = $from->format('j. n.') . '-' . $to->format('j. n. Y') . ' ' . $timeFrom . '-' . $timeTo;
+			}
+				
+		} else { // different year
+			$term = $dayFrom . '  ' . $timeFrom . '-' . $dayTo . ' ' . $timeTo;
+		}
+
+		return $term;
+	}
+
+
 	/**
 	 * Get suffix
 	 * @param string
@@ -36,6 +68,72 @@ class MyHelpers extends \Nette\Object
 	{
 		$temp = explode(".", $file);
 		return array_pop($temp);
+	}
+
+
+	/**
+	 * Minutes to readable time
+	 * @param int
+	 * @param int
+	 */
+	public static function minsToTime($mins, $type = 1)
+	{
+		return Time::im($mins, $type);
+
+	}
+
+
+	/**
+	 * Time to seconds
+	 * @param mixed
+	 * @param string
+	 */
+	public static function inSeconds($time, $inputFormat = NULL)
+	{
+		return Time::inSeconds($time, $inputFormat);
+	}
+
+
+	/**
+	 * First upper
+	 * @param string
+	 */
+	public static function fupper($string)
+	{
+		return ucfirst($string);
+	}
+
+
+	/**
+	 * Localized day
+	 * @param mixed
+	 * @param string
+	 * @param string
+	 * @return string
+	 */
+	public static function dayName($date, $lang = "cs", $type = "short")
+	{
+		$day = (is_int($date) ? $date : date("N", strtotime($date)));
+
+		if ($type == "short") {
+			if ($lang == "en") {
+				if ($type == "short") {
+					return date("D", strtotime($date));
+
+				} else {
+					return date("l", strtotime($date));
+				}
+			}
+		}
+
+		static $dayNames = array(
+			"cs" => array(
+				"short" => array(1 => "po", "út", "st", "čt", "pá", "so", "ne"),
+				"long" => array(1 => "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle")
+			)
+		);
+
+		return $dayNames[$lang][$type][$day];
 	}
 
 
@@ -64,33 +162,11 @@ class MyHelpers extends \Nette\Object
 	/**
 	 * highlight_string without '<?php' at the beggining
 	 */
-	public static function highlight($code) {	
+	public static function highlight($code)
+	{	
 		$code = "<?php ".$code;
 		$split = array('&lt;?php&nbsp;' => '');
 		return strtr(highlight_string($code,TRUE),$split);
-	}
-
-
-	/**
-	 * Timeline helper
-	 * @param int
-	 * @param int
-	 * @return html
-	 */
-	public function timeLine($time, $steps = 25) 
-	{
-		$step = floor($time/$steps);
-		$width = floor(100/$steps);
-	
-		$return = "";
-		$time = -4;
-		for ($i = 0; $i < $steps; $i++) {
-			$time += $step;
-			$return .= Html::el("td")->setHtml(Time::im($time))->width($width . "%");
-			$time += 2.1; // special constant
-		}
-
-		return $return;
 	}
 
 
@@ -102,17 +178,16 @@ class MyHelpers extends \Nette\Object
 	public function combineFields()
 	{
 		$args = func_get_args();
-		$data = array_shift($args);	
-		$sep = $args[0];
+		$data = array_shift($args);
 
 		$temp = "";
-		foreach($args[1] as $key) {
+		foreach($args[0] as $key) {
 			if (isset($data[$key])) {
-				$temp .= $data[$key] . $sep;
+				$temp .= $data[$key] . " ";
 			}
 		}
 
-		return trim($temp, $sep); 
+		return trim($temp); 
 	}
 
 
@@ -123,11 +198,12 @@ class MyHelpers extends \Nette\Object
 	 * @param string
 	 * @param mixed
 	 */
-	public function ternal($value, $one = "ano", $two = "ne", $cond = 1) {
+	public static function ternal($value, $one = "ano", $two = "ne", $cond = 1)
+	{
 		if ($value == $cond) {
 			return $one;
-		}
-		else {
+
+		} else {
 			return $two;
 		}
 	}
@@ -138,11 +214,12 @@ class MyHelpers extends \Nette\Object
 	 * @param mixed
 	 * @param string
 	 */
-	public function isEmpty($value, $emptyReturn = "-", $notEmptyReturn = NULL) {
+	public function isEmpty($value, $emptyReturn = "-", $notEmptyReturn = NULL)
+	{
 		if ((!isset($value)) OR (!$value AND !is_numeric($value)) OR is_null($value)) {
 			return $emptyReturn;
-		}
-		else {
+
+		} else {
 			return trim($value." ".$notEmptyReturn);
 		}
 	}
@@ -157,8 +234,8 @@ class MyHelpers extends \Nette\Object
 	{
 		if (isset($array[$value])) {
 			return $array[$value];
-		}
-		else {
+
+		} else {
 			return $return;
 		}
 	}
@@ -170,7 +247,8 @@ class MyHelpers extends \Nette\Object
 	 * @param string
 	 * @return string
 	 */
-	public function iconv($value, $from = "utf-8", $to = "windows-1250") {
+	public function iconv($value, $from = "utf-8", $to = "windows-1250")
+	{
         return iconv($from, $to, $value);
 	}
 
@@ -313,9 +391,10 @@ class MyHelpers extends \Nette\Object
 	 * @param string
 	 * @param string
 	 * @param bool
+	 * @param string
 	 * @return string
 	 */
-	public function secureMail($email, $node = NULL, $clickable = TRUE)
+	public function secureMail($email, $node = NULL, $clickable = TRUE, $class = NULL)
 	{	
 		$return = NULL;
 		for($i=0,$j=strlen($email);$i<$j; $i++) {
@@ -324,9 +403,9 @@ class MyHelpers extends \Nette\Object
 
 		if ($clickable) {
 			$node = $node ? $node : $return;
-			return "<a href='mailto:$return'>$node</a>";
-		}
-		else {
+			return "<a " . ($class ? "class='" . $class . "' " : NULL)."href='mailto:$return'>$node</a>";
+
+		} else {
 			return $return;
 		}
 	}
@@ -343,48 +422,12 @@ class MyHelpers extends \Nette\Object
 
 
 	/**
-	 * Returns month name
-	 * @param int $month
+	 * Translate 
+	 * @hotfix
 	 */
-	public static function month($month, $monthList = array("leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"))
+	public function translate($s)
 	{
-		return $monthList[$month - 1];
-	}
-
-
-	/**
-	 * Returns Czech weekday
-	 * @param int $weekday
-	 */
-	public static function weekday($weekday, $weekdayList = array("pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle"))
-	{
-		return $week[$weekday - 1];
-	}
-
-
-	/**
-	 * Prepares string for use in TITLE element
-	 * @param string $s
-	 * @return string
-	 */
-	public static function title($s)
-	{
-		return String::replace(html_entity_decode(strip_tags($s), ENT_COMPAT, 'UTF-8'), '#\\s+#u', ' ');
-	}
-
-
-	/** [sleeper.cz]
-	 * Vrátí fotku daného uživatele nebo prázdnou
-	 * @string jméno profilovky
-	 * @string název třídy
-	 * @return html
-	 */
-	public function showProfilePhoto($profilePhoto, $class = "profilePhoto")
-	{
-		$basePath = $this->context->httpRequest->url->scriptPath;
-		$profilePhoto = (isset($profilePhoto[5]) ? $profilePhoto : "no_profile.jpg");
-
-		return '<img src="'.$basePath.'/images/profile_photo/'.$profilePhoto.'" alt="" class="'.$class.'">';
+		return $s;
 	}
 
 }
