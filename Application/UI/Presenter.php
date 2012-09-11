@@ -9,10 +9,13 @@ use Schmutzka\Forms\Replicator,
 	Components\JsLoader,
 	DependentSelectBox\JsonDependentSelectBox,
 	Nette\Http\Url,
-	Schmutzka\Templates\TemplateFactory;
+	Schmutzka\Templates\TemplateFactory,
+	Nette\Security\Identity;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {
+	/** @persistent */
+	public $lang;
 	/** @var \Panels\User */
 	public $userPanel;
 
@@ -31,13 +34,11 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/** @var bool */
 	public $logged = FALSE;
 
-
 	/** @var bool */
 	protected $runStopwatch = FALSE;
 
 	/** @var string */
 	protected $onLogoutLink = ":Front:Homepage:default";
-
 
 	/** @var string */	
 	private $referer;
@@ -105,6 +106,22 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
+	/**
+	 * Automated login
+	 */
+	public function autologin($user)
+	{
+        if (!($user instanceof User)) {
+			$user = $this->context->database->user->where($user)->fetchRow();
+        }
+
+		unset($user["password"]);
+
+		$identity = new Identity($user["id"], (isset($user["role"]) ? $user["role"] : "user"), $user);
+		$this->user->login($identity);
+	}
+
+
 	/* ************************ handlers ************************ */
 
 
@@ -136,6 +153,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 	/* *********************** components ************************ */
 	
+
 
 	/**
 	 * Css component

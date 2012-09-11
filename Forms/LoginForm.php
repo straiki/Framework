@@ -5,6 +5,18 @@ namespace Schmutzka\Forms;
 class LoginForm extends Form
 {
 
+	/** @var string */
+	public $flashContent = "Byli jste úspěšně přihlášeni.";
+
+	/** @var string */
+	public $loginColumn = NULL;
+
+	/** @var array */
+	public $onLoginSuccess = array();
+
+	/** @var array */
+	public $onLoginError = array();
+
 	/** @var \Nette\Security\User */	
 	private $user;
 
@@ -15,16 +27,6 @@ class LoginForm extends Form
 	private $permalogin = FALSE;
 
 
-	/** @var string */
-	public $flashContent = "Byli jste úspěšně přihlášeni.";
-
-	/** @var array */
-	public $onLoginSuccess = array();
-
-	/** @var array */
-	public $onLoginError = array();
-
-
 	public function __construct(\Nette\Security\User $user, \Nette\Http\Session $session)
 	{
 		parent::__construct();
@@ -33,17 +35,26 @@ class LoginForm extends Form
 	}
 
 
-
-
-
 	public function build()
 	{
 		parent::build();
 
-		$this->addText("login","Přihlašovací jméno:",15)
-			->addRule(Form::FILLED,"Zadejte přihlašovací jméno");
+		if ($this->loginColumn == "login") {
+			$this->addText("login","Přihlašovací jméno:")
+				->addRule(Form::FILLED,"Zadejte přihlašovací jméno")
+				->addRule(~Form::EMAIL, "Login nemá správný formát");
 
-		$this->addPassword("password","Přihlašovací heslo:",15)
+		} elseif ($this->loginColumn == "email") {
+			$this->addText("login","Přihlašovací email:")
+				->addRule(Form::FILLED,"Zadejte přihlašovací email")
+				->addRule(Form::EMAIL, "Email nemá správný formát");
+
+		} else {
+			$this->addText("login","Přihlašovací jméno:")
+				->addRule(Form::FILLED,"Vyplňte přihlašovací údaje.");
+		}
+
+		$this->addPassword("password","Přihlašovací heslo:")
 			->addRule(Form::FILLED,"Zadejte heslo");
 
 		if ($this->permalogin) {
@@ -63,8 +74,8 @@ class LoginForm extends Form
 
 			if ($this->permalogin AND $values["permalogin"]) {
 				$this->user->setExpiration("+ 14 days", FALSE);
-			}
-			else {
+
+			} else {
 				$this->user->setExpiration("+ 6 hours", TRUE);
 			}
 
@@ -77,6 +88,7 @@ class LoginForm extends Form
 			$this->flashMessage($this->flashContent);
 			$this->presenter->restoreRequest($this->appSession->backlink);
 			$this->redirect("Homepage:default");
+
 		} catch (\Nette\Security\AuthenticationException $e) { // incorrect user/password
 
 			if ($this->onLoginError) {

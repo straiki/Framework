@@ -2,7 +2,8 @@
 
 namespace Schmutzka\Security;
 
-use Nette\Security\AuthenticationException;
+use Nette\Security\AuthenticationException,
+	Nette\Security\Identity;
 
 class User extends \Nette\Security\User implements \Nette\Security\IAuthenticator
 {
@@ -15,6 +16,24 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 	{
 		parent::__construct($storage, $context);
 		$this->userModel = $context->models->user;
+		if ($this->loggedIn && isset($context->params["logUserActivity"])) {
+			$this->logUserActivity($context->params["logUserActivity"]);
+		}
+	}
+
+
+	/**
+	 * Identity property shortcut 
+	 */
+	public function &__get($name)
+	{
+		if ($this->getIdentity() && $this->getIdentity()->{$name} && $name != "roles") {
+			$data = $this->getIdentity()->data;
+			return $data[$name];
+
+		}
+
+		return \Nette\ObjectMixin::get($this, $name);
 	}
 
 
@@ -53,6 +72,10 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
             throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
         }
 
+		if (!preg_match('/^[0-9a-f]{40}$/i', $password)) { // sha1 check
+			$password = sha1($password);
+		}
+
         if ($row["password"] !== sha1($password)) {
             throw new AuthenticationException("Chybné heslo.");
         }
@@ -70,6 +93,24 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 	{
 		$roles = $this->roles;
 		return array_pop($roles);
+	}
+
+
+	/**
+	 * Log user activity
+	 * @param array
+	 */
+	private function logUserActivity($configColumn)
+	{
+		$column = is_string($configColumn) ? $configColumn : "last_active"; 
+		$array[$column] = new \Nette\DateTime;
+
+		$lastActive =  $this->userModel->fetchSingle($column, $this->id); // 1 ms
+		$lastUpdate = time()-strtotime($lastActive); 
+
+		if ($lastUpdate > 180) { // log max once per 3 mins
+			$this->userModel->update($array, array("id" => $this->id)); // 60 ms!
+		}
 	}
 	
 }
