@@ -1,5 +1,7 @@
 <?php
 
+// http://j.maxmind.com/app/geoip.js - detection
+
 /**
  * All the joints saver
  * d - dump

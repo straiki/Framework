@@ -8,17 +8,13 @@ class DumpMail extends \Schmutzka\Application\UI\Control implements \Nette\Diagn
 	/** @var \SessionSection */
 	private $sessionData;
 
-	/** @var \Nette\DI\Context */
-	public $context;
-
 	/** @var array */
 	private $data = array();
 
 
-	public function __construct(\Nette\Http\Session $session, \Nette\DI\Container $context)
+	public function __construct(\Nette\Http\Session $session)
 	{
 		$this->sessionData = $session->getSection("dumpMail");
-		$this->context = $context;
 	}
 
 

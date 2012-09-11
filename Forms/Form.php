@@ -4,10 +4,33 @@ namespace Schmutzka\Forms;
 
 use Schmutzka\Forms\Controls,
 	Nette\Utils\Html,
-	DependentSelectBox\JsonDependentSelectBox;
+	DependentSelectBox\JsonDependentSelectBox,
+	Schmutzka\Forms\Render\BootstrapRenderer;
+
 
 class Form extends \Nette\Application\UI\Form
 {
+	/** validators */
+	const RC = "Schmutzka\Forms\Rules::validateRC",
+		IC = "Schmutzka\Forms\Rules::validateIC",
+		PHONE = "Schmutzka\Forms\Rules::validatePhone",
+		ZIP = "Schmutzka\Forms\Rules::validateZip",
+		DATE = "Schmutzka\Forms\Rules::validateDate",
+		TIME = "Schmutzka\Forms\Rules::validateTime";
+
+		
+	/** @var string */
+	public $id;
+
+	/** @var string */
+	public $target;
+
+	/** @var string */
+	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
+
+	/** @var \Translator */
+	protected $translator = NULL;
+
 	/** @var array */
 	private $typeClass = array(
 		"send" => "btn btn-primary",
@@ -24,19 +47,8 @@ class Form extends \Nette\Application\UI\Form
 	/** @var bool */
 	private $isBuilt = FALSE;
 
-
-	/** @var string */
-	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
-
-	/** @var string */
-	public $id = "";
-
-	/** @var string */
-	public $target = "";
-
-
-	/** @var \Translator */
-	protected $translator = NULL;
+	/** @var \Nette\Templating\FileTemplate */
+	private $template = NULL;
 
 
 	/**
@@ -56,6 +68,33 @@ class Form extends \Nette\Application\UI\Form
 
 		if ($this->target) {
 			$this->setTarget($this->target);
+		}
+
+		$this->setRenderer(new BootstrapRenderer);
+	}
+
+
+	/**
+	 * Custom form render for separate form
+	 * @seeks APP_DIR/Forms/MyFormName.latte
+	 */
+	public function render()
+	{
+		$className = strtr($this->getReflection()->name, array("\\" => "/"));
+		$file = APP_DIR . "/" . lcfirst($className) . ".latte";
+
+		if (file_exists($file)) {
+			$template = $this->createTemplate($file);
+
+			foreach ($this as $key => $value) {
+				if (is_array($value) || is_string($value) || is_int($value)) {
+					$template->{$key} = $value;
+				}
+			}
+			$template->render();
+
+		} else {
+			parent::render();	
 		}
 	}
 
@@ -78,7 +117,7 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * Set defaults accepts NULL or empty string
+	 * Set defaults accepts array, object or empty string
 	 * @param mixed
 	 */
 	public function setDefaults($defaults, $erase = FALSE)
@@ -86,6 +125,11 @@ class Form extends \Nette\Application\UI\Form
 		if (is_array($defaults)) {
 			parent::setDefaults($defaults, $erase);
 		}
+
+		if (is_object($defaults)) {
+			parent::setDefaults(get_object_vars($array), $erase);
+		}
+
 		return $this;
 	}
 
@@ -166,9 +210,11 @@ class Form extends \Nette\Application\UI\Form
 	{
 		$values = parent::getValues(TRUE);
 	
-		foreach ($this->httpData as $key => $value) {
-			if (empty($values[$key]) AND $value AND !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
-				$values[$key] = $value;
+		if ($this->getHttpData()) {
+			foreach ($this->getHttpData() as $key => $value) {
+				if (empty($values[$key]) && $value && !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
+					$values[$key] = $value;
+				}
 			}
 		}
 
@@ -177,7 +223,7 @@ class Form extends \Nette\Application\UI\Form
 		}
 
 		foreach ($values as $key => $value) { 
-			if (is_object($value) AND (get_class($value) == "Nette\DateTime" OR get_class($value) == "DateTime")) { // object to date
+			if (is_object($value) && (get_class($value) == "Nette\DateTime" || get_class($value) == "DateTime")) { // object to date
 				$values[$key] = $value->format("Y-m-d");
 			}
 		}
@@ -221,7 +267,10 @@ class Form extends \Nette\Application\UI\Form
 	public function addEmail($name, $label = NULL, $cols = NULL, $maxLength = NULL)
 	{
 		$item = $this->addText($name, $label, $cols, $maxLength);
-		$item->setAttribute('type', "email")->addCondition(self::FILLED)->addRule(self::EMAIL);
+		$item->setAttribute('type', "email")
+			->addCondition(self::FILLED)
+			->addRule(self::EMAIL);
+
 		return $item;
 	}
 
@@ -258,8 +307,8 @@ class Form extends \Nette\Application\UI\Form
 	{
 		$item = $this[$name] = new Controls\CheckboxList($label, $cols, NULL);
 
-		$sep = trim($sep, "<>");
-		$item->setSeparator(Html::el($sep));	
+		$sep = Html::el($sep);
+		$item->setSeparator($sep);	
 
 		return $item;
 	}
@@ -293,15 +342,6 @@ class Form extends \Nette\Application\UI\Form
 		return $this[$name] = new Controls\DatePicker($label, $cols, NULL);
 	}
 
-
-	/**
-	 * @return TimeControl
-	 * @2DO: add MyRules
-	 */
-	public function addTime($name, $label = NULL, $cols = NULL)
-	{
-		return $this[$name] = new Controls\TimeControl($label, $cols, NULL);
-	}
 
 
 	/**
@@ -372,9 +412,14 @@ class Form extends \Nette\Application\UI\Form
 
 	/**
 	 * Create template
+	 * @param string
 	 */
-	public function createTemplate()
+	public function createTemplate($file = NULL)
 	{
+		if ($file) {
+			return $this->getPresenter()->createTemplate()->setFile($file);
+		}
+
 		return $this->getPresenter()->createTemplate();
 	}
 

@@ -355,4 +355,13 @@ class Base extends \Nette\Object
 		$this->lang = $lang;
 	}
 
+	/********************* db tweak - init *********************/
+
+
+	public function tableExists() {}
+
+	public function createTable() {}
+
+	public function columnExists() {}
+
 }

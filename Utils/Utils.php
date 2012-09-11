@@ -3,6 +3,7 @@
 namespace Schmutzka;
 
 use Nette\Utils\MimeTypeDetector;
+
 class Utils extends \Nette\Object
 {
 

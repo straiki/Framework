@@ -204,7 +204,12 @@ class Arrays extends \Nette\Object
 		$result = array();
 		foreach ($array as $key => $value) {
 			if ($value OR $value === 0) {
-				$result[$key] = trim($value);
+				if (!is_array($value)) {
+					$result[$key] = trim($value);
+
+				} elseif (count($value)) {
+					$result[$key] = $value;						
+				}
 			}
 		}
 
@@ -243,7 +248,6 @@ class Arrays extends \Nette\Object
 	 */
 	private static function helperSubkeySort($args)
 	{
-		//get args of the function 
 		$c = count($args); 
 		if ($c < 2) { 
 			return false; 
@@ -258,7 +262,7 @@ class Arrays extends \Nette\Object
 			$i = 0; 
 			$c = count($args); 
 			$cmp = 0; 
-			while($cmp == 0 && $i < $c) { 
+			while ($cmp == 0 && $i < $c) { 
 				$cmp = strcmp($a[$args[$i]], $b[$args[$i]]); 
 				$i++; 
 			} 
@@ -270,38 +274,39 @@ class Arrays extends \Nette\Object
 
 
 	/**	
-	 * Vrátí záznam, kde klíč bude dané hodnoty
-	 * @array pole	 
-	 * @string zkoumané pole
-	 * @string hodnota pole
-	 * @return mixed nalezená hodnota / NULL
+	 * Find row with specific key value
+	 * @param array
+	 * @param string
+	 * @param string
+	 * @return mixed 
 	 */
 	public static function findByKeyValue(array $array, $key, $find, $returnArrayStrict = FALSE)
 	{
 		$return = array();
 
-		foreach($array as $value) {
+		foreach ($array as $value) {
 			$compare = $value[$key];
 
-			/* array s 1 hodnotou */
-			if(is_array($compare)) {
-				while(is_array($compare)) {
+			if (is_array($compare)) {
+				while (is_array($compare)) {
+
 					$compare = array_shift($compare); 
 				}
 			}
 
-			if($compare == $find) {
+			if ($compare == $find) {
 				$return[] = $value;
 			}
 		}
 
-		if($returnArrayStrict OR count($return) > 1) { // více výsledků -> pole
+		if ($returnArrayStrict OR count($return) > 1) { // mor results -> array
 			return $return;
-		}
-		elseif(count($return) == 1) {
+
+		} elseif (count($return) == 1) {
 			return $return[0];
 		}
-		return NULL; // žádný výsledek
+
+		return NULL;
 	}
 
 

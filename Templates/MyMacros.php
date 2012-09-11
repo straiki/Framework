@@ -78,7 +78,13 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	 */
 	public function macroSrc(MacroNode $node, PhpWriter $writer)
 	{
-		return $writer->write('echo \' src="\' . %escape($basePath) . "/images/" . %escape(%node.word) . \'"\'');
+		$replace = array(
+			"{" => "\" . ",
+			"}" => " . \"",
+		);
+		$node = strtr($node->args, $replace);
+		
+		return $writer->write('echo \' src="\' . %escape($basePath) . "/images/" . "'.$node.'" . \'"\'');
 	}
 
 
@@ -115,9 +121,9 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		
 		$node = Html::el("script")->setText("
 			var _gaq = _gaq || [];
-			_gaq.push(['_setAccount', '" . $code . "']);" .
-			($subdomains ? "_gaq.push(['_setDomainName', '".$subdomains."']);" : NULL) . 
-			"_gaq.push(['_trackPageview']);
+			_gaq.push(['_setAccount', '" . $code . "']);\n" .
+			($subdomains ?  "_gaq.push(['_setDomainName', '".$subdomains."']);\n" : NULL) . 
+			"_gaq.push(['_trackPageview']);\n
 
 			(function() {
 				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -149,10 +155,10 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	public function macroMenuItem(MacroNode $node, PhpWriter $writer)
 	{
 		$args = explode(",", $node->args);
-		if(count($args) == 2) {
+		if (count($args) == 2) {
 			list($href, $name) = $args;
-		}
-		elseif(count($args) == 3) { // include specific view
+
+		} elseif (count($args) == 3) { // include specific view
 			list($href, $name, $specificView) = $args;
 		}
 
@@ -161,17 +167,17 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 
 		$presenter = explode(":",$href);
 
-		if(count($presenter) >= 3) { // module included
+		if (count($presenter) >= 3) { // module included
 			$presenterCurrent = ":".$presenter[1].":".$presenter[2];
-		}	
-		else {
+
+		} else {
 			$presenterCurrent = array_shift($presenter);
 		}
 
-		if(isset($specificView)) {
+		if (isset($specificView)) {
 			$presenterCurrent .= ":".array_pop($presenter);
-		}
-		else {
+
+		} else {
 			$presenterCurrent .= ":*";	
 		}
 		

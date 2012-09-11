@@ -10,7 +10,7 @@ class MyHelpers extends \Nette\Object
 	private $context;
 
 
-	public function __construct(\SystemContainer $context)
+	public function __construct($context)
 	{
 		$this->context = $context;
 	}
@@ -21,42 +21,6 @@ class MyHelpers extends \Nette\Object
 		if (method_exists($this, $helper)) {
 			return callback($this, $helper);
 		}
-	}
-
-
-	/** 
-	 * Joins two datetimes as term (from - to)
-	 * @param string/DibiDateTime
-	 * @param string/DibiDateTime
-	 */
-	public static function term($from, $to)
-	{
-		$from = new \Nette\DateTime($from);
-		$to = new \Nette\DateTime($to);
-
-		if ($from->format('Y-m-d H:i') == $to->format('Y-m-d H:i')) {
-			return $from;
-		}
-		
-		$dayFrom = $from->format('j. n. Y');
-		$dayTo = $to->format('j. n. Y');
-		$timeFrom = $from->format('H:i');
-		$timeTo = $to->format('H:i');
-
-		if ($from->format('Y') == $to->format('Y')) { // same year
-
-			if ($dayFrom == $dayTo) { // same day
-				$term = $dayFrom . ' ' . $timeFrom . ' - ' . $timeTo;
-				
-			} else { // different day
-				$term = $from->format('j. n.') . '-' . $to->format('j. n. Y') . ' ' . $timeFrom . '-' . $timeTo;
-			}
-				
-		} else { // different year
-			$term = $dayFrom . '  ' . $timeFrom . '-' . $dayTo . ' ' . $timeTo;
-		}
-
-		return $term;
 	}
 
 
@@ -79,7 +43,6 @@ class MyHelpers extends \Nette\Object
 	public static function minsToTime($mins, $type = 1)
 	{
 		return Time::im($mins, $type);
-
 	}
 
 
@@ -101,61 +64,6 @@ class MyHelpers extends \Nette\Object
 	public static function fupper($string)
 	{
 		return ucfirst($string);
-	}
-
-
-	/**
-	 * Localized day
-	 * @param mixed
-	 * @param string
-	 * @param string
-	 * @return string
-	 */
-	public static function dayName($date, $lang = "cs", $type = "short")
-	{
-		$day = (is_int($date) ? $date : date("N", strtotime($date)));
-
-		if ($type == "short") {
-			if ($lang == "en") {
-				if ($type == "short") {
-					return date("D", strtotime($date));
-
-				} else {
-					return date("l", strtotime($date));
-				}
-			}
-		}
-
-		static $dayNames = array(
-			"cs" => array(
-				"short" => array(1 => "po", "út", "st", "čt", "pá", "so", "ne"),
-				"long" => array(1 => "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle")
-			)
-		);
-
-		return $dayNames[$lang][$type][$day];
-	}
-
-
-	/**
-	 * Localized month
-	 * @param mixed
-	 * @param string
-	 * @return string
-	 */
-	public static function monthLoc($date, $lang)
-	{
-		$month = (is_int($date) ? $date : date("n", strtotime($date)));
-	
-		if ($lang == "en") {
-			return date("F", strtotime($month));
-		}
-
-		static $monthNames = array(
-			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
-		);
-
-		return $monthNames[$lang][$month];
 	}
 
 
@@ -409,15 +317,141 @@ class MyHelpers extends \Nette\Object
 			return $return;
 		}
 	}
+ 
+
+	/********************** date structures & localization **********************/
 
 
 	/**
-	 * If empty value, returns zero
-	 * @param mixed $value
+	 * Localized day
+	 * @param mixed
+	 * @param string
+	 * @param string
+	 * @return string
 	 */
-	public static function zero($value, $zero = "0")
+	public static function dayName($date, $lang = "cs", $type = "short")
 	{
-		return (empty($value) ? $zero : $value);
+		$day = (is_int($date) ? $date : date("N", strtotime($date)));
+
+		if ($type == "short") {
+			if ($lang == "en") {
+				if ($type == "short") {
+					return date("D", strtotime($date));
+
+				} else {
+					return date("l", strtotime($date));
+				}
+			}
+		}
+
+		static $dayNames = array(
+			"cs" => array(
+				"short" => array(1 => "po", "út", "st", "čt", "pá", "so", "ne"),
+				"long" => array(1 => "pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle")
+			)
+		);
+
+		return $dayNames[$lang][$type][$day];
+	}
+
+
+	/**
+	 * Localized month
+	 * @param mixed
+	 * @param string
+	 * @return string
+	 */
+	public static function monthLoc($date, $lang)
+	{
+		$month = (is_int($date) ? $date : date("n", strtotime($date)));
+	
+		if ($lang == "en") {
+			return date("F", strtotime($month));
+		}
+
+		static $monthNames = array(
+			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
+		);
+
+		return $monthNames[$lang][$month];
+	}
+
+
+	/**
+	 * Date default values
+	 * @param string
+	 * @param string
+	 */
+	public static function dateCs($date, $format = "j. n. Y H:i")
+	{
+		return Helpers::date($date, $format);
+	}
+
+
+	/**
+	 * Date default values
+	 * @param string
+	 * @param string
+	 */
+	public static function dateEn($date, $format = "Y-m-d H:i")
+	{
+		return Helpers::date($date, $format);
+	}
+
+
+	/**
+	 * Returns month name
+	 * @param int $month
+	 */
+	public static function month($month, $monthList = array("leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"))
+	{
+		return $monthList[$month - 1];
+	}
+
+
+	/**
+	 * Returns Czech weekday
+	 * @param int $weekday
+	 */
+	public static function weekday($weekday, $weekdayList = array("pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle"))
+	{
+		return $week[$weekday - 1];
+	}
+
+
+	/** 
+	 * Joins two datetimes as term (from - to)
+	 * @param string/DibiDateTime
+	 * @param string/DibiDateTime
+	 */
+	public static function term($from, $to)
+	{
+		$from = new \Nette\DateTime($from);
+		$to = new \Nette\DateTime($to);
+
+		if ($from->format('Y-m-d H:i') == $to->format('Y-m-d H:i')) {
+			return $from;
+		}
+		
+		$dayFrom = $from->format('j. n. Y');
+		$dayTo = $to->format('j. n. Y');
+		$timeFrom = $from->format('H:i');
+		$timeTo = $to->format('H:i');
+
+		if ($from->format('Y') == $to->format('Y')) { // same year
+
+			if ($dayFrom == $dayTo) { // same day
+				$term = $dayFrom . ' ' . $timeFrom . ' - ' . $timeTo;
+				
+			} else { // different day
+				$term = $from->format('j. n.') . '-' . $to->format('j. n. Y') . ' ' . $timeFrom . '-' . $timeTo;
+			}
+				
+		} else { // different year
+			$term = $dayFrom . '  ' . $timeFrom . '-' . $dayTo . ' ' . $timeTo;
+		}
+
+		return $term;
 	}
 
 

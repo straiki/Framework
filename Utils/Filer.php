@@ -2,10 +2,34 @@
 
 namespace Schmutzka\Utils;
 
-use Schmutzka\Utils\Name;
+use Schmutzka\Utils\Name,
+	Nette\Mail\MimePart,
+	Nette\Utils\MimeTypeDetector,
+	Nette\Utils\Strings;
 
 class Filer extends \Nette\Utils\Neon
 {
+
+	/**
+	 * Let download file under different name
+	 * @param string
+	 * @param string
+	 */
+	public static function downloadAs($file, $name)
+	{
+		if (is_file($file)) {
+			$content = file_get_contents($file);
+
+		} else {
+			$content = $file;
+		}
+
+		header('Content-type: ' . MimeTypeDetector::fromString($content));
+		header('Content-Disposition: attachment; filename="'. $name .'"');
+		readfile($file);
+		die;
+	}
+
 
 	/**
 	 * Check file
@@ -20,7 +44,8 @@ class Filer extends \Nette\Utils\Neon
 
 		$suffix = Name::suffix($file->name);
 
-		if ($file->isOk() AND in_array($suffix, $allowed)) {
+		if ($file->isOk() && in_array($suffix, $allowed)) {
+			// recheck: Nette\Utils\MimeTypeDetector::fromString
 			return $suffix;
 		}
 
