@@ -7,7 +7,6 @@ use Schmutzka\Forms\Controls,
 	DependentSelectBox\JsonDependentSelectBox,
 	Schmutzka\Forms\Render\BootstrapRenderer;
 
-
 class Form extends \Nette\Application\UI\Form
 {
 	/** validators */
@@ -377,6 +376,18 @@ class Form extends \Nette\Application\UI\Form
 	public function addGmap($name, $label, $options = NULL)
 	{
 		return $this[$name] = new \GMapFormControl($label, $options);
+	}
+
+
+	/** 
+	 * Adds suggest 
+	 * @param string
+	 * @param string
+	 * @param array
+	 */
+	public function addSuggest($name, $label = NULL, $suggestList)
+	{
+		return $this[$name] = new Controls\SuggestControl($label, $suggestList);
 	}
 
 
