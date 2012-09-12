@@ -94,7 +94,7 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	public function macroConfirm(MacroNode $node, PhpWriter $writer)
 	{
 		$node = $node->args;
-		return $writer->write(' echo "onclick=\"return confirm(\'" . %escape($template->translate("' . $node . '")) . "\')\""');
+		return $writer->write(' echo " onclick=\"return confirm(\'" . %escape($template->translate("' . $node . '")) . "\')\""');
 	}
 
 
@@ -104,7 +104,7 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	public function macroTooltip(MacroNode $node, PhpWriter $writer)
 	{
 		$node = $node->args;
-		return $writer->write('echo "rel=\'tooltip\' title=\'" . %escape($template->translate("' . $node . '")) . " \'"');
+		return $writer->write('echo " rel=\'tooltip\' title=\'" . %escape($template->translate("' . $node . '")) . " \'"');
 	}
 
 

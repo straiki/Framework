@@ -76,7 +76,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 			$password = sha1($password);
 		}
 
-        if ($row["password"] !== sha1($password)) {
+        if ($row["password"] !== $password) {
             throw new AuthenticationException("Chybné heslo.");
         }
 
