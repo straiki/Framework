@@ -7,8 +7,14 @@ use Schmutzka\Utils\Neon;
 class CssLoader extends \WebLoader\Nette\CssLoader
 {
 
-	public function __construct($basePath, $configPart = "css" )
+	/**
+	 * @param string
+	 * @param \Nette\Application\Application
+	 */
+	public function __construct(\Nette\Application\Application $application, $configPart = "css")
 	{
+		$basePath = $application->presenter->template->basePath;
+
 		$filesArray = Neon::loadConfigPart("header.neon", $configPart);
 
 		$files = new \WebLoader\FileCollection(WWW_DIR . "/css");

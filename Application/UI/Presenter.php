@@ -65,7 +65,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 		
 		if ($this->params["debugMode"]) {
-			Message::$defaultMailer = new \Schmutzka\Diagnostics\DumpMail($this->getContext()->session); // service conflict with @nette.mail
+			Message::$defaultMailer = new \Schmutzka\Diagnostics\Panels\DumpMail($this->getContext()->session); // service conflict with @nette.mail
 		}
 
 		$this->userPanel = UserPanel::register($this->user, $this->session, $this->context);
@@ -153,6 +153,15 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 	/* *********************** components ************************ */
 	
+
+	/**
+	 * Title component
+	 * @return \Components\TitleControl
+	 */
+	protected function createComponentTitle()
+	{
+		return $this->context->createTitleControl();
+	}
 
 
 	/**

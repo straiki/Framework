@@ -22,7 +22,7 @@ class ChangePasswordForm extends Form
 	/**
 	 * Build the form
 	 */
-	public function __construct(\SystemContainer $context)
+	public function __construct(\Nette\DI\Container $context)
 	{
 		parent::__construct();
 

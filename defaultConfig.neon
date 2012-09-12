@@ -57,11 +57,15 @@ common:
 
 	factories:
 
+		cssControl: Components\CssLoader
+
 		customEmail: Components\CustomEmailControl
 
 		changePasswordForm: Schmutzka\Forms\ChangePasswordForm
 
 		feedbackForm: Schmutzka\Forms\FeedbackForm
+
+		jsControl: Components\JsLoader
 
 		loginForm: Schmutzka\Forms\LoginForm
 
@@ -70,6 +74,8 @@ common:
 		registrationForm: Schmutzka\Forms\RegistrationForm
 
 		remindPassword: Components\RemindPasswordControl
+
+		titleControl: Components\TitleControl
 
 		userForm: Schmutzka\Forms\UserForm
 

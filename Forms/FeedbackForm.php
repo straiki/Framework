@@ -6,10 +6,6 @@ use Nette\Mail\Message;
 
 class FeedbackForm extends Form
 {
-	/** @var \User */
-	private $user;
-
-
 	/** @var string */
 	public $to;
 
@@ -22,8 +18,14 @@ class FeedbackForm extends Form
 	/** @var string */
 	public $flashContent = "Váš feedback byl odeslán. Děkujeme.";
 
+	/** @var \Nette\Security\User*/
+	private $user;
 
-	public function __construct($user)
+
+	/**
+	 * @param \Nette\Security\User
+	 */
+	public function __construct(\Nette\Security\User $user)
 	{
 		parent::__construct();
 		$this->user = $user;

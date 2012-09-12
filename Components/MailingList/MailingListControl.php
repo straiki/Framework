@@ -9,11 +9,6 @@ use Schmutzka\Application\UI\Control,
 
 class MailingListControl extends Control
 {
-
-	/** @var \Context */
-	private $container;
-
-
 	/** @var string */
 	public $emailFrom = "no-reply@domain.com";
 
@@ -23,8 +18,14 @@ class MailingListControl extends Control
 	/** @var string */
 	public $malingListTemplate = "email.latte";
 
+	/** @var \Nette\DI\Container */
+	private $container;
 
-	public function __construct($container)
+
+	/**
+	 * @param \Nette\DI\Container
+	 */
+	public function __construct(\Nette\DI\Container $container)
     {
         parent::__construct();
 		$this->container = $container;

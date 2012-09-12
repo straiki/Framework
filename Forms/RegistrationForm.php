@@ -6,13 +6,11 @@ use Nette\Mail\Message;
 
 class RegistrationForm extends Form
 {
-
-	/** @var context */
+	/** @var \Nette\DI\Container */
 	private $context;
 
 	/** @var dir */
 	private $appDir;
-
 
 	/** @var string */
 	public $company = "OurCompany";
@@ -36,7 +34,10 @@ class RegistrationForm extends Form
 	public $passwordMinLenth = 6;
 
 
-	public function __construct(\SystemContainer $context)
+	/**
+	 * @param \Nette\DI\Container
+	 */
+	public function __construct(\Nette\DI\Container $context)
 	{
 		parent::__construct();
 		$this->context = $context;

@@ -8,10 +8,6 @@ use Schmutzka\Forms\Form,
 
 class UserForm extends  Form
 {
-	/** @var \Models\User */
-	private $userModel;
-
-
 	/** @var array */
 	public $roleList = array(
 		"admin" => "Správce",
@@ -30,8 +26,14 @@ class UserForm extends  Form
 	/** @var array */
 	public $regexp = array();
 
+	/** @var \Models\User */
+	private $userModel;
 
-	public function __construct($context)
+
+	/**
+	 * @param \Nette\DI\Container
+	 */
+	public function __construct(\Nette\DI\Container $context)
 	{
 		parent::__construct();
 		$this->userModel = $context->models->user;
