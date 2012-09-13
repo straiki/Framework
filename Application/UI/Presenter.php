@@ -16,6 +16,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 {
 	/** @persistent */
 	public $lang;
+
 	/** @var \Panels\User */
 	public $userPanel;
 
@@ -132,7 +133,19 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	{
 		$this->user->logout();
 		$this->flashMessage("Byli jste odhlášeni.", "flash-info");
-		$this->redirect($this->onLogoutLink);
+
+		if ($this->onLogoutLink) {
+			$this->redirect($this->onLogoutLink);
+		}
+
+		$moduleLink = $this->link("Front:Homepage:default");
+
+		if (strpos($moduleLink, "Cannot load presenter") !== FALSE) {
+			$this->redirect("Homepage:default");	
+
+		} else {
+			$this->redirect("Front:Homepage:default");	
+		}
 	} 
 
 
@@ -170,7 +183,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentCss()
 	{
-		return new CssLoader($this->template->basePath);
+		return $this->context->createCssControl();
 	}
 
 
@@ -180,7 +193,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	 */
 	protected function createComponentJs()
 	{
-		return new JsLoader($this->template->basePath);
+		return $this->context->createJsControl();
 	}
 
 
