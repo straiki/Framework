@@ -44,4 +44,20 @@ class Url extends \Nette\Object
 		}
 	}
 
+
+	/**
+	 * Linkify text
+	 * @param string
+	 * @param bool
+	 */
+	public static function linkifyText($string, $linkName = NULL)
+	{
+		if ($linkName) {
+			return preg_replace("#((http|https|ft​p)://(\S*?\.\S*?))(\s|\;|\)|​\]|\[|\{|\}|,|\"|'|:[0-9]{1,5}|\<|$|\.\s)#ie", "'<a href=\"$1$4\" target=\"_blank\">". $linkName . "</a>'", $string);
+
+		} else {
+			return preg_replace("#((http|https|ft​p)://(\S*?\.\S*?))(\s|\;|\)|​\]|\[|\{|\}|,|\"|'|:[0-9]{1,5}|\<|$|\.\s)#ie", "'<a href=\"$1$4\" target=\"_blank\">$1$4</a>'", $string);
+		}
+	}
+
 }

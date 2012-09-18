@@ -126,7 +126,7 @@ class Form extends \Nette\Application\UI\Form
 		}
 
 		if (is_object($defaults)) {
-			parent::setDefaults(get_object_vars($array), $erase);
+			parent::setDefaults(get_object_vars($defaults), $erase);
 		}
 
 		return $this;
