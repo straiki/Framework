@@ -4,13 +4,16 @@ namespace Schmutzka\Application\UI;
 
 use Schmutzka\Forms\Replicator,
 	Schmutzka\Diagnostics\Panels\UserPanel,
+	Schmutzka\Templates\TemplateFactory,
+	Schmutzka\Utils\Filer,
 	Nette\Mail\Message,
+	Nette\Http\Url,
+	Nette\Security\Identity,
+	Nette\Utils\Strings,
+	Nette\Utils\Finder,
 	Components\CssLoader,
 	Components\JsLoader,
-	DependentSelectBox\JsonDependentSelectBox,
-	Nette\Http\Url,
-	Schmutzka\Templates\TemplateFactory,
-	Nette\Security\Identity;
+	DependentSelectBox\JsonDependentSelectBox;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {
@@ -41,6 +44,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/** @var string */
 	protected $onLogoutLink = ":Front:Homepage:default";
 
+	/** @var  Schmutzka\Services\ParamService */
+	protected $paramService;
+
 	/** @var string */	
 	private $referer;
 
@@ -51,6 +57,15 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		JsonDependentSelectBox::tryJsonResponse($this->presenter);
 	}
 
+
+	/**
+	 * Inject services
+	 * @param Schmutzka\Services\ParamService
+	 */
+	public function injectServices(Schmutzka\Services\ParamService $paramService) 
+	{ 
+		$this->paramService = $paramService;
+	}
 
 	public function startup()
 	{
@@ -77,6 +92,10 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		if ($this->user->loggedIn) {	
 			$this->logged = TRUE;
 			$this->role = $this->user->getRole();
+
+			if (isset($this->params["logUserActivity"])) {
+				$this->user->logUserActivity($this->params["logUserActivity"]);
+			}
 
 		} elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
 			if (!is_array($this->signal) OR !in_array("logout", $this->signal)) { // do not save logout signal either (results in logout after login)
@@ -109,6 +128,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 	/**
 	 * Automated login
+	 * @param string
 	 */
 	public function autologin($user)
 	{
@@ -138,9 +158,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 			$this->redirect($this->onLogoutLink);
 		}
 
-		$moduleLink = $this->link("Front:Homepage:default");
-
-		if (strpos($moduleLink, "Cannot load presenter") !== FALSE) {
+		if (Strings::startsWith($this->link("Front:Homepage:default"), "error")) {
 			$this->redirect("Homepage:default");	
 
 		} else {
@@ -163,6 +181,71 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		return $template;
 	}
 
+
+	/**
+	 * Find template files
+	 */
+	public function formatTemplateFiles()
+	{
+		$templateFiles = parent::formatTemplateFiles();
+
+		if ($this->useMobileTemplates && MobileDetection::isMobile()) {
+			$templateFiles = array_map(function($path) {
+					return str_replace("/templates", "/templatesMobile", $path);
+			}, $templateFiles);
+		}
+
+		return $templateFiles;
+	}
+
+
+	/**	
+	 * Find template layout
+	 */
+	public function formatLayoutTemplateFiles()
+	{
+		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
+		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
+
+		if ($this->useMobileTemplates && MobileDetection::isMobile()) {
+			$layoutTemplateFiles = array_map(function($path) {
+					return str_replace("/templates", "/templatesMobile", $path);
+			}, $layoutTemplateFiles);
+		}
+
+		return $layoutTemplateFiles;
+	}
+
+
+	/**
+	 * Takes array values from presenter
+	 * @param $this
+	 * @return array
+	 */
+	protected function getPresenterArrays($presenter)
+	{
+		$array = array();
+		foreach ($presenter as $key => $value) {
+			if (is_array($value)) {
+				$array[$key] = $value;
+			}
+		}
+		return $array;
+	}
+
+
+	/**
+	 * Adds every list to the template
+	 * @param array
+	 */
+	public function listsToTemplate($array)
+	{
+		foreach ($array as $key => $value) {
+			$this->template->{$key} = $value;
+		}	
+
+
+	}
 
 	/* *********************** components ************************ */
 	
@@ -238,72 +321,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		}
 	
 		return $text;
-	}
-
-
-	/**
-	 * Add variable into the template
-	 * @param mixed
-	 */
-	public function tpl($var)
-	{
-		$clear = array("this->" => "");
-
-		$trace = debug_backtrace();
-		$i = !isset($trace[1]['class']) && isset($trace[1]['function']) && $trace[1]['function'] === 'dump' ? 1 : 0;
-		if (isset($trace[$i]['file'], $trace[$i]['line']) && is_file($trace[$i]['file'])) {
-			$lines = file($trace[$i]['file']);
-			preg_match('#\(\$(.*)\)#', $lines[$trace[$i]['line'] - 1], $m);
-		
-			if (isset($m[1])) {
-				$varName = strtr($m[1], $clear);
-				$this->template->$varName = $var;
-			}
-		}
-	}
-
-
-	/**
-	 * Takes array values from presenter
-	 * @param $this
-	 * @return array
-	 */
-	protected function getPresenterArrays($presenter)
-	{
-		$array = array();
-		foreach ($presenter as $key => $value) {
-			if (is_array($value)) {
-				$array[$key] = $value;
-			}
-		}
-		return $array;
-	}
-
-
-	/**
-	 * Adds every list to the template
-	 * @param array
-	 */
-	public function listsToTemplate($array)
-	{
-		foreach ($array as $key => $value) {
-			$this->template->{$key} = $value;
-		}	
-	}
-
-
-	/* ********************* modularity ********************* */
-
-
-	/**	
-	 * Add layout address for module
-	 */
-	public function formatLayoutTemplateFiles()
-	{
-		$list = parent::formatLayoutTemplateFiles();
-		$list[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
-
-		return $list;
 	}
 
 
