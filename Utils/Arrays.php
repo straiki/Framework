@@ -25,7 +25,7 @@ class Arrays extends \Nette\Object
 	{
 		if (self::hasMoreLevels($array)) {
 			foreach ($array as $value) {
-				foreach($value as $key => $value2) {
+				foreach ($value as $key => $value2) {
 					if (!in_array($key, $requiredKeys)) {
 						return FALSE;
 					}
@@ -60,54 +60,6 @@ class Arrays extends \Nette\Object
 		return $array;
 	}
 
-
-	/**
-	 * Switch rows into colums order { 1 2 / 3 4 / 5 } => {1 3 / 2 4 / 5 }
-	 * @param array
-	 * @param int
-	 */
-	public static function rowsToColumns($array, $int = 2)	
-	{
-		$p = ceil(count($array)/2);
-		$m = $p - 1;
-		$k = 1;
-
-		sort($array);
-
-		$return = array();
-		for($i = 0; $i < count($array); $i++) {
-			if ($i == 0) {
-				$return[0] = $array[0];
-			}
-			elseif ($i%$int == 1) {
-				$k = $k + $p;
-				$return[$k] = $array[$i];
-			}
-			else {
-				$k = $k - $m;
-				$return[$k] = $array[$i];
-			}
-		}
- 
-		return $return;
-	}
-
-
-	/**
-	 * Switch rows and cols in two-dimensional array
-	 * @param array
-	 */
-	public static function tr2td($array)
-	{
-		$return = array();
-		foreach ($array as $tr => $td) {
-			foreach ($td as $key => $value) {
-				$return[$key][$tr] = $value;
-			}
-		}
-
-		return $return;
-	}
 
 
 	/**
@@ -156,13 +108,13 @@ class Arrays extends \Nette\Object
 	public static function retype($array, $type = "int", $format = NULL, $keepNull = TRUE)	
 	{
 		foreach ($array as $key => $value) {
-			if($type == "int") {		
-				$array[$key] = (($keepNull AND is_null($value)) ? NULL : (int) $value);
-			}
-			elseif($type == "float") {
-				$array[$key] = (($keepNull AND is_null($value)) ? NULL : (float) $value);
-			}
-			elseif($type == "date") {
+			if ($type == "int") {		
+				$array[$key] = (($keepNull && is_null($value)) ? NULL : (int) $value);
+
+			} elseif ($type == "float") {
+				$array[$key] = (($keepNull && is_null($value)) ? NULL : (float) $value);
+
+			} elseif ($type == "date") {
 				$array[$key] = date($format, strtotime($value));
 			}
 		}
@@ -172,7 +124,7 @@ class Arrays extends \Nette\Object
 
 
 	/**
-	 * Gets 1 column into array 	
+	 * Get 1 column into array 	
 	 * @param array
 	 * @param string
  	 * @return array
@@ -180,12 +132,12 @@ class Arrays extends \Nette\Object
 	public static function extractColumn($array, $column)
 	{
 		$result = array();
-		foreach($array as $key => $value) {
+		foreach ($array as $key => $value) {
 			if (!is_array($value)) {
 				$value = iterator_to_array($value);
 			}
 
-			if (isset($value[$column]) OR $value[$column] === NULL) {
+			if (isset($value[$column]) || $value[$column] === NULL) {
 				$result[] = $value[$column];
 			}
 		}
@@ -203,7 +155,7 @@ class Arrays extends \Nette\Object
 	{
 		$result = array();
 		foreach ($array as $key => $value) {
-			if ($value OR $value === 0) {
+			if ($value || $value === 0) {
 				if (!is_array($value)) {
 					$result[$key] = trim($value);
 
@@ -218,58 +170,34 @@ class Arrays extends \Nette\Object
 
 
 	/**	
-	 * Order array by subkey, subkey 2 optional 
-	 * @param mixed
-	 * @return array
+	 * Order array by subkey
+	 * @param array
+	 * @param string
 	 */
-	public static function sortBySubKey()
+	public static function sortBySubKey(&$array, $subkey)
 	{
-		$args = func_get_args(); 
-		return self::helperSubkeySort($args);
+		$keys = array();
+		foreach ($array as $subarray) {
+			$keys[] = $subarray[$subkey];
+		}
+
+		array_multisort($keys, SORT_ASC, $array);
 	}
 
 
 	/**	
-	 * Order array by subkey, subkey 2 optional 
+	 * Order array by subkey
 	 * @param mixed
 	 * @return array
 	 */
-	public static function sortBySubKeyReverse($array, $subkey)
+	public static function sortBySubKeyReverse(&$array, $subkey)
 	{
-		$args = func_get_args(); 
-		$array = self::helperSubkeySort($args);
-		return array_reverse($array);
-	}
+		$keys = array();
+		foreach ($array as $subarray) {
+			$keys[] = $subarray[$subkey];
+		}
 
-
-	/**
-	 * @param array
-	 * @return array
-	 */
-	private static function helperSubkeySort($args)
-	{
-		$c = count($args); 
-		if ($c < 2) { 
-			return false; 
-		} 
-
-		//get the array to sort 
-		$array = array_splice($args, 0, 1); 
-		$array = $array[0]; 
-
-		//sort with an anoymous function using args 
-		usort($array, function($a, $b) use($args) { 
-			$i = 0; 
-			$c = count($args); 
-			$cmp = 0; 
-			while ($cmp == 0 && $i < $c) { 
-				$cmp = strcmp($a[$args[$i]], $b[$args[$i]]); 
-				$i++; 
-			} 
-			return $cmp;
-		});
-
-		return $array;
+		array_multisort($keys, SORT_DESC, $array);
 	}
 
 
@@ -289,7 +217,6 @@ class Arrays extends \Nette\Object
 
 			if (is_array($compare)) {
 				while (is_array($compare)) {
-
 					$compare = array_shift($compare); 
 				}
 			}
@@ -299,7 +226,7 @@ class Arrays extends \Nette\Object
 			}
 		}
 
-		if ($returnArrayStrict OR count($return) > 1) { // mor results -> array
+		if ($returnArrayStrict || count($return) > 1) { // more results -> array
 			return $return;
 
 		} elseif (count($return) == 1) {
@@ -307,18 +234,6 @@ class Arrays extends \Nette\Object
 		}
 
 		return NULL;
-	}
-
-
-	/**
-	 * Mirror of Nette\Utils\Arrays
-	 * @param string $name
-	 * @param array $args
-	 * @return mixed
-	 */
-	public static function __callStatic($name, $args)
-	{
-		return callback("\Nette\Utils\Arrays", $name)->invokeArgs($args);
 	}
 
 }
