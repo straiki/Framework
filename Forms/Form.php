@@ -236,6 +236,16 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
+	 * Get submit control name
+	 * @return string
+	 */
+	public function getSubmitName()
+	{
+		return $this->isSubmitted()->name;
+	}
+
+
+	/**
 	 * Set id for the form
 	 * @param string
 	 */
