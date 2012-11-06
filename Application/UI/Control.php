@@ -15,7 +15,7 @@ class Control extends \Nette\Application\UI\Control
 
 		$this->context->template->configure($template);
 
-		if ($autosetFile && !$template->getFile()) {
+		if ($autosetFile && !$template->getFile() && file_exists($this->getTemplateFilePath())) {
 			$template->setFile($this->getTemplateFilePath());
 		}
 

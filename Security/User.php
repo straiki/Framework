@@ -7,15 +7,15 @@ use Nette\Security\AuthenticationException,
 
 class User extends \Nette\Security\User implements \Nette\Security\IAuthenticator
 {
-
-	/** @var \NotORM_Result */
+	/** @var NotORM_Result */
 	private $userModel;
 
-	
+
 	public function __construct(\Nette\Security\IUserStorage $storage, \Nette\DI\Container $context)
 	{
 		parent::__construct($storage, $context);
 		$this->userModel = $context->models->user;
+
 		if ($this->loggedIn && isset($context->params["logUserActivity"])) {
 			$this->logUserActivity($context->params["logUserActivity"]);
 		}
@@ -68,7 +68,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
             throw new AuthenticationException("Uživatel '$login' neexistuje.");
         }
 
-        if (isset($row["auth"]) AND $row["auth"] != 1) {
+        if (isset($row["auth"]) && $row["auth"] != 1) {
             throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
         }
 
@@ -87,7 +87,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 
 
 	/**
-	 * Get user role
+	 * Get user's role
 	 */
 	public function getRole()
 	{
@@ -107,9 +107,8 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 
 		$lastActive =  $this->userModel->fetchSingle($column, $this->id); // 1 ms
 		$lastUpdate = time()-strtotime($lastActive); 
-
-		if ($lastUpdate > 180) { // log max once per 3 mins
-			$this->userModel->update($array, array("id" => $this->id)); // 60 ms!
+		if ($lastUpdate > 180)) { // log max once per 3 mins
+			$this->userModel->update($array, array("id" => $this->id)); // 60 ms
 		}
 	}
 	

@@ -7,22 +7,23 @@
 
 namespace Schmutzka\Diagnostics\Panels;
 
-use Schmutzka\Forms\Form,
-	Nette\Diagnostics\Debugger,
+use Nette\Diagnostics\Debugger,
 	Nette\Security\AuthenticationException,
-	Schmutzka\Utils;
+	Nette,
+	Schmutzka\Utils,
+	Schmutzka\Application\UI\Control,
+	Schmutzka\Forms\Form;
 
-class UserPanel extends \Schmutzka\Application\UI\Control implements \Nette\Diagnostics\IBarPanel
+class UserPanel extends Control implements \Nette\Diagnostics\IBarPanel
 {
+	/** @var Nette\DI\Container */
+	public $context;
 
-	/** @var \Nette\Security\User */
+	/** @var Nette\Security\User */
 	private $user;
 
-	/** @var \Nette\Http\Session */
+	/** @var Nette\Http\Session */
 	private $session;
-
-	/** @var \Nette\DI\Container */
-	public $context;
 
 	/** @var array */
 	private $credentials = array();
@@ -32,7 +33,12 @@ class UserPanel extends \Schmutzka\Application\UI\Control implements \Nette\Diag
 	public $usernameColumn = "name";
 	
 
-	public function __construct(\Nette\Security\User $user, \Nette\Http\Session $session, \Nette\DI\Container $context)
+	/**
+	 * @param Nette\Security\User
+	 * @param Nette\Http\Session
+	 * @param Nette\DI\Container
+	 */
+	public function __construct(Nette\Security\User $user, Nette\Http\Session $session, Nette\DI\Container $context)
 	{
 		$this->session = $session;
  		$this->context = $context;
