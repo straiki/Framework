@@ -3,6 +3,7 @@
 namespace Schmutzka\Templates;
 
 use Schmutzka\Utils\Time;
+use Nette\Templating\Helpers;
 
 class MyHelpers extends \Nette\Object
 {
@@ -21,6 +22,17 @@ class MyHelpers extends \Nette\Object
 		if (method_exists($this, $helper)) {
 			return callback($this, $helper);
 		}
+	}
+
+
+	/**
+	 * Linkify text
+	 * @param string
+	 * @param bool
+	 */
+	public static function linkifyText($string, $linkName = NULL)
+	{		
+		return Url::linkifyText($string, $linkName);
 	}
 
 
@@ -149,16 +161,7 @@ class MyHelpers extends \Nette\Object
 	}
 
 
-	/**
-	 * Iconv
-	 * @param string
-	 * @param string
-	 * @return string
-	 */
-	public function iconv($value, $from = "utf-8", $to = "windows-1250")
-	{
-        return iconv($from, $to, $value);
-	}
+
 
 
 	/** 
@@ -421,8 +424,8 @@ class MyHelpers extends \Nette\Object
 
 	/** 
 	 * Joins two datetimes as term (from - to)
-	 * @param string/DibiDateTime
-	 * @param string/DibiDateTime
+	 * @param string/DateTime
+	 * @param string/DateTime
 	 */
 	public static function term($from, $to)
 	{
