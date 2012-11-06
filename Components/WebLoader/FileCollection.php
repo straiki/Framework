@@ -114,7 +114,6 @@ class FileCollection implements IFileCollection
 	}
 
 
-
 	/**
 	 * Get files from libs folder
 	 * @param string
