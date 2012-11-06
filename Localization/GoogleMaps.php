@@ -33,7 +33,6 @@ class GoogleMaps extends \Nette\Object
 	}
 
 
-
 	/**
 	 * Converts WGS-84 into S-JTSK
 	 * @param float $latitude (e.g.: 50.1580658)
