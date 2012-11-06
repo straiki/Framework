@@ -107,7 +107,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 
 		$lastActive =  $this->userModel->fetchSingle($column, $this->id); // 1 ms
 		$lastUpdate = time()-strtotime($lastActive); 
-		if ($lastUpdate > 180)) { // log max once per 3 mins
+		if ($lastUpdate > 180) { // log max once per 3 mins
 			$this->userModel->update($array, array("id" => $this->id)); // 60 ms
 		}
 	}
