@@ -25,6 +25,7 @@ common:
 				- Schmutzka\Diagnostics\Panels\SessionPanel
 				- Schmutzka\Diagnostics\Panels\DumpMail
 				- Schmutzka\Diagnostics\Panels\Stopwatch
+				- Schmutzka\Diagnostics\Panels\ClearPanel(@container)
 
 		database:
 			default:
@@ -37,46 +38,29 @@ common:
 
 
 	services:
-
 		cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
-
 		customEmailSender: Services\CustomEmailSender
-
 		dbcache: NotORM_Cache_Include("%tempDir%/notorm.cache")
-
 		database: NotORM(@\PDO, NULL, @dbcache)
-
+		localization: Schmutzka\Localization
 		nette.database.defaultConnectionPanel: Schmutzka\Panels\ConnectionPanel
-
+		paramService: Schmutzka\Services\ParamService
 		sessionStorage: Services\SessionStorage
-
 		template: Schmutzka\Templates\TemplateService
-
 		user: Schmutzka\Security\User
 
 
 	factories:
-
 		cssControl: Components\CssLoader
-
 		customEmail: Components\CustomEmailControl
-
 		changePasswordForm: Schmutzka\Forms\ChangePasswordForm
-
 		feedbackForm: Schmutzka\Forms\FeedbackForm
-
 		jsControl: Components\JsLoader
-
 		loginForm: Schmutzka\Forms\LoginForm
-
 		mailingList: Components\MailingListControl
-
 		registrationForm: Schmutzka\Forms\RegistrationForm
-
 		remindPassword: Components\RemindPasswordControl
-
 		titleControl: Components\TitleControl
-
 		userForm: Schmutzka\Forms\UserForm
 
 
