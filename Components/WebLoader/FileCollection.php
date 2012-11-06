@@ -23,24 +23,10 @@ class FileCollection implements IFileCollection
 
 	/**
 	 * @param string|null $root files root for relative paths
-	 * @param bool|int include all files from the folder
 	 */
-	public function __construct($root = NULL, $autoload = FALSE)
+	public function __construct($root = NULL)
 	{
 		$this->root = $root;
-
-		if ($autoload == 2) { // load files from dir
-			$suffix = pathinfo($root, PATHINFO_FILENAME);
-			foreach(Finder::findFiles("*.".$suffix)->from($this->root) as $key => $file) {
-				$this->addFile($key);
-			}
-		}
-		elseif ($autoload == 1) { // load files from dir
-			$suffix = pathinfo($root, PATHINFO_FILENAME);
-			foreach(Finder::findFiles("*.".$suffix)->in($this->root) as $key => $file) {
-				$this->addFile($key);
-			}
-		}
 	}
 
 	/**
@@ -94,11 +80,52 @@ class FileCollection implements IFileCollection
 	/**
 	 * Add files
 	 * @param $files array list of files
+	 * @param $type required file type
 	 */
-	public function addFiles(array $files)
+	public function addFiles(array $files, $type = NULL)
 	{
-		foreach ($files as $file) {	
-			$this->addFile($file);
+		foreach ($files as $key => $value) {	
+			if (is_array($value)) {
+				if ($key == "assets") {
+					$this->addFromAssets($value, $type);
+
+				} elseif ($key == "libs") {
+					$this->addFromLibs($value, $type);
+				}
+
+			} else {
+				$this->addFile($value);
+			}
+		}
+	}
+
+
+	/**
+	 * Get files from assets folder
+	 * @param string
+	 */
+	private function addFromAssets($files, $type)
+	{	
+		$dir = LIBS_DIR . "/Schmutzka/assets/" . $type . "/";
+		foreach ($files as $file) {
+
+			$this->addFile($dir . $file);
+		}
+	}
+
+
+
+	/**
+	 * Get files from libs folder
+	 * @param string
+	 */
+	private function addFromLibs($dirs, $type)
+	{	
+		foreach ($dirs as $dir) {
+			$dir = LIBS_DIR . "/" . $dir . "/";
+			foreach (Finder::findFiles("*" . $type)->from($dir) as $file => $info) {
+				$this->addFile($file);
+			}
 		}
 	}
 

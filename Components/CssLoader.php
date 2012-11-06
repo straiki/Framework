@@ -2,27 +2,30 @@
 
 namespace Components;
 
-use Schmutzka\Utils\Neon;
+use Schmutzka\Utils\Neon,
+	Webloader,
+	Webloader\FileCollection,
+	Webloader\Filter,
+	Webloader\Compiler,
+	Nette;
 
-class CssLoader extends \WebLoader\Nette\CssLoader
+class CssLoader extends Webloader\Nette\CssLoader
 {
 
 	/**
 	 * @param string
-	 * @param \Nette\Application\Application
+	 * @param Nette\Application\Application
 	 */
-	public function __construct(\Nette\Application\Application $application, $configPart = "css")
+	public function __construct(Nette\Application\Application $application, $configPart = "css")
 	{
 		$basePath = $application->presenter->template->basePath;
 
+		$files = new FileCollection(WWW_DIR . "/css");
 		$filesArray = Neon::loadConfigPart("header.neon", $configPart);
+		$files->addFiles($filesArray, "css");
 
-		$files = new \WebLoader\FileCollection(WWW_DIR . "/css");
-		$files->addFiles($filesArray);
-
-		$compiler = \WebLoader\Compiler::createCssCompiler($files, WWW_DIR . "/temp");
-
-		$compiler->addFileFilter(new \Webloader\Filter\LessFilter);
+		$compiler = Compiler::createCssCompiler($files, WWW_DIR . "/temp");
+		$compiler->addFileFilter(new Filter\LessFilter);
 
 		parent::__construct($compiler, $basePath . "/temp");
 	}
