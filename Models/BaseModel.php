@@ -3,27 +3,28 @@
 namespace Models;
 
 use Schmutzka\Utils\Name;
+use Nette;
+use NotORM;
 
-class Base extends \Nette\Object
+abstract class Base extends Nette\Object
 {
-
-	/** @var \Notorm */
-	protected $db;
-
-	/** @var \Nette\Caching\Cache */
-	protected $cache;
-
 	/** @var string */
 	protected $tableName;
 
 	/** @var string */
 	protected $lang;
 
+	/** @var NotORM */
+	protected $db;
 
-	public function __construct(\NotORM $notorm, \Nette\Caching\Cache $cache, \Nette\DI\Container $context)
+
+	/**
+	 * @param NotORM
+	 * @param Nette\DI\Container
+	 */
+	public function __construct(NotORM $db, Nette\DI\Container $context)
 	{
-		$this->db = $notorm;
-		$this->cache = $cache;
+		$this->db = $db;
 
 		if (isset($context->params["activeLang"])) {
 			$this->lang = $context->params["activeLang"];
@@ -42,8 +43,8 @@ class Base extends \Nette\Object
 	{
 		if ($key) {
 			return $this->table($key);
-		}
-		else {
+
+		} else {
 			return $this->table();
 		}
 	}
@@ -70,8 +71,8 @@ class Base extends \Nette\Object
 	{
 		if (is_array($key)) {
 			$this->table($key)->update($array);	
-		}
-		else {
+
+		} else {
 			$this->table("id", $key)->update($array);	
 		}
 
@@ -88,14 +89,14 @@ class Base extends \Nette\Object
 	{
 		if (is_array($key)) {
 			$result = $this->all($key);
-		}
-		else {
+
+		} else {
 			$row = $this->item($key);
 			unset($row["id"]);
 			return $this->insert($row);
 		}
 
-		foreach($result as $row) {
+		foreach ($result as $row) {
 			unset($row["id"]);
 
 			if ($change) {
@@ -120,8 +121,24 @@ class Base extends \Nette\Object
 	{
 		if ($record = $this->exist($key)) {
 			return $record->delete();
+
+		} else {
+			return FALSE;
 		}
-		else {
+	}
+
+
+	/**
+	 * Get 1 item
+	 * @param mixed
+	 * @return array
+	 */
+	public function item($key)
+	{
+		if ($record = $this->exist($key)) {
+			return $record->fetchRow();
+
+		} else {
 			return FALSE;
 		}
 	}
@@ -136,65 +153,28 @@ class Base extends \Nette\Object
 	{		
 		if (is_array($key)) {
 			$record = $this->table($key);		
-		}
-		else {
+
+		} else {
 			$record = $this->table("id", $key);		
 		}
 
-		if ($record->count("*")) {
-			return $record;
-		}
-		else {
-			return FALSE;
-		}
+		return $record;
 	}
 
-
-	/**
-	 * Get 1 item
-	 * @param mixed
-	 * @return array
-	 */
-	public function item($key)
-	{
-		$record = $this->exist($key);
-
-		if ($record) {
-			return $record->fetchRow();
-		}
-		else {
-			return FALSE;
-		}
-	}
-	
 	
 	/**
 	 * Get number of table rows
 	 * @param array
 	 * @return int
 	 */
-	public function count($where = NULL)
+	public function count($key = NULL)
 	{
-		$key = $this->tableName . ($where ?  "_" . md5(serialize($where)) : NULL);
-	
-		if (isset($this->cache[$key])) {
-			return (int) $this->cache[$key];
-		}
+		if ($key) {
+			return $this->table($key)->count("*");
 
-		if ($where) {
-			$count = $this->table($where)->count("*");
+		} else {
+			return $this->table()->count("*");
 		}
-		else {
-			$count = $this->table()->count("*");
-		}
-
-		if ($count > 1000) {
-			$this->cache->save($key, $count, array(
-				"expire" => (int) (time() + 60 * 60 * 24 * ($count/500000)), // Jean's magic constant
-			));
-		}
-
-		return $count;
 	}
 
 
@@ -203,14 +183,9 @@ class Base extends \Nette\Object
 	 * @param string $column
 	 * @return array
 	 */
-	public function fetchPairs($id = "id", $column = NULL, array $where = array())
+	public function fetchPairs($id = "id", $column = NULL, array $key = array())
 	{
-		$result = $this->table();
-		if ($where) {
-			$result->where($where);
-		}
-
-		return $result->fetchPairs($id, $column);
+		return $this->table($key)->fetchPairs($id, $column);
 	}
 
 
@@ -230,13 +205,13 @@ class Base extends \Nette\Object
 	 * @param mixed
 	 * @return mixed
 	 */
-	public function fetchSingle($column, $where)
+	public function fetchSingle($column, $key)
 	{
-		if (is_array($where)) {
-			return $this->table($where)->fetchSingle($column);
-		}
-		else {
-			return $this->table("id", $where)->fetchSingle($column);
+		if (is_array($key)) {
+			return $this->table($key)->fetchSingle($column);
+
+		} else {
+			return $this->table("id", $key)->fetchSingle($column);
 		}
 	}
 
@@ -285,56 +260,11 @@ class Base extends \Nette\Object
 	{
 		if ($id) {
 			return !$this->table($key)->where("NOT id", $id)->count("*");
-		}
-		else {
+
+		} else {
 			return !$this->table($key)->count("*");
 		}
 	}
-
-
-	/**
-	 * Magic function
-	 * @use 1: findByTag("apple") -> where("tag", "apple")
-	 * @howtouse: http://pla.nette.org/cs/jednoduchy-model-s-notorm#toc-relacie-1-n
-	 */
-	public function __call($name, $args)
-	{
-        if (strpos($name, "findBy") !== FALSE) {
-            $cammelCaseSplit = preg_split("~(?<=\\w)(?=[A-Z])~", str_replace("findBy", "", $name));
-            $loweredCammels = array_map(function($in) {
-                return strtolower($in);
-            }, $cammelCaseSplit);
-            $findCondition = implode(".", $loweredCammels);
-
-            if (isset($args[1]) && true === $args[1]) {
-                // M:N relation
-                $relationTableName = $loweredCammels[0] . "s_" . $this->tableName;
-                $mn = $this->db->{$relationTableName}($findCondition, $args[0])
-                    ->select(substr($this->tableName, 0, -1) . "_id");
-
-                try {
-                    $result = $this->table("id", $mn);
-                } catch (\PDOException $e) {
-                    if (false !== strpos($e->getMessage(), "Table") && false !== strpos($e->getMessage(), "doesn't exist")) {
-                        // switch table name elements
-                        $relationTableName = $this->tableName . "_" . $loweredCammels[0] . "s";
-                        $mn = $this->db->{$relationTableName}($findCondition, $args[0])
-                            ->select(substr($this->tableName, 0, -1) . "_id");
-
-                        $result = $this->table("id", $mn);
-                    } else {
-                        throw $e;
-                    }
-                }
-
-                return $result;
-            } 
-			else {
-                // no or 1:N relation
-                return $this->table()->where($findCondition, $args[0]);
-            }
-        }
-    }
 
 
 	/**
@@ -354,14 +284,5 @@ class Base extends \Nette\Object
 	{
 		$this->lang = $lang;
 	}
-
-	/********************* db tweak - init *********************/
-
-
-	public function tableExists() {}
-
-	public function createTable() {}
-
-	public function columnExists() {}
 
 }
