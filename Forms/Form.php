@@ -17,6 +17,26 @@ class Form extends \Nette\Application\UI\Form
 		DATE = "Schmutzka\Forms\Rules::validateDate",
 		TIME = "Schmutzka\Forms\Rules::validateTime";
 
+
+/**
+ *
+ * @param IControl $control
+ * @param array $allowedExtensions lowercase! seznam povolenych pripon
+ * @return bool
+ */
+// http://forum.nette.org/cs/9855-nefunkcni-validace-uploadovaneho-souboru
+/*public function fileExtensionValidator(IControl $control, array $allowedExtensions)
+{
+    $file = $control->getValue();
+
+    if ($file instanceof \Nette\Http\FileUpload) {
+        $ext = strtolower(pathinfo($file->getName(), PATHINFO_EXTENSION));
+        return in_array($ext, $allowedExtensions);
+    }
+
+    return false;
+}*/
+
 		
 	/** @var string */
 	public $id;

@@ -55,16 +55,6 @@ class Rules extends \Nette\Object
 	public static function validateZip(IControl $control)
 	{
 		return Strings::match($control->value, "~^(\d{3}) ?\d{2}$~");
-	/*
-		$zip = $control->value;
-		$pattern = '~^(\d{3}) ?\d{2}$~';
-
-		if (preg_match($pattern, $phone)) {
-			return TRUE;
-		}
-
-		return FALSE;
-	*/
 	}
 
 
