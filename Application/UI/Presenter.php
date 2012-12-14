@@ -111,6 +111,88 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
+	public function loadState(array $params)
+	{
+		parent::loadState($params);
+		$this->params = $this->filterCustomPersistentParams($this->params);
+	}
+
+
+	public function saveState(array & $params, $reflection = NULL)
+	{
+		parent::saveState($params, $reflection);
+		$params = $this->filterCustomPersistentParams($params);
+	}
+
+
+	/**
+	 * Check persistent for* annotations
+	 * @param array
+	 * @return array
+	 * @experimental
+	 */
+	private function filterCustomPersistentParams($params)
+	{
+		$reflection = $this->getReflection();
+
+		$presenter = $reflection->name;
+		$view = $this->view;
+
+		foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
+			if ($rp->hasAnnotation("persistent")) {
+				if ($rp->hasAnnotation("forPresenter")) {
+					$allowedPresenters = (array) $rp->getAnnotation("forPresenter");
+					if (!in_array($presenter, $allowedPresenters)) {
+						unset($params[$rp->getName()]);
+					}
+
+				} elseif ($rp->hasAnnotation("forView")) {
+					$allowedViews = (array) $rp->getAnnotation("forView");
+					if (!in_array($view, $allowedViews)) {
+						unset($params[$rp->getName()]);
+					}
+				}
+			}
+		}
+	
+		return $params;
+	}
+
+
+	/**
+	 * Custom persistent params
+	 * @param string
+	 *
+	 * <code>
+	 * @presistent @forPresenter(CategoryPresenter, ProductPresenter)
+	 * </code>
+	 */
+/*	public static function getPersistentParams()
+	{
+		$rp = new \Nette\Reflection\ClassType(get_called_class());
+		$params = array();
+
+		foreach ($rp->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
+
+
+			if (!$rp->isStatic() && $rp->hasAnnotation("persistent")) {
+
+				if ($rp->hasAnnotation("forPresenter")) {
+					$allowedPresenters = (array) $rp->getAnnotation("forPresenter");
+					if (in_array($rp->getName(), $allowedPresenters)) {
+						$params[] = $rp->getName();
+					}
+
+				} else {
+					$params[] = $rp->getName();
+				}
+			}
+		}
+
+		return $params;
+	}*/
+
+
 	/**
 	 * Flash message including translator
 	 * @param string
