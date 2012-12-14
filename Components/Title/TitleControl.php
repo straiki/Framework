@@ -19,6 +19,12 @@ class TitleControl extends \Nette\Application\UI\Control
 	/** @var bool */
 	private $isHomepage = FALSE;
 
+	/** @var array */
+	private $customTitles = array();
+
+	/** @var array */
+	private $customPreTitles = array();
+
 
 	public function __construct(\Nette\DI\Container $context)
 	{
@@ -42,17 +48,16 @@ class TitleControl extends \Nette\Application\UI\Control
 	 * Create title for particular location
 	 * @param array
 	 * @param string
-	 * @param string
-	 * @param string
+	 * @param array
+	 * @param array
 	 * @return array
 	 */
-	protected function createTitle($titles, $presenter)
+	protected function createTitle($titles, $presenter, $customPreTitles, $customTitles)
 	{
 		list($module, $presenter, $view) = Name::mpv($presenter);
 		if ($presenter == "Homepage" AND $view == "default") {
 			$this->isHomepage = TRUE;
 		}
-
 
 		if (isset($titles[$module]["main"])) {
 			$titleArray[] = $titles[$module]["main"];
@@ -64,6 +69,10 @@ class TitleControl extends \Nette\Application\UI\Control
 			$titleArray[] = $titles["main"];
 		}
 
+		$titleArray[0] = $this->translate($titleArray[0]);
+
+		$titleArray = array_merge($titleArray, $customPreTitles);
+
 		if ($module) {
 			$titleArray["h1"] = Arrays::get($titles, array($module, $presenter, $view), 
 				Arrays::get($titles, array($module, $presenter, "main"),
@@ -72,14 +81,12 @@ class TitleControl extends \Nette\Application\UI\Control
 					)
 				)
 			);
-	
 		}
 		else {
 			$titleArray["h1"] = Arrays::get($titles, array($presenter, $view),
 				Arrays::get($titles, array($presenter, "main"), NULL)
 			);
 		}
-		
 
 		if (isset($titleArray["h1"]) AND is_array($titleArray["h1"])) {
 			if (isset($titleArray["h1"]["logged"]) AND isset($titleArray["h1"]["unlogged"])) {
@@ -90,17 +97,26 @@ class TitleControl extends \Nette\Application\UI\Control
 		if (empty($titleArray["h1"]) OR is_array($titleArray["h1"])) {
 			unset($titleArray["h1"]);
 		}
+		else {
+			$titleArray["h1"] = $this->translate($titleArray["h1"]);
+		}
+
+		$titleArray = array_merge($titleArray, $customTitles);
+
+		if (isseT($this->titles["reverse"])) {
+			$titleArray = array_reverse($titleArray);
+		}
 
 		return $titleArray;
 	}
 
 
 	/**
-	 * Generate compiled file(s) and render link(s)
+	 * Generate site title
 	 */
 	public function render()
 	{
-		$title = $this->createTitle($this->titles, $this->parent->presenter);
+		$title = $this->createTitle($this->titles, $this->parent->presenter, $this->customPreTitles, $this->customTitles);
 
 		if (!$this->isHomepage AND isset($this->titles["subOnly"]) AND $this->titles["subOnly"] == TRUE) {
 			$title = array_pop($title);
@@ -109,7 +125,7 @@ class TitleControl extends \Nette\Application\UI\Control
 			$title = implode(" " . $this->titles["sep"]. " ", $title);
 		}
 
-		echo Html::el("title")->setHtml($this->translate($title));
+		echo Html::el("title")->setHtml($title);
 	}
 
 
@@ -118,13 +134,33 @@ class TitleControl extends \Nette\Application\UI\Control
 	 */
 	public function renderH1($wrapper = NULL)
 	{
-		$title = $this->createTitle($this->titles, $this->parent->presenter);
+		$title = $this->createTitle($this->titles, $this->parent->presenter, $this->customPreTitles, $this->customTitles);
 
 		if (isset($title["h1"])) {
 			echo Html::el($wrapper)->setHtml($this->translate($title["h1"]));
 		}
 	}
 
+
+	/**
+	 * Add custom title as last one
+	 */
+	public function addTitle($title)
+	{	
+		$this->customTitles[] = $title;
+		return $this;
+	}
+
+
+	/**
+	 * Add custom before last one title
+	 */
+	public function addPreTitle($title)
+	{	
+		$this->customPreTitles[] = $title;
+		return $this;
+	}
+	
 
 	/**
 	 * Translate function
@@ -139,6 +175,5 @@ class TitleControl extends \Nette\Application\UI\Control
 
 		return $string;
 	}
-
 
 }
