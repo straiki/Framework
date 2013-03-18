@@ -2,38 +2,47 @@
 
 namespace Schmutzka\Security;
 
-use Nette\Security\AuthenticationException,
-	Nette\Security\Identity;
+use Nette;
+use Nette\Security\AuthenticationException as AE;
+use Schmutzka\Utils\Password;
+use Schmutzka\Models;
 
-class User extends \Nette\Security\User implements \Nette\Security\IAuthenticator
+class User extends Nette\Security\User implements Nette\Security\IAuthenticator
 {
-	/** @var NotORM_Result */
-	private $userModel;
+	/** @var Models\User */
+	protected $userModel;
+
+	/** @var string */
+	protected $salt;
 
 
-	public function __construct(\Nette\Security\IUserStorage $storage, \Nette\DI\Container $context)
+	/**
+	 * @param Nette\Security\IUserStorage
+	 * @param Nette\DI\Container
+	 * @param Models\User
+	 */
+	public function __construct(Nette\Security\IUserStorage $storage, Nette\DI\Container $context, Models\User $userModel)
 	{
 		parent::__construct($storage, $context);
-		$this->userModel = $context->models->user;
-
-		if ($this->loggedIn && isset($context->params["logUserActivity"])) {
-			$this->logUserActivity($context->params["logUserActivity"]);
+		$this->userModel = $userModel;
+		if (isset($context->parameters["salt"])) {
+			$this->salt = $context->parameters["salt"];
 		}
 	}
 
 
 	/**
-	 * Identity property shortcut 
+	 * Identity property shortcut
+	 * @param string
 	 */
 	public function &__get($name)
 	{
-		if ($this->getIdentity() && $this->getIdentity()->{$name} && $name != "roles") {
+		if ($this->getIdentity() && array_key_exists($name, $this->getIdentity()->data) && $name != "roles") {
 			$data = $this->getIdentity()->data;
 			return $data[$name];
-
 		}
 
-		return \Nette\ObjectMixin::get($this, $name);
+		return Nette\ObjectMixin::get($this, $name);
 	}
 
 
@@ -48,7 +57,7 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 				$this->identity->{$key} = $values[$key];
 			}
 		}
-	}	
+	}
 
 
 	/**
@@ -58,36 +67,35 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 	 */
 	public function authenticate(array $credentials)
 	{
-        list($login, $password) = $credentials;
+		list($login, $password) = $credentials;
 
 		$key[strpos($login, "@") ? "email" : "login"] = $login;
 		
 		$row = $this->userModel->item($key);
 
-        if (!$row) {
-            throw new AuthenticationException("Uživatel '$login' neexistuje.");
-        }
-
-        if (isset($row["auth"]) && $row["auth"] != 1) {
-            throw new AuthenticationException("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
-        }
-
-		if (!preg_match('/^[0-9a-f]{40}$/i', $password)) { // sha1 check
-			$password = sha1($password);
+		if (!$row) {
+			throw new AE("Uživatel '$login' neexistuje.");
 		}
 
-        if ($row["password"] !== $password) {
-            throw new AuthenticationException("Chybné heslo.");
-        }
+		if (isset($row["auth"]) AND $row["auth"] != 1) {
+			throw new AE("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
+		}
 
-		unset($row["password"], $row["remindHash"]);
+		if (!preg_match('/^[0-9a-f]{40}$/i', $password)) {
+			$password = Password::saltHash($password, $this->salt);
+		}
 
-		return new Identity($row["id"], (isset($row["role"]) ? $row["role"] : "user"), $row);
+		if ($row["password"] !== $password) {
+			throw new AE("Chybné heslo.");
+		}
+
+		unset($row["password"]);
+		return new Nette\Security\Identity($row["id"], (isset($row["role"]) ? $row["role"] : "user"), $row);
 	}
 
 
 	/**
-	 * Get user's role
+	 * Get user role
 	 */
 	public function getRole()
 	{
@@ -100,16 +108,33 @@ class User extends \Nette\Security\User implements \Nette\Security\IAuthenticato
 	 * Log user activity
 	 * @param array
 	 */
-	private function logUserActivity($configColumn)
+	public function logUserActivity($configColumn)
 	{
 		$column = is_string($configColumn) ? $configColumn : "last_active"; 
 		$array[$column] = new \Nette\DateTime;
 
 		$lastActive =  $this->userModel->fetchSingle($column, $this->id); // 1 ms
-		$lastUpdate = time()-strtotime($lastActive); 
-		if ($lastUpdate > 180) { // log max once per 3 mins
-			$this->userModel->update($array, array("id" => $this->id)); // 60 ms
+		$lastUpdate = time() - strtotime($lastActive); 
+
+		if ($lastUpdate > (3 * 60)) { // log max once per 3 mins
+			$this->userModel->update($array, $this->id); // 60 ms!
 		}
+	}
+
+
+	/**
+	 * Automated login
+	 * @param string
+	 */
+	public function autologin($user)
+	{
+		if (!($user instanceof User)) {
+			$user = $this->userModel->item($user);
+		}
+		unset($user["password"]);
+
+		$identity = new Nette\Security\Identity($user["id"], (isset($user["role"]) ? $user["role"] : "user"), $user);
+		$this->user->login($identity); // fix
 	}
 	
 }
