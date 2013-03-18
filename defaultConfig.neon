@@ -1,77 +1,72 @@
-common:
-	parameters:
- 
-
-	php:
-		date.timezone: Europe/Prague
-		session.save_path: %tempDir%/sessions
-		zlib.output_compression: yes
-	
-
-	nette:
-		session:
-			autoStart: smart
-			expiration: 14 days
-
-		container:
-			debugger: TRUE  
-
-		debugger:
-			email: tomas.vot@gmail.com
-			strictMode: TRUE
-			maxDepht: 3
-			maxLen: 4096
-			bar:
-				- Schmutzka\Diagnostics\Panels\SessionPanel
-				- Schmutzka\Diagnostics\Panels\DumpMail
-				- Schmutzka\Diagnostics\Panels\Stopwatch
-				- Schmutzka\Diagnostics\Panels\ClearPanel(@container)
-
-		database:
-			default:
-				dsn: "%database.driver%:host=%database.host%;dbname=%database.dbname%"
-				user: %database.username%
-				password: %database.password%			
-
-		security:
-			debugger: FALSE
+php:
+	date.timezone: Europe/Prague
+	session.save_path: %tempDir%/sessions
+	zlib.output_compression: yes
 
 
-	services:
-		cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
-		customEmailSender: Services\CustomEmailSender
-		dbcache: NotORM_Cache_Include("%tempDir%/notorm.cache")
-		database: NotORM(@\PDO, NULL, @dbcache)
-		localization: Schmutzka\Localization
-		nette.database.defaultConnectionPanel: Schmutzka\Panels\ConnectionPanel
-		paramService: Schmutzka\Services\ParamService
-		sessionStorage: Services\SessionStorage
-		template: Schmutzka\Templates\TemplateService
-		user: Schmutzka\Security\User
+parameters:
+	libsDir: %appDir%/../libs
+	assetsDir: %libsDir%/Schmutzka/assets
+
+nette:
+	session:
+		autoStart: smart
+		expiration: 14 days
+		debugger: TRUE
+
+	container:
+		debugger: TRUE
+
+	debugger:
+		email: tomas.vot@gmail.com
+		strictMode: TRUE
+		bar:
+			# - Schmutzka\Diagnostics\Panels\CallbackPanel
+			- Schmutzka\Diagnostics\Panels\DumpMail
+
+	security:
+		debugger: TRUE
+
+	latte:
+		macros:
+			- Schmutzka\Templates\Macros::install
 
 
-	factories:
-		cssControl: Components\CssLoader
-		customEmail: Components\CustomEmailControl
-		changePasswordForm: Schmutzka\Forms\ChangePasswordForm
-		feedbackForm: Schmutzka\Forms\FeedbackForm
-		jsControl: Components\JsLoader
-		loginForm: Schmutzka\Forms\LoginForm
-		mailingList: Components\MailingListControl
-		registrationForm: Schmutzka\Forms\RegistrationForm
-		remindPassword: Components\RemindPasswordControl
-		titleControl: Components\TitleControl
-		userForm: Schmutzka\Forms\UserForm
+services:
+	routerFactory: RouterFactory
+	router: @routerFactory::createRouter
+	cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
+	paramService: Schmutzka\Config\ParamService(@container::getParameters())
+	sessionStorage: Services\SessionStorage
+	template: Schmutzka\Templates\TemplateService
+	helpers: Schmutzka\Templates\Helpers
+	localization: Schmutzka\Localization
+
+	# cms
+	userModel: Schmutzka\Models\User
+	pageModel: Schmutzka\Models\Page
+	pageCategoryModel: Schmutzka\Models\PageCategory
+	pageContentModel: Schmutzka\Models\PageContent
+	articleModel: Schmutzka\Models\Article
+	articleCategoryModel: Schmutzka\Models\ArticleCategory
+	articleContentModel: Schmutzka\Models\ArticleContent
+	galleryModel: Schmutzka\Models\Gallery
+	galleryFileModel: Schmutzka\Models\GalleryFile
+	fileModel: Schmutzka\Models\File
+	customEmail: Schmutzka\Models\CustomEmail
+	emailLog: Schmutzka\Models\EmailLog	
 
 
-production < common:
-	parameters:
-		database:
-			driver: mysql
-			host: mysql5
-			dbname: 
-			username: 
-			password: 
+factories:
+	titleControl: Components\TitleControl
+
+	# cms
+	userForm: UserModule\Forms\UserForm
+	userGrid: UserModule\Grids\UserGrid
 
 
-development < common:
+extensions:
+	replicator: Kdyby\Replicator\DI\ReplicatorExtension
+	bootstrapRenderer: Kdyby\BootstrapFormRenderer\DI\RendererExtension
+	gpspicker: VojtechDobes\NetteForms\GpsPickerExtension
+	webloader: WebLoader\Nette\Extension
