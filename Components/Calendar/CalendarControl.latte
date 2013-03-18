@@ -6,23 +6,23 @@
 </div>
 
 <table cellpadding="0" cellspacing="0" class="calendar">
-    <tr class="calendar-row"><th>{!$dayNames|implode:'</th><th>'}</th></tr>
-    <tr class="calendar-row">
+	<tr class="calendar-row"><th>{!$dayNames|implode:'</th><th>'}</th></tr>
+	<tr class="calendar-row">
 
-    {* print "blank" days until the first of the current week *}
-    {for $x = 0; $x < $running_day; $x++}
-        <td class="calendar-day-np">&nbsp;</td>
-        {?$days_in_this_week++}
-     {/for}
+	{* print "blank" days until the first of the current week *}
+	{for $x = 0; $x < $running_day; $x++}
+		<td class="calendar-day-np">&nbsp;</td>
+		{?$days_in_this_week++}
+	{/for}
 
-    {* keep going with days.... *}
-    {for $list_day = 1; $list_day <= $days_in_month; $list_day++}
+	{* keep going with days.... *}
+	{for $list_day = 1; $list_day <= $days_in_month; $list_day++}
 		{if $list_day < 10} {var $list_day = "0".$list_day}{/if}
 		{var $dayInfo = $monthArray["$activeMonth-$list_day"]}
-        <td n:class="calendar-day, $dayInfo['active'] ? active">
-            {* add in the day number *}
+		<td n:class="calendar-day, $dayInfo['active'] ? active">
+			{* add in the day number *}
 			
-            <div class="day-number">{$list_day}</div>
+			<div class="day-number">{$list_day}</div>
 
 				{if $dayInfo["active"]}
 					{foreach $dayInfo["actions"] as $action}
@@ -36,29 +36,29 @@
 						{/if}
 					{/foreach}
 				{/if}
-                     
-        </td>
+					
+		</td>
 
-        {if $running_day == 6}
-            </tr>
+		{if $running_day == 6}
+			</tr>
 
-            {if ($day_counter + 1) != $days_in_month}
-                <tr class="calendar-row">
+			{if ($day_counter + 1) != $days_in_month}
+				<tr class="calendar-row">
 
-            {/if}
+			{/if}
 
-            {? $running_day = -1}
-            {? $days_in_this_week = 0}
-        {/if}
-        {? $days_in_this_week++} {? $running_day++} {? $day_counter++}
-    {/for}
+			{? $running_day = -1}
+			{? $days_in_this_week = 0}
+		{/if}
+		{? $days_in_this_week++} {? $running_day++} {? $day_counter++}
+	{/for}
 
-    {* finish the rest of the days in the week *}
-    {if $days_in_this_week < 8}
-        {for $x = 1; $x <= (8 - $days_in_this_week); $x++}
-          <td class="calendar-day-np">&nbsp;</td>
-        {/for}
-    {/if}
+	{* finish the rest of the days in the week *}
+	{if $days_in_this_week < 8}
+		{for $x = 1; $x <= (8 - $days_in_this_week); $x++}
+			<td class="calendar-day-np">&nbsp;</td>
+		{/for}
+	{/if}
 
-    </tr>
+	</tr>
 </table>

@@ -19,15 +19,15 @@ class StepMenuControl extends Control
 	
 
 	public function __construct($siteList, $class = array())
-    {
-        parent::__construct();
-        $this->siteList = $siteList;
+	{
+		parent::__construct();
+		$this->siteList = $siteList;
 
 		foreach ($class as $key => $value)
 		{
 			$this->classList[$key] = $value;
 		}
-    }
+	}
 
 
 	/**

@@ -1,30 +1,39 @@
 <?php
 
-use Nette\Application\UI\Control;
+namespace Components;
+
+use Schmutzka\Application\UI\Control;
 
 class CalendarControl extends Control
 {
-
 	/** @string zobrazovaný měsíc */
 	private $activeMonth;
 
-	/** @int  počet dnů v měsíci */
+	/** @int počet dnů v měsíci */
 	private $daysCount;
 
-	/** @array názvy měsíců ve zvoleném jazyce */
+	/** @var array */
 	private $monthNames = array(1=> "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec");
 
-	/** @array názvy dnů ve zvoleném jazyce */
-	private $dayNames = array("Po", "Út", "St", "Čt", "Pá", "So", "Ne");
+	/** @var array */
+	private $dayNames = array(1 => "Po", "Út", "St", "Čt", "Pá", "So", "Ne");
+
+	/** @string NotORM_Result */
+	private $data;
 
 
-	public function __construct($activeMonth)
+	/**
+	 * @param string
+	 * @param NotORM_Result
+	 */
+	public function __construct($activeMonth, \NotORM_Result $data = NULL)
     {
-		if(!isset($activeMonth)) {
-			throw MemberAccessException("Missing parameter $activeMonth");
-		}
         parent::__construct();
         $this->activeMonth= $activeMonth;
+	
+		if ($data) {
+			$this->data = $data;
+		}
     }
 
 
@@ -62,32 +71,31 @@ class CalendarControl extends Control
 	}
 
 
+	/********************** render **********************/
+
+
 	/**
 	* Výpis malé verze
 	**/
 	public function renderMini()
 	{
-		parent::userTemplate("mini");
-
+		parent::useTemplate("mini");
 		$monthData = $this->monthData($this->activeMonth);
-
-		$template = $this->fillInTemplate($template);
-		$template->monthArray = $monthData;
-		$template->render();
+		$this->fillInTemplate($this->template);
+		$this->template->monthArray = $monthData;
+		$this->template->render();
 	}
 
 	
 	/**
 	* Výpis běžné verze
-	**/
+	*/
 	public function render()
 	{
 		$monthData = $this->monthData($this->activeMonth);
-
-		$template = $this->fillInTemplate($template);
-		$template->monthArray = $monthData;
-
-		$template->render();
+		$this->fillInTemplate($this->template);
+		$this->template->monthArray = $monthData;
+		$this->template->render();
 	}
 
 
@@ -118,14 +126,19 @@ class CalendarControl extends Control
 	private function monthData($activeMonth)
 	{
 		// data pro tento měsíc
-		$records = $this->presenter->models->calendarControl->getMonthData($activeMonth);
+		if ($this->data) {
+			$records = $this->data;
+
+		} else {
+			$records = $this->presenter->models->calendarControl->getMonthData($activeMonth);	
+		}
 
 		// ohraničení měsíce a základní proměnné
 		$monthStartTime = $activeMonth."-01 00:00:00";
 		$monthEndTime =  date("Y-m-t 23:59:59", strtotime($monthStartTime));
 		$this->daysCount = date("t",strtotime($activeMonth)); // délka měsíce v dnech
 
-		$currentDay = $activeMonth."-01"; // aktivní den pro procházení
+		$currentDay = $activeMonth . "-01"; // aktivní den pro procházení
 		$monthData = array();
 
 		// rozdělíme data jednotlivým dnům
@@ -134,7 +147,8 @@ class CalendarControl extends Control
 			// záznamy pro daný den
 			$monthData[$currentDay]["active"] = FALSE;
 			foreach($records as $row) {
-				if($row["date_from"] <= $currentDay AND $row["date_to"] >=  $currentDay) {
+				// if ($row["date_from"] <= $currentDay AND $row["date_to"] >=  $currentDay) {
+				if ($row["date"] == $currentDay) {
 					$monthData[$currentDay]["active"] = TRUE;
 					$monthData[$currentDay]["actions"][] = $row;
 				}
