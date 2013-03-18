@@ -1,13 +1,17 @@
 <?php
 
-namespace Schmutzka\Utils; // that's me!
+namespace Schmutzka\Utils;
 
-use Nette\Diagnostics\Debugger,
-	Schmutzka\Utils\Validators;
+use Nette;
+use Schmutzka\Utils\Validators;
 
-class Url extends \Nette\Object
+/**
+ * shorten($url)
+ * linkifyText($string, $linkNode = NULL)
+ */
+
+class Url extends Nette\Object
 {
-
 	/** @var string */
 	private static $bitLyLogin = "schmutzka";
 
@@ -19,10 +23,9 @@ class Url extends \Nette\Object
 	 * Converts url to bit.ly version
 	 * @param string
 	 */
-	public static function bitLy($url)
+	public static function shorten($url)
 	{
 		if (Validators::isUrl($url)) {
-
 			if (strpos($url, "http://bit.ly/") !== FALSE) {
 				return $url;
 			}
@@ -50,10 +53,10 @@ class Url extends \Nette\Object
 	 * @param string
 	 * @param bool
 	 */
-	public static function linkifyText($string, $linkName = NULL)
+	public static function linkifyText($string, $linkNode = NULL)
 	{
-		if ($linkName) {
-			return preg_replace("#((http|https|ft​p)://(\S*?\.\S*?))(\s|\;|\)|​\]|\[|\{|\}|,|\"|'|:[0-9]{1,5}|\<|$|\.\s)#ie", "'<a href=\"$1$4\" target=\"_blank\">". $linkName . "</a>'", $string);
+		if ($linkNode) {
+			return preg_replace("#((http|https|ft​p)://(\S*?\.\S*?))(\s|\;|\)|​\]|\[|\{|\}|,|\"|'|:[0-9]{1,5}|\<|$|\.\s)#ie", "'<a href=\"$1$4\" target=\"_blank\">". $linkNode . "</a>'", $string);
 
 		} else {
 			return preg_replace("#((http|https|ft​p)://(\S*?\.\S*?))(\s|\;|\)|​\]|\[|\{|\}|,|\"|'|:[0-9]{1,5}|\<|$|\.\s)#ie", "'<a href=\"$1$4\" target=\"_blank\">$1$4</a>'", $string);

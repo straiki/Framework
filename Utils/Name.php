@@ -2,16 +2,15 @@
 
 namespace Schmutzka\Utils;
 
-use Nette\Utils\Strings;
+use Nette;
 
-final class Name extends \Nette\Object
+/**
+ * tableFromClass($class)
+ * mpv($activePresenter, $part = NULL)
+ */
+
+class Name extends Nette\Object
 {
-
-	/** @var array */
-	private static $convertSuffix = array(
-		"jpeg" => "jpg"
-	);
-
 
 	/**
 	 * Get table name by class name
@@ -34,54 +33,32 @@ final class Name extends \Nette\Object
 
 
 	/**
-	 * Presenter name
-	 * @param string
-	 * @return string
-	 */
-	public static function presenter($name)
-	{
-		if (strpos($name, ":") == TRUE) {
-			$temp = explode(":", $name);
-			return array_pop($temp);
-		}
-
-		return $name;
-	}
-
-
-	/**
 	 * Modul/presenter/view
 	 * @param Presenter
+	 * @param string
 	 */
-	public static function mpv($activePresenter)
+	public static function mpv($activePresenter, $part = NULL)
 	{
 		$module = NULL;
 		$presenter = $activePresenter->name;
 		if (strpos($presenter, ":")) {
 			list($module, $presenter) = explode(":", $presenter, 2);
 		}
-		$view = $activePresenter->view;
-	
+		$view = lcfirst($activePresenter->view);
+		$presenter = lcfirst($presenter);
+		$module = lcfirst($module);
+
+		if ($part == "module") {
+			return $module;
+
+		} elseif ($part == "presenter") {
+			return $presenter;
+
+		} elseif ($part == "view") {
+			return $view;
+		} 
+
 		return array($module, $presenter, $view);
-	}
-
-
-	/**
-	 * Get suffix
-	 * @param string
-	 * @return string
-	 */
-	public static function suffix($name)
-	{
-		$temp = explode(".", $name);
-		$suffix = array_pop($temp);
-		$suffix = strtolower($suffix);
-
-		if (isset(self::$convertSuffix[$suffix])) {
-			$suffix = self::$convertSuffix[$suffix];
-		}
-
-		return $suffix;
 	}
 
 }

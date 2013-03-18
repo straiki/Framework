@@ -2,10 +2,33 @@
 
 namespace Schmutzka\Utils;
 
+use Nette;
+use Nette\Utils\Strings;
 use Schmutzka\Utils\Validators;
 
-class Time extends \Nette\Object
+/**
+ * todo move to common/DateTime.php, or Time.php if possible
+ * @todo convert - autodetection by preg_match? but hh:mm vs mm:ss?
+ */
+
+class Time extends Nette\Object
 {
+
+	/**
+	 * Is date between limts
+	 * @param Nette\DateTime|string
+	 * @param Nette\DateTime|string
+	 * @param Nette\DateTime|string
+	 * @return bool
+	 */
+	public static function isBetween($date, $from, $to)
+	{	
+		$date = self::from($date);
+		$from = self::from($from);
+		$date = self::from($date);
+
+		return ($date >= $from && $date <= $to);
+	}
 
 	/**
 	 * Find week borders
@@ -20,9 +43,9 @@ class Time extends \Nette\Object
 
 		$time = strtotime("1 January $year", time());
 		$day = date("w", $time);
-		$time += ((7*$week)+1-$day)*24*3600;
+		$time += ((7 * $week) + 1 - $day) * 24 * 3600;
 		$return[0] = date("Y-m-d", $time);
-		$time += 6*24*3600;
+		$time += 6 * 24 * 3600;
 		$return[1]= date("Y-m-d", $time);
 
 		if ($type == "start") {
@@ -37,169 +60,173 @@ class Time extends \Nette\Object
 
 
 	/**
-	 * Return difference between 2 timestamp in sec
-	 * @param datetime
-	 * @param datetime
-	 * @param string
-	 * @return int
-	 */
-	public static function timestampDiff($timestamp1, $timestamp2 = NULL, $format = "d", $floor = TRUE)
-	{
-		$seconds = (int) abs(strtotime($timestamp1) - strtotime($timestamp2));
-
-		switch($format) {
-			case "d":
-				$return = $seconds / (60 * 60 * 24);
-				break;
-			default:
-				$return = $seconds;
-		}
-
-		if ($floor) {
-			return (int) floor($return);
-		}
-
-		return (int) $return;
-	}
-
-
-	/**
-	 * Return birthdate from rc (rodné číslo)
-	 * @param string
-	 * @param bool
-	 * @return date
-	 */
-	public static function birthdateFromRC($rc, $detectGender = FALSE)
-	{
-		$female = FALSE;
-
-		$rc = strtr($rc, array("/" => NULL));
-		$y = substr($rc, 0, 2);
-		$m = substr($rc, 2, 2);
-		$d = substr($rc, 4, 2);
-		
-		if ($m >= 50) { // female
-			$female = TRUE;
-			$m -= 50;
-		}
-
-		if ($y < date("y")) { // 20xx
-			$y = "20" . $y;
-
-		} else {
-			$y = "19" . $y;			
-		}
-
-		$date = date("Y-m-d", strtotime("$y-$m-$d"));
-
-		if ($detectGender) {
-			return array(
-				"date" => $date,
-				"gender" => ($female ? "female" : "male")
-			);
-		}
-
-		return $date;
-	}
-
-
-	/**
-	 * Parse date in misc format and return it in YYYY-MM-DD
-	 */
-	static function parse($date)
-	{
-		if (empty($date)) {
-			return null;
-		}
-
-		if (preg_match('/^([12][0-9]{3})([0-9]{2})([0-9]{2})$/', "$date", $m)) {
-			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[3], $m[1]));
-
-		} elseif (preg_match('/^([12][0-9]{3})-([0-9]{1,2})-([0-9]{1,2})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m) OR
-			preg_match('/^([0-9]{1,2}).\s*([0-9]{1,2}).\s*([12][0-9]{3})(?: ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}))?$/', "$date", $m)) {
-			$date = date(@$m[4] ? 'Y-m-d H:i:s' : 'Y-m-d', mktime(@$m[4], @$m[5], @$m[6], $m[2], $m[1], $m[3]));
-
-		} elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.$/', "$date", $m)) { // dd.mm.
-			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], date('Y')));
-
-		} elseif (preg_match('/^([0-9]{1,2})\\.\s*([0-9]{1,2})\\.([0-9]{1,2})$/', "$date", $m)) {
-			$date = date('Y-m-d', mktime(0, 0, 0, $m[2], $m[1], $m[3] < 70 ? "20{$m[3]}" : "19{$m[3]}"));
-		}
-
-		if ($time = @strtotime($date)) {
-			$date = date('Y-m-d', $time);
-			if ((int) date('His', $time)) {
-				$date .= " " . ($time = date('H:i:s', $time));
-			}
-		}
-
-		return $date;
-	}
-	
-
-	/**
-	 * Get age from birthdate
-	 * @param date format/time()
-	 */
-	public static function age($birthDate)
-	{  
-		if (!is_int($birthDate)) {
-			$birthDate = strtotime($birthDate);
-		}
-
-		return floor((date("Ymd") - date("Ymd", $birthDate)) / 10000);
-	}
-
-
-	/**
-	 * Get number of days in month
-	 * @param date
-	 */
-	public static function daysInMonth($date)
-	{
-		$month = date("m", strtotime($date));
-		$year = date("Y", strtotime($date));
-
-		return cal_days_in_month(CAL_GREGORIAN, $month, $year); 
-	}
-
-
-	/**
-	 * Divide time to hours and minutes
-	 * @param string 
+	 * Conver one number to another
 	 * @param int
-			1 = h (6)
-			2 = m (360)
-			3 = hh:00 (22:00)
-			4 = hh:mm (390 => 6:30)
-	 * @return mixed
+	 * @param string {[ d, h, m, s ]}
+	 * @param string {[ d, h, m, s ]}
 	 */
-	public static function ex($time, $type = 1)
+	public static function convert($time, $from, $to)
 	{
-		if (Validators::isTime($time)) {
-			list($h, $m) = explode(":", $time);
-
-			if ($type == 1) {
-				return (int) $h;
-
-			} elseif ($type == 2) {
-				return (60 * $h + $m);
-
-			} elseif ($type == 3) {
-				return ($h . ":00");
-
-			} elseif ($type == 4) {
-				return sprintf("%02d:%02d", floor($time/60), $time%60);
+		$result = NULL;
+		if ($from == "s") {
+			switch ($to) {
+				case "m" :
+					$time /= 30;
+				case "d" :
+					$time /= 24;
+				case "h" :
+					$time /= 60;
+				case "m" :
+					$time /= 60;
+					break;
 			}
+			return $time;
+
+		} elseif ($from == "h:m") {
+			list ($h, $m) = explode(":", $time);
+			switch ($to) {
+				case "s" : 
+					return $h * 60 * 60 + $m * 60;
+
+				case "h" :
+					return $h + $m/60;
+
+				case "m" :
+					return 60 * $h + $m;
+
+				case "h:0":
+					return $h . ":00";
+			}
+
+		} elseif ($from == "m:s") {
+			list ($m, $s) = explode(":", $time);
+			switch ($to) {
+				case "s" : 
+					return $m * 60 + $s;
+			}
+
+		} elseif ($from == "m") {
+			$h = floor(($time)/60);
+			$m = $time - ($h * 60);
+			switch ($to) {
+				case "h:m" :
+					return $h . ":" . $m;
+
+				case "h:mm" :
+					return $h . ":" . Strings::padLeft($m, 2, 0);
+
+
+				case "h:m hod/min" :
+					if ($h) {
+						return $h . ":" . Strings::padLeft($m, 2, 0) . " hod.";			
+
+					} else {
+						return $m . " min.";			
+					}
+			}
+
+		} elseif ($from == "h:m:s") {
+			list ($h, $m, $s) = explode(":", $time);
+			switch ($to) {
+				case "s" :
+					return $h * 60 * 60 + $m * 60 + $s;
+					break;
+			}
+
 		}
 
-		return FALSE;
+		throw new \Exception("Not defined yet");
 	}
 
 
+	/**
+	 * Sum hh:mm + hh:mm
+	 * @param string
+	 * @param string
+	 */
+	public static function sum2Times24($time1,$time2)
+	{
+		$time1 = strtotime($time1 . ":00");
+		$time2 = strtotime($time2 . ":00");
+
+		$minute = date("i",$time2);
+		$hour = date("H",$time2);
+
+		$convert = strtotime("+$minute minutes", $time1);
+		$convert = strtotime("+$hour hours", $convert);
+
+		return date("H:i", $convert);
+	}
 
 
 	/********************* 2DO *********************/
+
+
+	/**
+	 * Count average values for start - end intervals
+	 * @refactor
+	 */
+	/* vrátí průměr spánku xx:xx-yy:yy za dané období */
+	public static function startEndMean($result,$dateStart = NULL,$dateEnd = NULL, $id = NULL)
+	{
+
+		// kurnik ale !!!!		
+
+		$increase = FALSE;
+		if (count($result)) { // máme výsledky
+			$start = $end = NULL;
+			foreach ($result as $row) {
+
+
+				// spánek začíná po 18 hodině a zároveň končí před 18 hodinou = po půlnoci - odečteme 24 hodin pro zachování točení výsledku kolem půlnoci (ještě třeba empirikovat)
+				/*
+				if(self::minutesFromTimeStamp($row["start"]) > 1*60 AND self::minutesFromTimeStamp($row["end"]) < 0 * 60) { // nikdy nebude víc jak 24 * 60, že :)
+					$start -= 24*60;       
+				}	
+				*/
+
+
+			
+				/* méně jak 12:00, přidáme 24 * 60 minut */
+				$startInMins = self::minutesFromTimeStamp($row["start"]);
+
+				$break = 18;
+
+				if($startInMins < $break *60) {
+					$startInMins += self::$dayMins;       
+					$increase = TRUE; // @test
+				}	
+
+				$endInMins = self::minutesFromTimeStamp($row["end"]);
+				if($endInMins < $break *60 OR $increase) {
+					$endInMins += self::$dayMins;   
+					$increase = TRUE; // @test    
+				}	
+
+				$start += $startInMins;
+				$end += $endInMins+1; // hh:m9 fix
+			}
+  
+			if($start<0) {$start *= -1;}
+
+			$startMean = $start/$result->count("*");
+			while($startMean > self::$dayMins) { // vyrovnání překročení 24 hodin
+				$startMean -= self::$dayMins;
+			}
+
+			$endMean = $end/$result->count("*");
+			while($endMean > self::$dayMins) { // vyrovnání překročení 24 hodin
+				$endMean -= self::$dayMins;
+			}
+
+
+			$startMean = self::time_form(60 * $startMean,3);
+			$endMean= self::time_form(60 * $endMean,3);
+
+			return "$startMean-$endMean";
+		}
+		return NULL;
+	}
 
 
 	/** 
@@ -264,63 +291,28 @@ class Time extends \Nette\Object
 	}
 
 
+
 	/**
-	 * Converts time to seconds
-	 * @param mixed
-
-	 * @param string
+	 * Get number of days in month
+	 * @param date
 	 */
-	public static function inSeconds($time, $inputFormat = NULL)
+	public static function daysInMonth($date)
 	{
-		$h = $m = $s = 0;
-		$list = explode(":", $time);
+		$month = date("m", strtotime($date));
+		$year = date("Y", strtotime($date));
 
-		if (count($list) == 3) {
-			list ($h, $m, $s) = $list;
-
-		} elseif (count($list) == 2) {
-			if ($inputFormat == "H:i") {
-				list ($h, $m) = $list;
-
-			} elseif ($inputFormat == "i:s") {
-				list ($m, $s) = $list;
-			}
+		return cal_days_in_month(CAL_GREGORIAN, $month, $year); 
+	}
+	/**
+	 * Get age from birthdate
+	 * @param date format/time()
+	 */
+	public static function age($birthDate)
+	{  
+		if (!is_int($birthDate)) {
+			$birthDate = strtotime($birthDate);
 		}
 
-		$secodns = $h * 60 * 60 + $m * 60 + $s;
-		return $secodns;
-
-
-	}
-
-
-	/**
-	 * Convert time
-
-
-
-
-
-
-
-	 * @param int
-	 * @param int
-	 */
-	public static function im($time, $type = 1)
-	{
-		$h = floor(($time)/60);
-		$m = $time - ($h * 60);
-
-		if ($type == 1) {
-			return $h . ":" . $m;
-
-		} elseif ($type == 2) { 
-			if ($h) {
-				return $h . ":" . ($m < 10 ?  ("0" . $m) : $m) . " hod.";			
-
-			} else {
-				return $m . " min.";			
-			}
-		}	
+		return floor((date("Ymd") - date("Ymd", $birthDate)) / 10000);
 	}
 }

@@ -2,19 +2,21 @@
 
 namespace Schmutzka\Utils;
 
-class Arrays extends \Nette\Object
-{
+use Nette;
 
-	/**
-	 * Determine, if is one level array or multiple level array 
-	 * @param array
-	 * @return bool
-	 */
-	public static function hasMoreLevels($array)
-	{
-		return is_array($array[key($array)]);
-	}
-	
+/**
+ * hasAllKeys($array, $requiredKeys)
+ * keySum($array, $key)
+ * minMax($array)
+ * extractKey($array, $key)
+ * clearEmpty($array)
+ * sortBySubKey($array, $subkey)
+ * sortBySubKeyReverse($array, $subkey)
+ * findByKeyValue($array, $key, $find, $returnArrayStrict)
+ */
+
+class Arrays extends Nette\Object
+{
 
 	/**
 	 * Check if arrays has all keys
@@ -45,30 +47,12 @@ class Arrays extends \Nette\Object
 
 
 	/**
-	 * Fill empty with value
-	 * @param array
-	 * @param string
-	 */
-	public static function fillEmpty($array, $emptyValue = "-")
-	{
-		foreach ($array as $key => $value) {
-			if (empty($value)) {
-				$array[$key] = $emptyValue;
-			}
-		}
-
-		return $array;
-	}
-
-
-
-	/**
 	 * Array key summary
 	 * @param array
 	 * @param string
 	 * @return int
 	 */
-	public static function keySum($array, $key)
+	public static function keySum(array $array, $key)
 	{
 		$sum = 0;
 		foreach ($array as $value) {
@@ -99,46 +83,21 @@ class Arrays extends \Nette\Object
 
 
 	/**
-	 * Change type of array to another specific 
-	 * @param array
-	 * @param string
-	 * @param string
-	 * @return array
-	 */
-	public static function retype($array, $type = "int", $format = NULL, $keepNull = TRUE)	
-	{
-		foreach ($array as $key => $value) {
-			if ($type == "int") {		
-				$array[$key] = (($keepNull && is_null($value)) ? NULL : (int) $value);
-
-			} elseif ($type == "float") {
-				$array[$key] = (($keepNull && is_null($value)) ? NULL : (float) $value);
-
-			} elseif ($type == "date") {
-				$array[$key] = date($format, strtotime($value));
-			}
-		}
-
-		return $array;
-	}
-
-
-	/**
 	 * Get 1 column into array 	
 	 * @param array
 	 * @param string
  	 * @return array
 	 */ 
-	public static function extractColumn($array, $column)
+	public static function extractKey($array, $key)
 	{
 		$result = array();
-		foreach ($array as $key => $value) {
+		foreach ($array as $value) {
 			if (!is_array($value)) {
 				$value = iterator_to_array($value);
 			}
 
-			if (isset($value[$column]) || $value[$column] === NULL) {
-				$result[] = $value[$column];
+			if (isset($value[$key]) || $value[$key] === NULL) {
+				$result[] = $value[$key];
 			}
 		}
 
@@ -234,6 +193,20 @@ class Arrays extends \Nette\Object
 		}
 
 		return NULL;
+	}
+
+
+	/********************** helpers **********************/
+
+
+	/**
+	 * Determine, if is one level array or multiple level array 
+	 * @param array
+	 * @return bool
+	 */
+	private static function hasMoreLevels($array)
+	{
+		return is_array($array[key($array)]);
 	}
 
 }

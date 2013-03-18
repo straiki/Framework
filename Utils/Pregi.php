@@ -2,7 +2,13 @@
 
 namespace Schmutzka\Utils;
 
-class Pregi extends \Nette\Object
+use Nette;
+
+/**
+ * removeLinks($string)
+ */
+
+class Pregi extends Nette\Object
 {
 
 	/**

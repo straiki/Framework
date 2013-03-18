@@ -2,28 +2,29 @@
 
 namespace Schmutzka\Utils; 
 
-use Nette\Object,
-	Nette\Diagnostics\Debugger;
+use Nette;
 
-class Export extends Object
+/**
+ * cvs($fields, $data)
+ */
+
+class Export extends Nette\Object
 {
-
-	/** @var \DI\Container */
-	private $context;
-	
-	/** @var \UI\Presenter */
-	private $presenter;
-	
 	/** @var string */
 	public $sep = ";";
 
 	/** @var string */
 	public $fileName;
 
+	/** @var Nette\Application\UI\Presenter */
+	private $presenter;
+	
 
-	public function __construct($context, $presenter)
+	/**
+	 * @param Nette\Application\UI\Presenter 
+	 */
+	public function __construct(Nette\Application\UI\Presenter $presenter)
 	{
-		$this->context = $context;
 		$this->presenter = $presenter;
 	}
 
@@ -33,12 +34,12 @@ class Export extends Object
 	 * @param array
 	 * @param array
 	 */
-	public function cvs(array $fields, array $data)
+	public function cvs($fields, $data)
 	{
-		$file = $this->context->parameters["appDir"]."/../libs/Schmutzka/Utils/Export/csv.latte";
+		$file = __DIR__ . "/Export/cvs.latte";
 
 		header('Content-Type: application/csv, windows-1250');
-		header('Content-Disposition: attachment;filename="'.$this->fileName.'.csv"');
+		header('Content-Disposition: attachment;filename="' . $this->fileName . '.csv"');
 		header('Cache-Control: max-age=0');
 
 		$template = $this->presenter->createTemplate()->setFile($file);
@@ -47,16 +48,16 @@ class Export extends Object
 		$template->sep = $this->sep;
 
 		$template->render();
-		$this->presenter->terminate();
+		exit();
 	}
 
 
 	/**
 	 * Iconv shortcut - alternative to helper
 	 */
-	private function ic($value, $from = "utf-8", $to = "windows-1250") { 
+	private function ic($value, $from = "utf-8", $to = "windows-1250")
+	{ 
 		return iconv($from, $to, $value);
 	}
-	 
 
 }

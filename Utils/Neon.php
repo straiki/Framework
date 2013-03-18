@@ -2,7 +2,9 @@
 
 namespace Schmutzka\Utils;
 
-class Neon extends \Nette\Utils\Neon
+use Nette;
+
+class Neon extends Nette\Utils\Neon
 {
 
 	/**
@@ -10,24 +12,35 @@ class Neon extends \Nette\Utils\Neon
 	 * @param file
 	 * @param string
 	 */
-	public static function loadConfigPart($file, $part = NULL)
+	public static function fromFile($file, $part = NULL)
 	{
-		if (!file_exists(APP_DIR."/config/$file")) {
-			throw new \Exception("Missing 'config/$file'.");
-		}
-
-		$file = file_get_contents(APP_DIR."/config/$file");
-		$fileDecoded = \Nette\Utils\Neon::decode($file);
+		$file = self::loadFile($file);
+		$fileDecoded = Nette\Utils\Neon::decode($file);
 
 		if ($part) {
 			if (!isset($fileDecoded[$part])) {
-				throw new \Exception("Key '$part' does not exits.");
+				return $fileDecoded[$part];	
 			}
 
-			return $fileDecoded[$part];
+			throw new \Exception("Key '$part' does not exits.");
 		}
 
 		return $fileDecoded;
+	}
+
+
+	/**
+	 * Load config file
+	 * @param string
+	 */
+	private static function loadFile($file)
+	{	
+		$filePath = APP_DIR . "/config/" . $file;
+		if (!file_exists($filePath)) {
+			throw new \Exception("Missing 'config/$file'.");
+		}
+
+		return file_get_contents($filePath);
 	}
 
 }
