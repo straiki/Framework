@@ -2,30 +2,22 @@
 
 namespace Schmutzka\Forms;
 
-use Nette\Mail\Message;
+use Nette;
+use Schmutzka\Mail\Message;
 
 class ContactForm extends Form
 {
 	/** @var string */
-	private $mailTo;
+	public $mailTo;
 
 	/** @var string */
-	private $siteFrom;
+	public $siteFrom;
 
 	/** @var bool */
 	public $showEmail = TRUE;
 
 	/** @var bool */
-	public $showPhone = FALSE;
-
-	/** @var bool */
 	public $showName = TRUE;
-
-	/** @var bool */
-	public $showText = TRUE;
-
-	/** @var bool */
-	public $textRequired = TRUE;
 
 	/** @var string */
 	public $flashText = "Zpráva byla úspěšně odeslána.";
@@ -39,12 +31,25 @@ class ContactForm extends Form
 	/** @var string */
 	public $redirectTo = "this";
 
+	/** @var array */
+	public $logSender = array("login");
 
-	public function __construct($siteFrom, $mailTo)
+	/** @var Nette\Security\User*/
+	private $user;
+
+	/** @var Nette\Mail\IMailer */
+	private $mailer;
+
+
+	/**
+	 * @param Nette\Security\User
+	 * @param Nette\Mail\IMailer
+	 */
+	public function __construct(Nette\Security\User $user, Nette\Mail\IMailer $mailer)
 	{
 		parent::__construct();
-		$this->siteFrom = $siteFrom;
-		$this->mailTo = $mailTo;
+		$this->user = $user;
+		$this->mailer = $mailer;
 	}
 
 
@@ -61,27 +66,15 @@ class ContactForm extends Form
 				->addRule(Form::EMAIL, "Email nemá správný formát");
 		}
 
-		if ($this->showPhone) {
-			$this->addText("phone", "Váš telefon:")
-				->addCondition(Form::FILLED)
-					->addRule(Form::INTEGER, "Můžete zadat použít pouze čísla")
-					->addRule(Form::MIN_LENGTH, "Číslo musí mít minimálně %d znaků.", 9);
-		}
-
-		if ($this->showText) {
-			$this->addTextarea("text", "Zpráva:");
-			if($this->textRequired) {
-				$this["text"]->addRule(Form::FILLED, "Napište Váš dotaz");
-			}
-		}
+		$this->addTextarea("text", "Zpráva:")
+			->addRule(Form::FILLED, "Napište Váš dotaz");
 
 		$this->addAntispam();
-
 		$this->addSubmit("submit", "Odeslat");
 	}
 	
 
-	public function process(ContactForm $form)
+	public function process($form)
 	{
 		$values = $form->values;
 		unset($values["antispam"]);
@@ -95,7 +88,7 @@ class ContactForm extends Form
 			$message .= "\n\nVeškeré parametry:\n";
 
 			foreach ($form->components as $key => $component) {	
-				if($key != "submit") {
+				if ($key != "submit") {
 					$message .= $component->caption . " " . $component->value . "\n";
 				}
 			}
@@ -107,25 +100,52 @@ class ContactForm extends Form
 
 		$subject = rtrim($this->siteFrom.  " - ". $this->subjectText, " - ");
 
-		$mail = new Message;
-		$mail->setFrom($values["email"])
-			->setBody($message)
+		$message = new Message;
+		$message->setFrom($values["email"])
+			// ->setBody($message)
 			->setSubject($subject);
 
+		if ($this->logSender) {
+			if ($this->user->loggedIn) {
+				$name = "";
+				foreach ($this->logSender as $key) {
+					if (isset($this->user->identity->{$key})) {
+						$name .= $this->user->identity->{$key} . " ";
+					}
+				}
+
+				$message->setFrom($this->user->email, trim($name));
+				$from = "Od: " . trim($name) . ", ". $this->user->email . "\n\n";
+
+			} else {
+				$key = array_shift($this->logSender);
+				$email = $values[$key];
+				$from = "Od: " . $email;
+
+				if ($key = array_shift($this->logSender)) {
+					$name = trim($values[$key]);
+					$from .= ", " . $name;
+				}
+
+				$from .= "\n\n";
+				$message->setFrom($email, $name);
+			}
+		}
 
 		if (is_array($this->mailTo)) {
 			foreach ($this->mailTo as $value) {
-				$mail->addTo($value);
+				$message->addTo($value);
 			}
 		}
 		else {
-			$mail->addTo($this->mailTo);
+			$message->addTo($this->mailTo);
 		}
 
-		$mail->send();
-
-		$this->flashMessage($this->flashText, "flash-success");
-		$this->redirect($this->redirectTo);
+		$message->setBody($from . $values["message"]);
+		$this->mailer->send($message);
+	
+		$this->getPresenter()->flashMessage($this->flashText, "success");
+		$this->getPresenter()->redirect($this->redirectTo);
 	}
 
 }
