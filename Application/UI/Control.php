@@ -2,20 +2,24 @@
 
 namespace Schmutzka\Application\UI;
 
-class Control extends \Nette\Application\UI\Control
+use Nette;
+use Components;
+
+abstract class Control extends Nette\Application\UI\Control
 {
 
 	/**	 
-	 * Create template
+	 * Create template and autoset file
 	 * @param string
+	 * @param bool
+	 * @return Nette\Templating\FileTemplate;
 	 */
 	public function createTemplate($class = NULL, $autosetFile = TRUE)
 	{
 		$template = parent::createTemplate($class);
+		$this->parent->templateService->configure($template);
 
-		$this->context->template->configure($template);
-
-		if ($autosetFile && !$template->getFile() && file_exists($this->getTemplateFilePath())) {
+		if ($autosetFile && ! $template->getFile() && file_exists($this->getTemplateFilePath())) {
 			$template->setFile($this->getTemplateFilePath());
 		}
 
@@ -25,8 +29,9 @@ class Control extends \Nette\Application\UI\Control
 
 	/** 
 	 * Sets up template
+	 * @param string
 	 */
-	public function useTemplate($name)
+	public function useTemplate($name = NULL)
 	{
 		$this->template->setFile($this->getTemplateFilePath($name));
 	}
@@ -47,6 +52,7 @@ class Control extends \Nette\Application\UI\Control
 
 	/**
 	 * Derives template path from class name
+	 * @param string
 	 * @return string
 	 */
 	protected function getTemplateFilePath($name = "")
@@ -56,63 +62,40 @@ class Control extends \Nette\Application\UI\Control
 	}
 
 
-	/********************* shortcuts *********************/
+	/**
+	 * Renders the default template
+	 */
+	 public function render()
+	{
+		$this->template->render();
+	}
+
+
+	/********************* components *********************/
 
 
 	/**
 	 * FlashMessage component
-	 * @return \Components\FlashMessageControl
+	 * @return Components\FlashMessageControl
 	 */
 	protected function createComponentFlashMessage()
 	{
-		return new \Components\FlashMessageControl;
+		return new Components\FlashMessageControl;
 	}
 
 
-	/**
-	 * Context shortcut
-	 */
-	final public function getContext()
-	{
-		return $this->parent->context;
-	}
+	/********************** localization **********************/
 
 
 	/**
-	 * Model shortcut 
-	 */
-	final public function getModels()
-	{
-		return $this->context->models;
-	}
-
-
-	/**
-	 * Handles requests to create component / form?
+	 * Translate
 	 * @param string
-	 */
-	protected function createComponent($name)
-	{
-		$component = parent::createComponent($name);
-
-		if ($component === NULL) {
-			$componentClass = "Components\\" . $name . "Control";
-			if (class_exists($componentClass)) {
-				$component = new $componentClass;
-			}
-		}
-
-		return $component;
-	}
-
-
-	/**
-	 * Translate shortcut 
 	 */
 	public function translate($string)
 	{
-		if ($this->context->hasService("translator")) {
-			return $this->context->translator->translate($string);
+		dd("Control - translator - is neccessary?");
+		if ($this->parent->translator) {
+			return $this->parent->translator->translate($string);
 		}		
 
 		return $string;
