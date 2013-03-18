@@ -13,10 +13,11 @@
 
 namespace Schmutzka\Forms\Controls;
 
-use Nette,
-	Nette\Forms,
-	Nette\Forms\IControl,
-	DateTime;
+use Nette;
+use Nette\Forms;
+use Nette\Forms\IControl;
+use DateTime;
+use Schmutzka;
 
 class DatePicker extends Forms\Controls\BaseControl
 {
@@ -135,7 +136,7 @@ class DatePicker extends Forms\Controls\BaseControl
 		if ($value !== NULL) {
 			// DateTime constructor throws Exception when invalid input given
 			try {
-				$value = Nette\DateTime::from($value); // clone DateTime when given
+				$value = Schmutzka\DateTime::from($value); // clone DateTime when given
 			} catch (\Exception $e) {
 				$value = NULL;
 			}
@@ -220,7 +221,7 @@ class DatePicker extends Forms\Controls\BaseControl
 	 * @param    Forms\Rules
 	 * @return   array             0 => DateTime|NULL $minDate, 1 => DateTime|NULL $maxDate
 	 */
-	private function extractRangeRule(Forms\Rules $rules)
+	protected function extractRangeRule(Forms\Rules $rules)
 	{
 		$controlMin = $controlMax = NULL;
 

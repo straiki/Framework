@@ -8,11 +8,11 @@ use Nette\Utils\Html;
  * Suggest control
  * bootstrap.min.js + bootstrap.min.css required
  * 2DO: https://github.com/twitter/bootstrap/pull/3682
-	 source: function (query, process) {
+	source: function (query, process) {
 		$.get('/autocomplete', { q: query }, function (data) {
-		  process(data)
+			process(data)
 		})
-	  }
+	}
  */
 
 class SuggestControl extends \Nette\Forms\Controls\TextBase

@@ -2,42 +2,24 @@
 
 namespace Schmutzka\Forms;
 
-use Schmutzka\Forms\Controls,
-	Nette\Utils\Html,
-	DependentSelectBox\JsonDependentSelectBox,
-	Schmutzka\Forms\Render\BootstrapRenderer;
+use Nette;
+use Nette\Utils\Html;
+use Schmutzka\Forms\Controls;
+use MultipleFileUpload;
+use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
 
-class Form extends \Nette\Application\UI\Form
+class Form extends Nette\Application\UI\Form
 {
 	/** validators */
-	const RC = "Schmutzka\Forms\Rules::validateRC",
-		IC = "Schmutzka\Forms\Rules::validateIC",
-		PHONE = "Schmutzka\Forms\Rules::validatePhone",
-		ZIP = "Schmutzka\Forms\Rules::validateZip",
-		DATE = "Schmutzka\Forms\Rules::validateDate",
-		TIME = "Schmutzka\Forms\Rules::validateTime";
+	const RC = "Schmutzka\Forms\Rules::validateRC";
+	const IC = "Schmutzka\Forms\Rules::validateIC";
+	const PHONE = "Schmutzka\Forms\Rules::validatePhone";
+	const ZIP = "Schmutzka\Forms\Rules::validateZip";
+	const DATE = "Schmutzka\Forms\Rules::validateDate";
+	const TIME = "Schmutzka\Forms\Rules::validateTime";
+	const EXTENSION = "Schmutzka\Forms\Rules::extension";
 
 
-/**
- *
- * @param IControl $control
- * @param array $allowedExtensions lowercase! seznam povolenych pripon
- * @return bool
- */
-// http://forum.nette.org/cs/9855-nefunkcni-validace-uploadovaneho-souboru
-/*public function fileExtensionValidator(IControl $control, array $allowedExtensions)
-{
-    $file = $control->getValue();
-
-    if ($file instanceof \Nette\Http\FileUpload) {
-        $ext = strtolower(pathinfo($file->getName(), PATHINFO_EXTENSION));
-        return in_array($ext, $allowedExtensions);
-    }
-
-    return false;
-}*/
-
-		
 	/** @var string */
 	public $id;
 
@@ -47,31 +29,31 @@ class Form extends \Nette\Application\UI\Form
 	/** @var string */
 	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
 
+	/** @var bool */
+	public $useBootstrap = TRUE;
+
 	/** @var \Translator */
 	protected $translator = NULL;
+
+	/** @var callable */
+	protected $processor;
 
 	/** @var array */
 	private $typeClass = array(
 		"send" => "btn btn-primary",
-		"submit" => "btn btn-primary",
 		"cancel" => "btn",
-		"return" => "btn",
 		"reset" => "btn",
-		"test" => "btn",
 		"remove" => "btn btn-danger",
 		"delete" => "btn btn-danger",
-		"next" => "btn btn-success",
+		"add" => "btn btn-success",
 	);
 
 	/** @var bool */
 	private $isBuilt = FALSE;
 
-	/** @var \Nette\Templating\FileTemplate */
-	private $template = NULL;
-
 
 	/**
-	 * beforeRender build function
+	 * BeforeRender build function
 	 */
 	public function build()
 	{
@@ -88,33 +70,35 @@ class Form extends \Nette\Application\UI\Form
 		if ($this->target) {
 			$this->setTarget($this->target);
 		}
-
-		$this->setRenderer(new BootstrapRenderer);
 	}
 
 
 	/**
 	 * Custom form render for separate form
-	 * @seeks APP_DIR/Forms/MyFormName.latte
+	 * @seeks APP_DIR/Forms/{formName}.latte
+	 * @seeks LIBS_DIR/Schmutzka/Modules/{moduleName}/Forms/{formName}.latte
 	 */
-	public function render()
+	public function renderTemplate()
 	{
 		$className = strtr($this->getReflection()->name, array("\\" => "/"));
-		$file = APP_DIR . "/" . lcfirst($className) . ".latte";
+		$className = strtr($className, array("Forms" => "forms"));
+		$files[] = APP_DIR . "/" . lcfirst($className) . ".latte";
+		$files[] = LIBS_DIR . "/Schmutzka/Modules/" . $className . ".latte";
 
-		if (file_exists($file)) {
-			$template = $this->createTemplate($file);
-
-			foreach ($this as $key => $value) {
-				if (is_array($value) || is_string($value) || is_int($value)) {
-					$template->{$key} = $value;
+		foreach ($files as $file) {
+			if (file_exists($file)) {
+				$template = $this->createTemplate($file);
+				foreach ($this as $key => $value) {
+					if (is_array($value) || is_string($value) || is_int($value)) {
+						$template->{$key} = $value;
+					}
 				}
-			}
-			$template->render();
 
-		} else {
-			parent::render();	
+				return $template->render();
+			}
 		}
+
+		throw new \Exception("$file not found.");
 	}
 
 
@@ -155,22 +139,14 @@ class Form extends \Nette\Application\UI\Form
 
 	/**
 	 * Flash message error
+	 * @param string
 	 */
 	public function addError($message)
 	{
 		$this->valid = FALSE;
 
-		if ($message !== NULL) {
-			$messagePresent = FALSE;
-			foreach ($this->parent->template->flashes as $value) {
-				if ($message == $value->message) {
-					$messagePresent = TRUE;
-				}
-			}
-
-			if (!$messagePresent) {
-				$this->flashMessage($message,"flash-error");
-			}
+		if ($message) {
+			$this->flashMessage($message, "error");
 		}
 	}
 
@@ -187,24 +163,33 @@ class Form extends \Nette\Application\UI\Form
 			$this->build();
 		}
 
-		if ($this->getContext()->hasService("translator")) { // automatic translator
-			$this->translator = $this->getContext()->translator;
+		if (method_exists($this, "afterBuild")) {
+			$this->afterBuild();
+		}
+
+		if ($presenter->context->hasService("translator")) { // automatic translator
+			$this->translator = $presenter->context->translator;
 			$this->setTranslator($this->translator);
 		}
 
-		if ($presenter instanceof \Nette\Application\IPresenter) {
+		if ($presenter instanceof Nette\Application\IPresenter) {
 			$this->attachHandlers($presenter);
+		}
+
+		if ($presenter->module != "front" && $this->useBootstrap) {
+			$this->setRenderer(new BootstrapRenderer($presenter->template));
 		}
 	}
 
 
 	/**
 	 * Automatically attach methods
-	 * @param \Nette\Application\UI\Presenter
+	 * @param Nette\Application\UI\Presenter
 	 */
 	protected function attachHandlers($presenter)
 	{
-		$formNameSent = lcfirst($this->getName())."Sent";
+		// $formNameSent = lcfirst($this->getName())."Sent";
+		$formNameSent = "process" . lcfirst($this->getName());
 
 		$possibleMethods = array(
 			array($presenter, $formNameSent),
@@ -231,7 +216,7 @@ class Form extends \Nette\Application\UI\Form
 	
 		if ($this->getHttpData()) {
 			foreach ($this->getHttpData() as $key => $value) {
-				if (empty($values[$key]) && $value && !isset($this->typeClass[rtrim($key,"_")]) AND $key != "_token_") {
+				if (empty($values[$key]) && $value && !isset($this->typeClass[rtrim($key,"_")]) && $key != "_token_") {
 					$values[$key] = $value;
 				}
 			}
@@ -241,12 +226,12 @@ class Form extends \Nette\Application\UI\Form
 			unset($values[$key]);
 		}
 
-		foreach ($values as $key => $value) { 
-			if (is_object($value) && (get_class($value) == "Nette\DateTime" || get_class($value) == "DateTime")) { // object to date
-				$values[$key] = $value->format("Y-m-d");
-			}
-		}
+		if ($this->processor && is_callable($this->processor)) {
+			$values = call_user_func($this->processor, $values);
 
+		} elseif (method_exists($this->parent, lcfirst($this->getName()) . "Processor") && is_callable($this->processor)) { // find and use values processor if exists
+			$values = call_user_func($this->processor, $values);
+		}
 		if ($removeEmpty) { 
 			$values = array_filter($values); 
 		}
@@ -291,31 +276,6 @@ class Form extends \Nette\Application\UI\Form
 
 
 	/**
-	 * Adds email input
-	 */
-	public function addEmail($name, $label = NULL, $cols = NULL, $maxLength = NULL)
-	{
-		$item = $this->addText($name, $label, $cols, $maxLength);
-		$item->setAttribute('type', "email")
-			->addCondition(self::FILLED)
-			->addRule(self::EMAIL);
-
-		return $item;
-	}
-
-
-	/**
-	 * Adds url input
-	 */
-	public function addUrl($name, $label = NULL, $cols = NULL, $maxLength = NULL)
-	{
-		$item = $this->addText($name, $label, $cols, $maxLength);
-		$item->setAttribute('type', "url")->addCondition(self::FILLED)->addRule(self::URL);
-		return $item;
-	}
-
-
-	/**
 	 * Adds a radio list
 	 */
 	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
@@ -338,6 +298,19 @@ class Form extends \Nette\Application\UI\Form
 
 		$sep = Html::el($sep);
 		$item->setSeparator($sep);	
+
+		return $item;
+	}
+
+
+	/**
+	 * @return UploadControl
+
+	 */
+	public function addUpload($name, $label = NULL)
+	{
+		$basePath = $this->getHttpRequest()->url->scriptPath;
+		$item = $this[$name] = new Controls\UploadControl($label, $basePath);
 
 		return $item;
 	}
@@ -382,33 +355,6 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 
-	/**
-	 * @return JsonDependentSelectBox
-	 */
-	public function addJSelect($name, $label = NULL, $parents = NULL, $dataCallback)
-	{
-		return $this[$name] = new JsonDependentSelectBox($label, $parents, $dataCallback);
-	}
-
-
-	/**
-	 * @return \Controls\Replicator
-	 */
-	public function addDynamic($name, $factory, $createDefault)
-	{
-		return $this[$name] = new Controls\Replicator($factory, $createDefault);
-	}
-
-
-	/**
-	 * @return \GMapFormControl	
-	 */
-	public function addGmap($name, $label, $options = NULL)
-	{
-		return $this[$name] = new \GMapFormControl($label, $options);
-	}
-
-
 	/** 
 	 * Adds suggest 
 	 * @param string
@@ -421,25 +367,30 @@ class Form extends \Nette\Application\UI\Form
 	}
 
 
-	/* ************************** shortcuts ************************ */
-
-
 	/**
-	 * @return \Nette\DI\IContainer
+	 * Adds datepicker time
+	 * @param string
+	 * @param string
 	 */
-	protected function getContext()
+	public function addDateTimePicker($name, $label = NULL)
 	{
-		return $this->getPresenter()->context;
+		return $this[$name] = new Controls\DateTimePicker($label);
 	}
 
 
 	/**
-	 * Models shortcut
+	 * Adds multipel file upload
+	 * @param string
+	 * @param string
+	 * @param int
 	 */
-	public function getModels()
+	public function addMultipleFileUpload($name, $label = NULL, $maxFiles=999)
 	{
-		return $this->context->models;
+		return $this[$name] = new MultipleFileUpload($label, $maxFiles);
 	}
+
+
+	/********************** helpers **********************/
 
 
 	/**
@@ -457,29 +408,23 @@ class Form extends \Nette\Application\UI\Form
 	 */
 	public function createTemplate($file = NULL)
 	{
+		$template = $this->getPresenter()->createTemplate();
 		if ($file) {
-			return $this->getPresenter()->createTemplate()->setFile($file);
+			$template->setFile($file);
 		}
 
-		return $this->getPresenter()->createTemplate();
+		return $template;
 	}
 
 
 	/**
-	 * Redirect
+	 * @param callable
+	 * @return self
 	 */
-	public function redirect()
+	public function setProcessor($processor)
 	{
-		call_user_func_array(array($this->getPresenter(), "redirect"), func_get_args());
-	}
-
-
-	/**
-	 * Flash message shortcut
-	 */
-	public function flashMessage()
-	{
-		call_user_func_array(array($this->getPresenter(), "flashMessage"), func_get_args());
+		$this->processor = $processor;
+		return $this;
 	}
 
 }
