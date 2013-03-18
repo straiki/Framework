@@ -2,23 +2,27 @@
 
 namespace Schmutzka\Templates;
 
-use Schmutzka\Templates\MyHelpers,
-	Schmutzka\Templates\MyMacros,
-	Nette\Templating\Filters\Haml,
-	Nette\Latte,
-	Nette,
-	Schmutzka\Utils;
+use Nette;
+use Schmutzka;
+use NetteTranslator;
 
-class TemplateService extends \Nette\Object
+class TemplateService extends Nette\Object
 {
+	/** @var Schmutzka\Templates\Helpers */
+	private $helpers;
 
-	/** @var \Nette\DI\Container */
-	private $context;
+	/** @var NetteTranslator\Gettext */
+	private $translator;
 
 
-	public function __construct(\Nette\DI\Container $context)
+	/**
+	 * @param Schmutzka\Templates\Helpers
+	 * @param NetteTranslator\Gettext
+	 */
+	public function __construct(Schmutzka\Templates\Helpers $helpers, NetteTranslator\Gettext $translator = NULL)
 	{
-		$this->context = $context;
+		$this->helpers = $helpers;
+		$this->translator = $translator;
 	}	
 
 
@@ -29,37 +33,22 @@ class TemplateService extends \Nette\Object
 	 */
 	public function configure(Nette\Templating\FileTemplate $template, $lang = NULL)
 	{
-		$latte = new Latte\Engine;
-
-		if ($this->context->hasService("translator")) {
-			if ($lang) {
-				$this->context->translator->setLang($lang); 
-			}
-			$template->setTranslator($this->context->translator);
+		if ($this->translator && $lang) {
+			$this->translator->setLang($lang); 
+			$template->setTranslator($this->translator);
 
 		} else {
-			$template->registerHelper("translate", array($this, "translate"));
+			$template->registerHelper("translate", function ($s) { 
+				return $s;
+			});
 		}
 
-		MyMacros::install($latte->compiler);
+		$template->registerFilter(new Nette\Templating\Filters\Haml);
+		$template->registerFilter(new Nette\Latte\Engine);
 
-		$template->registerFilter(new Haml);
-		$template->registerFilter($latte);
-
-		$helpers = new MyHelpers($this->context);
-		$template->registerHelperLoader(array($helpers, "loader"));
+		$template->registerHelperLoader(array($this->helpers, "loader"));
 
 		return $template;
-	}
-
-
-	/**	
-	 * Inactive translator helper
-	 * @param string
-	 */
-	public function translate($s)
-	{
-		return $s;
 	}
 
 }

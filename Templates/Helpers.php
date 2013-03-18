@@ -2,18 +2,23 @@
 
 namespace Schmutzka\Templates;
 
+use Nette;
+use Schmutzka;
 use Schmutzka\Utils\Time;
-use Nette\Templating\Helpers;
 
-class MyHelpers extends \Nette\Object
+class Helpers extends Nette\Object
 {
-	/** @var \SystemContainer */
-	private $context;
+	/** @var Schmutzka\Models\Page */
+	private $pageModel;
+
+	/** @var Schmutzka\Models\Article */
+	private $articleModel;
 
 
-	public function __construct($context)
+	public function __construct(Schmutzka\Models\Page $pageModel, Schmutzka\Models\Article $articleModel)
 	{
-		$this->context = $context;
+		$this->pageModel = $pageModel;
+		$this->articleModel = $articleModel;
 	}
 
 
@@ -26,6 +31,42 @@ class MyHelpers extends \Nette\Object
 
 
 	/**
+	 * Number format
+	 * @param array
+	 * @param int
+	 * @param string
+	 * @param string
+	 * @return string
+	 */
+	public static function numberF($number, $decimals = 0, $dec_point = ",", $thousand_sep = " ")
+	{
+		return number_format($number, $decimals, $dec_point, $thousand_sep);
+	}
+
+
+	/**
+	 * Localized month
+	 * @param mixed
+	 * @param string
+	 * @return string
+	 */
+	public static function monthLoc($date, $lang)
+	{
+		$month = (is_int($date) ? $date : date("n", strtotime($date)));
+	
+		if ($lang == "en") {
+			return date("F", strtotime($month));
+		}
+
+		static $monthNames = array(
+			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
+		);
+
+		return $monthNames[$lang][$month];
+	}
+
+
+	/**
 	 * Linkify text
 	 * @param string
 	 * @param bool
@@ -33,6 +74,27 @@ class MyHelpers extends \Nette\Object
 	public static function linkifyText($string, $linkName = NULL)
 	{		
 		return Url::linkifyText($string, $linkName);
+	}
+
+
+	/**
+	 * Display link without "http://"
+	 * @param string
+	 */
+	public static function displayUrl($url)
+	{
+		return ltrim($url, "http://");
+	}
+
+
+	/**
+	 * Difference in minutes
+	 * @param int
+	 * @param int
+	 */
+	public static function minDiff($time1, $time2)
+	{
+		return Time::timestampDiff($time1, $time2, "min");
 	}
 
 
@@ -100,14 +162,17 @@ class MyHelpers extends \Nette\Object
 		$args = func_get_args();
 		$data = array_shift($args);
 
+		$sep = $args[0];
+
 		$temp = "";
-		foreach($args[0] as $key) {
+		foreach($args[1] as $key) {
+
 			if (isset($data[$key])) {
-				$temp .= $data[$key] . " ";
+				$temp .= $data[$key] . $sep;
 			}
 		}
 
-		return trim($temp); 
+		return trim($temp, $sep); 
 	}
 
 
@@ -136,7 +201,7 @@ class MyHelpers extends \Nette\Object
 	 */
 	public function isEmpty($value, $emptyReturn = "-", $notEmptyReturn = NULL)
 	{
-		if ((!isset($value)) OR (!$value AND !is_numeric($value)) OR is_null($value)) {
+		if ((!isset($value)) || (!$value && !is_numeric($value)) || is_null($value)) {
 			return $emptyReturn;
 
 		} else {
@@ -159,9 +224,6 @@ class MyHelpers extends \Nette\Object
 			return $return;
 		}
 	}
-
-
-
 
 
 	/** 
@@ -334,6 +396,7 @@ class MyHelpers extends \Nette\Object
 	 */
 	public static function dayName($date, $lang = "cs", $type = "short")
 	{
+		dd("move to datetime");
 		$day = (is_int($date) ? $date : date("N", strtotime($date)));
 
 		if ($type == "short") {
@@ -359,46 +422,13 @@ class MyHelpers extends \Nette\Object
 
 
 	/**
-	 * Localized month
-	 * @param mixed
-	 * @param string
-	 * @return string
-	 */
-	public static function monthLoc($date, $lang)
-	{
-		$month = (is_int($date) ? $date : date("n", strtotime($date)));
-	
-		if ($lang == "en") {
-			return date("F", strtotime($month));
-		}
-
-		static $monthNames = array(
-			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
-		);
-
-		return $monthNames[$lang][$month];
-	}
-
-
-	/**
 	 * Date default values
 	 * @param string
 	 * @param string
 	 */
-	public static function dateCs($date, $format = "j. n. Y H:i")
+	public static function date($date, $format = "j. n. Y H:i")
 	{
-		return Helpers::date($date, $format);
-	}
-
-
-	/**
-	 * Date default values
-	 * @param string
-	 * @param string
-	 */
-	public static function dateEn($date, $format = "Y-m-d H:i")
-	{
-		return Helpers::date($date, $format);
+		return Nette\Templating\Helpers::date($date, $format);
 	}
 
 
@@ -408,6 +438,7 @@ class MyHelpers extends \Nette\Object
 	 */
 	public static function month($month, $monthList = array("leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec"))
 	{
+		dd("helpers move to datetime");
 		return $monthList[$month - 1];
 	}
 
@@ -418,6 +449,7 @@ class MyHelpers extends \Nette\Object
 	 */
 	public static function weekday($weekday, $weekdayList = array("pondělí", "úterý", "středa", "čtvrtek", "pátek", "sobota", "neděle"))
 	{
+		dd("helpers move to datetime");
 		return $week[$weekday - 1];
 	}
 
@@ -465,6 +497,54 @@ class MyHelpers extends \Nette\Object
 	public function translate($s)
 	{
 		return $s;
+	}
+
+
+	/*** cms ***/ 
+
+
+	/**
+	 * Enable page/article links
+	 * @param string
+	 * @return string
+	 */
+	public function enablePageArticleLinks($string)
+	{
+		preg_match_all('#(\[[^\[\]\n]++\])#U', $string, $matches);
+
+		dd("my helpers");
+
+		$pageList = $this->pageModel->fetchPairs("id", "url");
+		$articleList = $this->articleModel->fetchPairs("id", "url");
+		$from = $to = $replaceList = array();
+
+		foreach ($matches as $row) {
+			if ($row) {
+				$item = $row[0];
+				$item = trim($item, "[]");
+
+				$itemParts = explode(":", $item); 
+				if (count($itemParts) != 3) {
+					continue;
+				}
+				list($type, $id, $node) = $itemParts;
+				$node = trim($node, "\"");
+
+				if ($type == "page") {
+					$from[] = $row[0];
+					$to[] = "<a href='../stranka/" . $pageList[$id] . "'>" . $node . "</a>";  // move to appliaction, link!, base path +
+
+				} elseif ($type = "article") {
+					$from[] = $row[0];
+					$to[] = "<a href='../clanek/" . $pageList[$id] . "'>" . $node . "</a>";
+				}
+
+			}
+		}
+		
+		$string = str_replace($from, $to, $string);
+
+		return $string;
 	}
 
 }

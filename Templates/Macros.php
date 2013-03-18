@@ -4,26 +4,26 @@
  * My macros
  *
  * {menuItem ? ?} - <li n:class='$presenter->isCurrentLink("Homepage:*") ? active'><a n:href="Homepage:default">Test lists</a></li>
- * {n:id ?} <div n:id="cond ? one : two">
  * {ga ?} - google analytics code
+ * {n:id ?} <div n:id="cond ? one : two">
  * {n:confirm ?} - js confirm dialog
  * {n:tooltip ?} - into js tooltip
- * {n:src ?} - into <img src={$baseHref}/images/ ... >
+ * {n:src ?} - into <img src={$basePath}/images/ ... >
  * {n:current ?} - class="$presenter->isLinkCurrent() ? $node>
- * {clickableDump}
- * {label ?} 
+ * {empty} - ...
+ * {n:phref ?} - $presenter->link($args)
  */
 
 namespace Schmutzka\Templates;
 
-use Nette\Latte\MacroNode,
-	Nette\Latte\PhpWriter,
-	Nette\Utils\Html;
+use Nette;
+use Nette\Latte\MacroNode;
+use Nette\Latte\PhpWriter;
 
-class MyMacros extends \Nette\Latte\Macros\MacroSet
+class Macros extends Nette\Latte\Macros\MacroSet
 {
 
-	public static function install(\Nette\Latte\Compiler $compiler)
+	public static function install(Nette\Latte\Compiler $compiler)
 	{
 		$me = new static($compiler);
 		$me->addMacro("confirm", NULL, NULL, array($me, "macroConfirm"));
@@ -36,21 +36,6 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 		$me->addMacro("not-empty", "ob_start()", 'if ($iterations) ob_end_flush(); else ob_end_clean()');
 		$me->addMacro("empty", 'if (!$iterations):', "endif");
 		$me->addMacro("phref", NULL, NULL, array($me, "macroPhref"));
-		$me->addMacro("clickableDump","echo \Nette\Diagnostics\Helpers::clickableDump(%node.word)");
-		$me->addMacro("label", array($me, "macroLabel"));
-	}
-
-
-	/**
-	 * uncripled label
-	 */
-	public function macroLabel(MacroNode $node, PhpWriter $writer)
-	{
-		if (substr($node->args, -1) === "/") {
-			$node->setArgs(substr($node->args, 0, -1));
-		}
-
-		return $writer->write('if ($_label = $_form[%node.word]->getLabel()) echo $_label->addAttributes(%node.array)');
 	}
 
 
@@ -115,6 +100,8 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	 */
 	public function macroGa(MacroNode $node, PhpWriter $writer)
 	{
+		dd("ga macro - move to compnent");
+
 		$args = explode(",", $node->args);
 		$code = $args[0];
 		$subdomains = (isset($args[1]) ? $args[1] : NULL);
@@ -155,6 +142,7 @@ class MyMacros extends \Nette\Latte\Macros\MacroSet
 	public function macroMenuItem(MacroNode $node, PhpWriter $writer)
 	{
 		$args = explode(",", $node->args);
+
 		if (count($args) == 2) {
 			list($href, $name) = $args;
 
