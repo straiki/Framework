@@ -1,6 +1,6 @@
 <?php
 
-namespace Models;
+namespace Schmutzka\Models;
 
 use Schmutzka\Utils\Name;
 use Nette;
@@ -20,26 +20,37 @@ abstract class Base extends Nette\Object
 
 	/**
 	 * @param NotORM
-	 * @param Nette\DI\Container
+	 * @param Nette\Application\Application
 	 */
-	public function __construct(NotORM $db, Nette\DI\Container $context)
+	public function __construct(NotORM $db, Nette\Application\Application $application)
 	{
 		$this->db = $db;
 
-		if (isset($context->params["activeLang"])) {
-			$this->lang = $context->params["activeLang"];
+		if ($lang = $this->getLang($application)) {
+			$this->lang = $lang;
 		}
 
 		$this->tableName = Name::tableFromClass(get_class($this));
 	}
 
 
-	/** 
-	 * Retun records by condition
-	 * @param string
-	 * @param string
+	/**
+	 * Table shortcut
 	 */
-	public function all(array $key = array())
+	final public function table()
+	{
+		// todo: autodected array?
+		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
+	}
+
+
+	/********************** basic operations **********************/
+
+
+	/** 
+	 * @param array
+	 */
+	public function all($key = array())
 	{
 		if ($key) {
 			return $this->table($key);
@@ -51,7 +62,6 @@ abstract class Base extends Nette\Object
 
 
 	/** 
-	 * Insert record
 	 * @param array
 	 * @return int
 	 */
@@ -63,9 +73,23 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * Update record
-	 * @param array
 	 * @param mixed
+	 * @return array|NULL
+	 */
+	public function item($key)
+	{
+		if (is_array($key)) {
+			return $this->table($key)->fetchRow(); // todo: protect fetchRow() from error if empty result
+
+		} else {
+			return $this->table("id", $key)->fetchRow(); // todo: protect fetchRow() from error if empty result
+		}
+	}
+
+
+	/**
+	 * @param array
+	 * @return array
 	 */
 	public function update($array, $key)
 	{
@@ -73,7 +97,7 @@ abstract class Base extends Nette\Object
 			$this->table($key)->update($array);	
 
 		} else {
-			$this->table("id", $key)->update($array);	
+			$this->table("id", $key)->update($array);
 		}
 
 		return $this->item($key);
@@ -81,7 +105,6 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * Duplicates record
 	 * @param mixed
 	 * @param array
 	 */
@@ -98,7 +121,6 @@ abstract class Base extends Nette\Object
 
 		foreach ($result as $row) {
 			unset($row["id"]);
-
 			if ($change) {
 				foreach ($change as $keyChange => $valueChange) {
 					if (isset($row[$keyChange])) {
@@ -113,69 +135,31 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * Delete record
-	 * @param array
-	 * @param string
+	 * @param mixed
+	 * @param int
 	 */
 	public function delete($key)
 	{
-		if ($record = $this->exist($key)) {
-			return $record->delete();
-
-		} else {
-			return FALSE;
-		}
-	}
-
-
-	/**
-	 * Get 1 item
-	 * @param mixed
-	 * @return array
-	 */
-	public function item($key)
-	{
-		if ($record = $this->exist($key)) {
-			return $record->fetchRow();
-
-		} else {
-			return FALSE;
-		}
-	}
-
-
-	/**
-	 * Check if record exists
-	 * @param array
-	 * @return array/FALSE
-	 */
-	public function exist($key)
-	{		
 		if (is_array($key)) {
-			$record = $this->table($key);		
+			return $this->table($key)->delete();
 
 		} else {
-			$record = $this->table("id", $key);		
+			return $this->table("id", $key)->delete();
 		}
-
-		return $record;
 	}
 
-	
+
 	/**
-	 * Get number of table rows
 	 * @param array
 	 * @return int
 	 */
-	public function count($key = NULL)
+	public function count($key = array())
 	{
-		if ($key) {
-			return $this->table($key)->count("*");
-
-		} else {
-			return $this->table()->count("*");
-		}
+		return $this->table($key)->count("*");
 	}
+
+
+	/********************** fetch* **********************/
 
 
 	/**
@@ -183,7 +167,7 @@ abstract class Base extends Nette\Object
 	 * @param string $column
 	 * @return array
 	 */
-	public function fetchPairs($id = "id", $column = NULL, array $key = array())
+	public function fetchPairs($id = "id", $column = NULL, $key = array())
 	{
 		return $this->table($key)->fetchPairs($id, $column);
 	}
@@ -222,17 +206,12 @@ abstract class Base extends Nette\Object
 	 */
 	public function getLastId($column = "id")
 	{
-		$record = $this->table()->order("$column DESC")->fetchSingle($column);
-		if (is_null($record)) {
-			return 0;
-		}
-
-		return $record;	
+		return $this->table()->order("$column DESC")->fetchSingle($column);
 	}
 
-
+	
 	/**
-	 * Insert, update on duplicate key (
+	 * Insert, update on duplicate key
 	 * @param array
 	 * @param mixed
 	 */
@@ -250,39 +229,24 @@ abstract class Base extends Nette\Object
 	}
 
 
-	/**
-	 * Check if value in column is free
-	 * @param array
-	 * @param mixed
-	 * @return bool
-	 */
-	public function isFree(array $key, $id = NULL)
-	{
-		if ($id) {
-			return !$this->table($key)->where("NOT id", $id)->count("*");
+	/********************** helpers **********************/
 
-		} else {
-			return !$this->table($key)->count("*");
+
+	/**
+	 * Get lang from url if set
+	 * @param Nette\Application\Appliaction
+	 * @return string|NULL
+	 */
+	private function getLang(Nette\Application\Application $application)
+	{
+		if ($requests = $application->getRequests()) {
+			$parameters = $requests[0]->getParameters();
+			if (isset($parameters["lang"])) {
+				return $parameters["lang"];
+			}
 		}
-	}
 
-
-	/**
-	 * Table shortcut
-	 */
-	final public function table()
-	{
-		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
-	}
-
-
-	/**
-	 * Set up language
-	 * @param string
-	 */
-	public function setLang($lang)
-	{
-		$this->lang = $lang;
+		return NULL;
 	}
 
 }
