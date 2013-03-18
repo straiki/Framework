@@ -1,4 +1,4 @@
-{if $paginator->pageCount}
+{if $paginator->pageCount && $paginator->pageCount > 1}
 .pagination
 	%ul 
 		{foreach $steps as $step}
