@@ -2,226 +2,85 @@
 
 namespace Schmutzka\Application\UI;
 
-use Schmutzka\Forms\Replicator,
-	Schmutzka\Diagnostics\Panels\UserPanel,
-	Schmutzka\Templates\TemplateFactory,
-	Schmutzka\Utils\Filer,
-	Nette\Mail\Message,
-	Nette\Http\Url,
-	Nette\Security\Identity,
-	Nette\Utils\Strings,
-	Nette\Utils\Finder,
-	Components\CssLoader,
-	Components\JsLoader,
-	DependentSelectBox\JsonDependentSelectBox;
+use Nette;
+use Nette\Reflection\Property;
+use Nette\Reflection\ClassType;
+use Nette\Utils\Strings;
+use Schmutzka;
+use Schmutzka\Http\Browser;
+use Schmutzka\Utils\Name;
+use WebLoader;
 
-abstract class Presenter extends \Nette\Application\UI\Presenter
+abstract class Presenter extends Nette\Application\UI\Presenter
 {
 	/** @persistent */
 	public $lang;
 
-	/** @var \Panels\User */
-	public $userPanel;
-
-	/** @var \Nette\Caching\Cache */
-	public $cache;
-
-	/** @var \Nette\Http\SessionSection */
-	public $mySession;
-
-	/** @var \Nette\Http\SessionSection */
-	public $appSession;
-
-	/** @var string */
-	public $role = "";
-
-	/** @var bool */
-	public $logged = FALSE;
-
-	/** @var bool */
-	protected $runStopwatch = FALSE;
-
-	/** @var string */
-	protected $onLogoutLink = ":Front:Homepage:default";
-
-	/** @var  Schmutzka\Services\ParamService */
-	protected $paramService;
-
-	/** @var string */	
-	private $referer;
-
-
-	public function beforeRender()
-	{
-		parent::beforeRender();
-		JsonDependentSelectBox::tryJsonResponse($this->presenter);
-	}
-
+	/** @var array */
+	public $module;
 
 	/**
-	 * Inject services
-	 * @param Schmutzka\Services\ParamService
+	 * @var NetteTranslator\Gettext
+	 * @autowire
 	 */
-	public function injectServices(Schmutzka\Services\ParamService $paramService) 
-	{ 
-		$this->paramService = $paramService;
-	}
+	public $translator;
+
+	/** @var Nette\Http\SessionSection */
+	protected $baseSession;
+	
+	/** @var string */
+	protected $onLogoutLink;
+
+	/** @var bool */
+	protected $useMobileTemplates = FALSE;
+
+	/**
+	 * @var Nette\Caching\Cache
+	 * @autowire
+	 */
+	protected $cache;
+
+	/**
+	 * @var Schmutzka\Config\ParamService
+	 * @autowire
+	 */
+	protected $paramService;
+
+	/**
+	 * @var Schmutzka\Templates\TemplateService
+	 * @autowire
+	 */
+	protected $templateService;
+
+	/** @var array */
+	private $autowire = array();
+
+	/* @var Nette\DI\Container */
+	private $serviceLocator;
+
 
 	public function startup()
 	{
 		parent::startup();
 
 		$this->params += $this->context->parameters;
-
-		$this->cache = $this->context->cache;
+		$this->module = Name::mpv($this->presenter, "module");
 
 		$sectionKey = substr(sha1($this->params["wwwDir"]), 6);
-		$this->mySession = $this->session->getSection("mySession_" . $sectionKey);
-		$this->appSession = $this->session->getSection("appSession");
+		$this->baseSession = $this->session->getSection("baseSession_" . $sectionKey);
 
-		
-		if ($this->params["debugMode"]) {
-			Message::$defaultMailer = new \Schmutzka\Diagnostics\Panels\DumpMail($this->getContext()->session); // service conflict with @nette.mail
-		}
-
-		$this->userPanel = UserPanel::register($this->user, $this->session, $this->context);
-	
 		$this->user->storage->setNamespace("user_ " . $sectionKey); 
 
-		// user status and role info
 		if ($this->user->loggedIn) {	
-			$this->logged = TRUE;
-			$this->role = $this->user->getRole();
-
 			if (isset($this->params["logUserActivity"])) {
 				$this->user->logUserActivity($this->params["logUserActivity"]);
 			}
 
-		} elseif (!in_array($this->presenter->name, array("Homepage", "Front:Homepage"))) { // important, to not redirect to homepage, where login is
-			if (!is_array($this->signal) OR !in_array("logout", $this->signal)) { // do not save logout signal either (results in logout after login)
-				$this->appSession->backlink = $this->storeRequest();
-			}
+		} elseif ($this->isRequestStoreable($this->presenter, $this->signal)) {
+			$this->baseSession->requestBacklink = $this->storeRequest();
 		}
 
-		$this->template->role = $this->role;
-		$this->template->logged = $this->logged;
-
-		// referer
-		$this->updateReferer($this->mySession, $this->presenter->context->httpRequest);
-	}
-
-
-	public function loadState(array $params)
-	{
-		parent::loadState($params);
-		$this->params = $this->filterCustomPersistentParams($this->params);
-	}
-
-
-	public function saveState(array & $params, $reflection = NULL)
-	{
-		parent::saveState($params, $reflection);
-		$params = $this->filterCustomPersistentParams($params);
-	}
-
-
-	/**
-	 * Check persistent for* annotations
-	 * @param array
-	 * @return array
-	 * @experimental
-	 */
-	private function filterCustomPersistentParams($params)
-	{
-		$reflection = $this->getReflection();
-
-		$presenter = $reflection->name;
-		$view = $this->view;
-
-		foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
-			if ($rp->hasAnnotation("persistent")) {
-				if ($rp->hasAnnotation("forPresenter")) {
-					$allowedPresenters = (array) $rp->getAnnotation("forPresenter");
-					if (!in_array($presenter, $allowedPresenters)) {
-						unset($params[$rp->getName()]);
-					}
-
-				} elseif ($rp->hasAnnotation("forView")) {
-					$allowedViews = (array) $rp->getAnnotation("forView");
-					if (!in_array($view, $allowedViews)) {
-						unset($params[$rp->getName()]);
-					}
-				}
-			}
-		}
-	
-		return $params;
-	}
-
-
-	/**
-	 * Custom persistent params
-	 * @param string
-	 *
-	 * <code>
-	 * @presistent @forPresenter(CategoryPresenter, ProductPresenter)
-	 * </code>
-	 */
-/*	public static function getPersistentParams()
-	{
-		$rp = new \Nette\Reflection\ClassType(get_called_class());
-		$params = array();
-
-		foreach ($rp->getProperties(\ReflectionProperty::IS_PUBLIC) as $rp) {
-
-
-			if (!$rp->isStatic() && $rp->hasAnnotation("persistent")) {
-
-				if ($rp->hasAnnotation("forPresenter")) {
-					$allowedPresenters = (array) $rp->getAnnotation("forPresenter");
-					if (in_array($rp->getName(), $allowedPresenters)) {
-						$params[] = $rp->getName();
-					}
-
-				} else {
-					$params[] = $rp->getName();
-				}
-			}
-		}
-
-		return $params;
-	}*/
-
-
-	/**
-	 * Flash message including translator
-	 * @param string
-	 * @param string
-	 */
-	public function flashMessage($message, $type = "flash-success")
-	{		
-		if ($this->getContext()->hasService("translator")) {
-			$message = $this->getContext()->translator->translate($message);
-		}
-
-		return parent::flashMessage($message, $type);
-	}
-
-
-	/**
-	 * Automated login
-	 * @param string
-	 */
-	public function autologin($user)
-	{
-        if (!($user instanceof User)) {
-			$user = $this->context->database->user->where($user)->fetchRow();
-        }
-
-		unset($user["password"]);
-
-		$identity = new Identity($user["id"], (isset($user["role"]) ? $user["role"] : "user"), $user);
-		$this->user->login($identity);
+		$this->module = Name::mpv($this->presenter, "module");
 	}
 
 
@@ -229,24 +88,32 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 
 	/**
-	 * Logout	
+	 * Logout
 	 */
 	public function handleLogout()
 	{
 		$this->user->logout();
-		$this->flashMessage("Byli jste odhlášeni.", "flash-info");
+		$this->flashMessage("Byli jste odhlášeni.", "success timeout");
+		$this->redirectOnLogout();
+	} 
 
+
+	/**
+	 * Redirect after logout
+	 */
+	protected function redirectOnLogout()
+	{
 		if ($this->onLogoutLink) {
 			$this->redirect($this->onLogoutLink);
 		}
 
-		if (Strings::startsWith($this->link("Front:Homepage:default"), "error")) {
-			$this->redirect("Homepage:default");	
+		if (Strings::startsWith($this->link(":Front:Homepage:default"), "error")) {
+			$this->redirect("Homepage:default");
 
 		} else {
-			$this->redirect("Front:Homepage:default");	
+			$this->redirect(":Front:Homepage:default");
 		}
-	} 
+	}
 
 
 	/* *********************** templates ************************ */
@@ -259,7 +126,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function createTemplate($class = NULL)
 	{
 		$template = parent::createTemplate($class);
-		$this->context->template->configure($template, $this->lang);
+		$this->templateService->configure($template, $this->lang);
 		return $template;
 	}
 
@@ -271,7 +138,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	{
 		$templateFiles = parent::formatTemplateFiles();
 
-		if ($this->useMobileTemplates && MobileDetection::isMobile()) {
+		if ($this->useMobileTemplates && Browser::isMobile()) {
 			$templateFiles = array_map(function($path) {
 					return str_replace("/templates", "/templatesMobile", $path);
 			}, $templateFiles);
@@ -288,8 +155,9 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	{
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
 		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
+		$layoutTemplateFiles[] = LIBS_DIR . "/Schmutzka/Modules/@layout.latte"; // cms layout
 
-		if ($this->useMobileTemplates && MobileDetection::isMobile()) {
+		if ($this->useMobileTemplates && Browser::isMobile()) {
 			$layoutTemplateFiles = array_map(function($path) {
 					return str_replace("/templates", "/templatesMobile", $path);
 			}, $layoutTemplateFiles);
@@ -299,38 +167,8 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
-	/**
-	 * Takes array values from presenter
-	 * @param $this
-	 * @return array
-	 */
-	protected function getPresenterArrays($presenter)
-	{
-		$array = array();
-		foreach ($presenter as $key => $value) {
-			if (is_array($value)) {
-				$array[$key] = $value;
-			}
-		}
-		return $array;
-	}
-
-
-	/**
-	 * Adds every list to the template
-	 * @param array
-	 */
-	public function listsToTemplate($array)
-	{
-		foreach ($array as $key => $value) {
-			$this->template->{$key} = $value;
-		}	
-
-
-	}
-
 	/* *********************** components ************************ */
-	
+
 
 	/**
 	 * Title component
@@ -344,21 +182,21 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 
 	/**
 	 * Css component
-	 * @return \Components\CssLoader
+	 * @return WebLoader\Nette\CssLoader
 	 */
 	protected function createComponentCss()
 	{
-		return $this->context->createCssControl();
+		return new WebLoader\Nette\CssLoader($this->context->{"webloader.cssDefaultCompiler"}, $this->template->basePath . "/webtemp/");
 	}
 
 
 	/**
-	 * Js component 
-	 * @return \Components\JsLoader
+	 * Js component
+	 * @return WebLoader\Nette\JavaScriptLoader
 	 */
 	protected function createComponentJs()
 	{
-		return $this->context->createJsControl();
+		return new WebLoader\Nette\JavaScriptLoader($this->context->{"webloader.jsDefaultCompiler"}, $this->template->basePath . "/webtemp/");
 	}
 
 
@@ -384,58 +222,220 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/* *********************** shortcuts ************************ */
 
 
-	/**
-	 * Model shortcut 
-	 */
-	final public function getModels()
-	{
-		return $this->context->models;
-	}
-
-
 	/**	
 	 * Translator shortucut
 	 */
 	public function translate($text)
 	{
-		if ($this->getContext()->hasService("translator")) {
-			return $this->getContext()->translator->translate($text);
+		if ($this->translator) {
+			return $this->translator->translate($text);
 		}
 	
 		return $text;
 	}
 
 
-	/********************* helpers *********************/
+	/********************** module helpers @todo move to specifi module class **********************/
 
 
 	/**
-	 * Update referer, if changed
-	 * @param \Nette\Session\SessionSection
-	 * @param \httpRequest
+	 * Delete helper
+	 * @param Models\*
+	 * @param int
+	 * @param string
 	 */
-	protected function updateReferer(&$session, $http) 
+	protected function deleteHelper($model, $id, $redirect = "default")
 	{
-		$previous = $session->referer;
+		if ($model->delete($id)) {
+			$this->flashMessage("Záznam byl úspěšně smazán.","flash-success"); 
 
-		// get this url
-		$url = new Url($http->url);
-		$url->query = NULL;
-		$url = $url->absoluteUrl;
+		} else {
+			$this->flashMessage("Tento záznam neexistuje.", "flash-error"); 
+		} 
 
-		// compare with this referer - drop shits
-		$present = new Url($http->referer);
-		$present->query = NULL;
-		$present = $present->absoluteUrl;
-
-		if ($present != $url OR empty($previous)) { // it's not the same, return new one
-			$return = $present;
+		if ($redirect) {
+			$this->redirect($redirect, array("id" => NULL)); 
 		}
-		else {
-			$return = $previous; // the same, return old one
-		}
-
-		$this->referer = $session->referer = $return;
 	}
+
+
+	/**
+	 * Edit item
+	 * @param Models\*
+	 * @param int
+	 * @param string
+	 */
+	protected function loadItem($model, $id, $redirect = "default")
+	{
+		if ($item = $model->item($this->id)) {
+			$this->template->item = $item;
+			return $item;
+
+		} else {
+			$this->flashMessage("Tento záznam neexistuje.", "flash-error");
+			$this->redirect($redirect, array("id" => NULL));
+		}
+	}
+
+
+	/**
+	 * Is reuqest storeable
+	 * @param string
+	 * @param string
+	 */
+	private function isRequestStoreable($presenter, $signal)
+	{
+		$mvp = Schmutzka\Utils\Name::mpv($presenter);
+		$presenter = $mvp[1];
+		$view = $mvp[2];
+
+		if ($presenter == "homepage" || $presenter == "registration" || $view == "login") {
+			return FALSE;
+		}
+
+		if (is_array($signal) && (in_array("authorize", $signal) || in_array("login", $signal))) {
+			return FALSE;
+		}
+
+		return TRUE;
+	}
+
+
+	/**
+	 * Edit item
+	 * @param Models\*
+	 * @param int
+	 * @param string
+	 */
+	protected function loadEditItem($model, $id, $redirect = "default")
+	{
+		if ($item = $model->item($this->id)) {
+			$this->template->item = $item;
+
+		} else {
+			$this->flashMessage("Tento záznam neexistuje.", "error");
+			$this->redirect($redirect, array("id" => NULL));
+		}
+	}
+
+
+	/********************** autowire properties (by Hosiplan) **********************/
+
+
+	/**
+	 * @param Nette\DI\Container $dic
+	 * @throws Nette\InvalidStateException
+	 * @throws Nette\MemberAccessException
+	 * @throws Nette\DI\MissingServiceException
+	 */
+	public function injectProperties(Nette\DI\Container $dic)
+	{
+		if (!$this instanceof Nette\Application\UI\PresenterComponent) {
+			throw new Nette\MemberAccessException('Trait ' . __TRAIT__ . ' can be used only in descendants of PresenterComponent.');
+		}
+
+		$this->serviceLocator = $dic;
+		$cache = new Nette\Caching\Cache($this->serviceLocator->getByType('Nette\Caching\IStorage'), 'Presenter.Autowire');
+		if (($this->autowire = $cache->load($presenterClass = get_class($this))) === NULL) {
+			$this->autowire = array();
+
+			$rc = ClassType::from($this);
+			$ignore = class_parents('Nette\Application\UI\Presenter') + array('ui' => 'Nette\Application\UI\Presenter');
+			foreach ($rc->getProperties(Property::IS_PUBLIC | Property::IS_PROTECTED) as $prop) {
+				/** @var Property $prop */
+				if ((in_array($prop->getDeclaringClass()->getName(), $ignore) || !$prop->hasAnnotation('autowire')) && !($prop->hasAnnotation('var') && Strings::startsWith($prop->getAnnotation('var'), "Schmutzka\\Models\\"))) {
+					continue;
+					/* schmu lazyness! */
+					/*if !($prop->hasAnnotation('var') && Strings::startsWith($prop->getAnnotation('var'), "Models\\")) {
+					} else {
+						continue;
+					}*/
+				}
+
+				if (!$type = ltrim($prop->getAnnotation('var'), '\\')) {
+					throw new Nette\InvalidStateException("Missing annotation @var with typehint on $prop.");
+				}
+
+				if (!class_exists($type) && !interface_exists($type)) {
+					if (substr($prop->getAnnotation('var'), 0, 1) === '\\') {
+						throw new Nette\InvalidStateException("Class \"$type\" was not found, please check the typehint on $prop");
+					}
+
+					if (!class_exists($type = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $type) && !interface_exists($type)) {
+						throw new Nette\InvalidStateException("Neither class \"" . $prop->getAnnotation('var') . "\" or \"$type\" was found, please check the typehint on $prop");
+					}
+				}
+
+				if (empty($this->serviceLocator->classes[strtolower($type)])) {
+					throw new Nette\DI\MissingServiceException("Service of type \"$type\" not found for $prop.");
+				}
+
+				// unset property to pass control to __set() and __get()
+				unset($this->{$prop->getName()});
+
+				$this->autowire[$prop->getName()] = array(
+					'value' => NULL,
+					'type' => ClassType::from($type)->getName()
+				);
+			}
+
+			$files = array_map(function ($class) {
+				return ClassType::from($class)->getFileName();
+			}, array_diff(array_values(class_parents($presenterClass) + array('me' => $presenterClass)), $ignore));
+
+			$cache->save($presenterClass, $this->autowire, array(
+				$cache::FILES => $files,
+			));
+
+		} else {
+			foreach ($this->autowire as $propName => $tmp) {
+				unset($this->{$propName});
+			}
+		}
+	}
+
+
+	/**
+	 * @param string $name
+	 * @param mixed $value
+	 * @throws \Nette\MemberAccessException
+	 * @return mixed
+	 */
+	public function __set($name, $value)
+	{
+		if (!isset($this->autowire[$name])) {
+			return parent::__set($name, $value);
+
+		} elseif ($this->autowire[$name]['value']) {
+			throw new Nette\MemberAccessException("Property \$$name has already been set.");
+
+		} elseif (!$value instanceof $this->autowire[$name]['type']) {
+			throw new Nette\MemberAccessException("Property \$$name must be an instance of " . $this->autowire[$name]['type'] . ".");
+		}
+
+		return $this->autowire[$name]['value'] = $value;
+	}
+
+
+	/**
+	 * @param $name
+	 * @throws \Nette\MemberAccessException
+	 * @return mixed
+	 */
+	public function &__get($name)
+	{
+		if (!isset($this->autowire[$name])) {
+			return parent::__get($name);
+		}
+
+		if (empty($this->autowire[$name]['value'])) {
+			$this->autowire[$name]['value'] = $this->serviceLocator->getByType($this->autowire[$name]['type']);
+		}
+
+		return $this->autowire[$name]['value'];
+	}
+
+
+
 
 }
