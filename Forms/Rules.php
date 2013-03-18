@@ -2,8 +2,9 @@
 
 namespace Schmutzka\Forms;
 
-use Nette\Forms\IControl,
-	Nette\Utils\Strings;
+use Nette;
+use Nette\Forms\IControl;
+use Nette\Utils\Strings;
 
 /**
  * validateTime
@@ -12,14 +13,15 @@ use Nette\Forms\IControl,
  * validatePhone
  * validateRC
  * validateIC
+ * validateExtension
  */
 
-class Rules extends \Nette\Object
+class Rules extends Nette\Object
 {
 
 	/**
 	 * Validate time
-	 *	@param IControl
+	 * @param IControl
 	 */
 	public static function validateTime(IControl $control)
 	{
@@ -29,19 +31,24 @@ class Rules extends \Nette\Object
 
 	/**
 	 * Validate date
-	 *	@param IControl
+	 * @param IControl
 	 */
 	public static function validateDate(IControl $control)
 	{
 		$date = $control->value;
+		if (! $date) {
+			return FALSE;
+		}
 
-		$dateArray = explode("-", $date); //explode the date into date,month and year 
+		$date = $control->value->format("Y-m-d");
+
+		$dateArray = explode("-", $date);
 		if (count($dateArray) == 3) {
-			list($y, $m, $d) = $dateArray; 
+			list($y, $m, $d) = $dateArray;
 
 			if (checkdate($m, $d, $y) && strtotime("$y-$m-$d") && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', "$d-$m-$y")) { 
 				return TRUE; 
-			}  
+			}
 		}
 
 		return FALSE;
@@ -50,7 +57,7 @@ class Rules extends \Nette\Object
 
 	/**
 	 * Validate zip
-	 *	@param IControl
+	 * @param IControl
 	 */
 	public static function validateZip(IControl $control)
 	{
@@ -60,25 +67,18 @@ class Rules extends \Nette\Object
 
 	/**
 	 * Validate phone
-	 *	@param IControl
+	 * @param IControl
 	 */
 	public static function validatePhone(IControl $control)
 	{
-		$phone = $control->value;
-		$pattern = '~^(\+\d{2,3})? ?\d{3} ?\d{3} ?\d{3}$~';
-
-		if (preg_match($pattern, $phone)) {
-			return TRUE;
-		}
-
-		return FALSE;
+		return Strings::match($control->value, "~^(\+\d{2,3})? ?\d{3} ?\d{3} ?\d{3}$~");
 	}
 
 
 	/**
 	 * Validate RC
 	 * @param IControl
-	 * http://latrine.dgx.cz/jak-overit-platne-ic-a-rodne-cislo
+	 * @source http://latrine.dgx.cz/jak-overit-platne-ic-a-rodne-cislo
 	 */
 	public static function validateRC(IControl $control)
 	{
@@ -122,7 +122,7 @@ class Rules extends \Nette\Object
 	/**
 	 * Validate IC
 	 * @param IControl
-	 * http://latrine.dgx.cz/jak-overit-platne-ic-a-rodne-cislo
+	 * @source http://latrine.dgx.cz/jak-overit-platne-ic-a-rodne-cislo
 	 */
 	public static function validateIC(IControl $control)
 	{
@@ -150,6 +150,26 @@ class Rules extends \Nette\Object
 		else $c = 11 - $a;
 
 		return (int) $ic[7] === $c;
+	}
+
+
+	/**
+	 * Check allowed extensions
+	 * @param IControl
+	 * @param array
+	 * @return bool
+	 * @source http://forum.nette.org/cs/9855-nefunkcni-validace-uploadovaneho-souboru
+	 */
+	public function validateFileExtension(IControl $control, array $allowedExtensions)
+	{
+		$file = $control->getValue();
+
+		if ($file instanceof Nette\Http\FileUpload) {
+			$ext = strtolower(pathinfo($file->getName(), PATHINFO_EXTENSION));
+			return in_array($ext, $allowedExtensions);
+		}
+
+		return false;
 	}
 
 }
