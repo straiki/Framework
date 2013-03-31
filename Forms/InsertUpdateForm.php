@@ -25,6 +25,9 @@ class InsertUpdateForm extends  Form
 	/** @var string */
 	public $updateCaption = "Uložit";
 
+	/** @var bool */
+	public $nullId = TRUE;
+
 
 	/** @persistent */
 	private $userId;
@@ -68,12 +71,16 @@ class InsertUpdateForm extends  Form
 		if ($this->id) {
 			$this->model->update($values, $this->id);
 			$this->flashMessage($this->flashText, "flash-success");
-			$this->redirect($this->redirectUpdate, array("id" => NULL));
-		}
-		else {
+
+			if ($this->nullId) {
+				$this->id = NULL;
+			}
+			$this->redirect($this->redirectUpdate, array("id" => $this->id));
+
+		} else {
 			$this->model->insert($values);
 			$this->flashMessage($this->flashText, "flash-success");
-			$this->redirect($this->redirectInsert, array("id" => NULL));
+			$this->redirect($this->redirectInsert);
 		}
 	}
 

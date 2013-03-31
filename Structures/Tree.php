@@ -2,20 +2,20 @@
 
 namespace Schmutzka\Structures;
 
-class Tree extends \Nette\Object
+use Nette;
+
+class Tree extends Nette\Object
 {
-
-	/** @var string key column name */
-	private $idColumn = "";
-
-	/** @var string parent key column name */
-	private $parentColumn = "";
-
-
 	/** @var array */
 	public $structure;
 
-	
+	/** @var string key column name */
+	private $idColumn;
+
+	/** @var string parent key column name */
+	private $parentColumn;
+
+
 	/**
 	 * @param array
 	 * @param string

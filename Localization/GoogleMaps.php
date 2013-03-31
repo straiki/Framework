@@ -2,7 +2,7 @@
 
 namespace Schmutzka\Localization;
 
-class GoogleMaps extends \Nette\Object 
+class GoogleMaps extends \Nette\Object
 {
 
 	/**

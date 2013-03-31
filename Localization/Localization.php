@@ -6,19 +6,17 @@ use Nette;
 
 class Localization extends Nette\Object
 {
+	/** @var array  */
+	public $allowedLangs = array();
+
+	/** @var array  */
+	public $defaultLang = "en";
 
 	/** @var Nette\Http\Request */
 	private $httpRequest;
 
 	/** @var Nette\Http\Response  */
 	private $httpResponse;
-
-
-	/** @var array  */
-	public $allowedLangs = array();
-
-	/** @var array  */
-	public $defaultLang = "en";
 
 
 	/**
