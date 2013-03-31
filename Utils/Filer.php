@@ -12,6 +12,7 @@ use Nette\Mail\MimePart;
 use Nette\Utils\MimeTypeDetector;
 use Nette\Utils\Strings;
 use Nette\Utils\Finder;
+use Nette\Image;
 
 class Filer extends Nette\Object
 {
@@ -187,7 +188,7 @@ class Filer extends Nette\Object
 	{
 		if (self::checkImage($file)) {
 			$image = $file->toImage();
-			$image->resize($width, $height);
+			$image->resize($width, $height, Image::SHRINK_ONLY | Image::EXACT);
 
 			$folder .= self::createFolderName($width, $height) . "/";
 			if (! file_exists($folder)) {
