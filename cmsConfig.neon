@@ -1,0 +1,155 @@
+# todo move info to documentation
+
+parameters:
+	cms: FALSE
+
+	cmsSetup:
+		title: "CMS"
+		modules:
+
+			page:
+				active: FALSE
+				title: Stránky
+				categories: TRUE
+				categories_multi: FALSE
+				show_in_sliderbox: FALSE
+				publish_state: TRUE # změna stavu publikování
+				custom_url: TRUE # <page>/url? page router?
+				perex_short: TRUE
+				perex_long: TRUE 
+				# promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie - u stránek není nutné
+				attachment_gallery: TRUE # možnost připojit galerii
+				attachment_files: TRUE # možnost připojit soubory
+				admin_note: TRUE # interní poznámka
+				content_history: TRUE # vést changelog a historii zmeň obsahu
+
+			article:
+				active: FALSE
+				title: Články
+				categories: TRUE
+				categories_multi: FALSE
+				show_in_sliderbox: TRUE
+				publish_datetime: TRUE # nastavení data a času publikování
+				publish_state: TRUE # změna stavu publikování
+				custom_url: TRUE # <page>/url? page router?
+				perex_short: TRUE
+				perex_long: TRUE 
+				promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie
+				attachment_gallery: TRUE # možnost připojit galerii
+				attachment_files: TRUE # možnost připojit soubory
+				admin_note: TRUE # interní poznámka
+				content_history: TRUE # vést changelog a historii zmeň obsahu
+
+			event: 
+				active: FALSE
+				title: Akce
+				categories: NULL
+				show_in_sliderbox: NULL
+				perex: NULL
+				calendar: NULL
+				expiration: NULL
+				gallery_link: NULL
+				news: NULL
+				link: NULL
+
+			gallery:
+				active: FALSE
+				title: Fotogalerie
+				upload_max_file_size: "2M"
+				upload_max_file_count: "200"
+				image_width: 800
+				image_height: 600
+				image_thumb_height: 127
+
+			email:
+				active: FALSE
+				title: Email
+
+			user:
+				active: FALSE
+				title: Uživatelé
+				roles: [
+					user: Uživatel,
+					admin: Administrátor
+				]
+
+
+services:
+	userModel: Schmutzka\Models\User
+	pageModel: Schmutzka\Models\Page
+	pageCategoryModel: Schmutzka\Models\PageCategory
+	pageInCategoryModel: Schmutzka\Models\PageInCategory
+	pageContentModel: Schmutzka\Models\PageContent
+	articleModel: Schmutzka\Models\Article
+	articleInCategoryModel: Schmutzka\Models\ArticleInCategory
+	articleCategoryModel: Schmutzka\Models\ArticleCategory
+	articleContentModel: Schmutzka\Models\ArticleContent
+	galleryModel: Schmutzka\Models\Gallery
+	galleryFileModel: Schmutzka\Models\GalleryFile
+	fileModel: Schmutzka\Models\File
+	customEmail: Schmutzka\Models\CustomEmail
+	emailLog: Schmutzka\Models\EmailLog	
+
+
+factories:
+	articleForm: ArticleModule\Forms\ArticleForm
+	galleryForm: GalleryModule\Forms\GalleryForm
+	pageForm: PageModule\Forms\PageForm
+	userForm: UserModule\Forms\UserForm
+
+	articleGrid: ArticleModule\Grids\ArticleGrid
+	galleryGrid: GalleryModule\Grids\GalleryGrid
+	pageGrid: PageModule\Grids\PageGrid
+	userGrid: UserModule\Grids\UserGrid
+
+
+webloader:
+	css:
+		admin:
+			files:
+				- %assetsDir%/css/bootstrap/bootstrap.min.css
+				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/jquery-ui.css
+
+				# use propper css from bought template!
+				- %assetsDir%/css/cms/fullcale.css
+				- %assetsDir%/css/cms/unicorn0.css
+				- %assetsDir%/css/cms/unicorn1.css
+				- %assetsDir%/css/cms/base.css
+				- screenAdmin.css # move to adminBase asset
+
+				- %assetsDir%/css/chosen/chosen.css
+			filters:
+				- @lessFilter
+
+	js:
+		admin:
+			files:
+				- %assetsDir%/js/jquery/jquery-1.7.1.min.js
+				- %assetsDir%/js/jquery/jquery-ui.min.js
+				- %assetsDir%/js/bootstrap/bootstrap.min.js
+				- %assetsDir%/js/nette/nette.forms.js
+				- %assetsDir%/js/nette/nette.rules.js
+				- %assetsDir%/js/nette/nette.ajax.js
+				- %assetsDir%/js/datepicker.js
+
+				# use propper js from bought template!
+				- %assetsDir%/js/cms/base.js
+				- %assetsDir%/js/cms/excanvas.js
+				- %assetsDir%/js/cms/jquery02.js
+				- %assetsDir%/js/cms/jquery03.js
+				- %assetsDir%/js/cms/jquery04.js
+				- %assetsDir%/js/cms/unicorn0.js
+
+				- %assetsDir%/js/DateTimePicker/jquery-ui-sliderAccess.js
+				- %assetsDir%/js/DateTimePicker/jquery-ui-timepicker-addon.js
+				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
+				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
+
+				- TinyMCE/tiny_mce/jquery.tinymce.js
+				- TinyMCE/TinyMCE.js
+	
+				- jquery/jquery.livequery.min.js # mfu
+				- scriptsAdmin.js 
+
+				- %assetsDir%/js/chosen/chosen.jquery.min.js

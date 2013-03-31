@@ -8,6 +8,7 @@ parameters:
 	libsDir: %appDir%/../libs
 	assetsDir: %libsDir%/Schmutzka/assets
 
+
 nette:
 	session:
 		autoStart: smart
@@ -20,9 +21,10 @@ nette:
 	debugger:
 		email: tomas.vot@gmail.com
 		strictMode: TRUE
+		showLocation: TRUE
 		bar:
 			# - Schmutzka\Diagnostics\Panels\CallbackPanel
-			- Schmutzka\Diagnostics\Panels\DumpMail
+			- @dumpMailPanel
 
 	security:
 		debugger: TRUE
@@ -38,31 +40,23 @@ services:
 	cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
 	paramService: Schmutzka\Config\ParamService(@container::getParameters())
 	sessionStorage: Services\SessionStorage
-	template: Schmutzka\Templates\TemplateService
+	template:
+		class: Schmutzka\Templates\TemplateService
+		setup:
+			- setLatte(@nette.latte)
 	helpers: Schmutzka\Templates\Helpers
 	localization: Schmutzka\Localization
-
-	# cms
-	userModel: Schmutzka\Models\User
-	pageModel: Schmutzka\Models\Page
-	pageCategoryModel: Schmutzka\Models\PageCategory
-	pageContentModel: Schmutzka\Models\PageContent
-	articleModel: Schmutzka\Models\Article
-	articleCategoryModel: Schmutzka\Models\ArticleCategory
-	articleContentModel: Schmutzka\Models\ArticleContent
-	galleryModel: Schmutzka\Models\Gallery
-	galleryFileModel: Schmutzka\Models\GalleryFile
-	fileModel: Schmutzka\Models\File
-	customEmail: Schmutzka\Models\CustomEmail
-	emailLog: Schmutzka\Models\EmailLog	
+	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
 
 
 factories:
 	titleControl: Components\TitleControl
+	flashMessageControl: Components\FlashMessageControl
+	registrationControl: Components\RegistrationControl
+	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
 
-	# cms
-	userForm: UserModule\Forms\UserForm
-	userGrid: UserModule\Grids\UserGrid
+	loginForm: Schmutzka\Forms\LoginForm
+
 
 
 extensions:
@@ -70,3 +64,10 @@ extensions:
 	bootstrapRenderer: Kdyby\BootstrapFormRenderer\DI\RendererExtension
 	gpspicker: VojtechDobes\NetteForms\GpsPickerExtension
 	webloader: WebLoader\Nette\Extension
+
+
+webloader:
+	css:
+		default:
+			filters:
+				- @lessFilter
