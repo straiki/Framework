@@ -26,22 +26,24 @@
 			%td {include #emails, emailList => $mail['to']}
 
 
-		%tr [n:if => $mail["bcc"]]
+		{*
+			%tr [n:ifset => $mail["bcc"]]
 			%th Bcc
 			%td {include #emails, emailList => $mail['bcc']}
+		*}
 
 
-		{if $mail["bodyHtml"]}
+		{if $mail["html"]}
 			%tr 
 				%th [colspan => 2] Html version
 			%tr 
 				%td [colspan => 2]
-					{!$mail["bodyHtml"]}
+					{!$mail["html"]}
 			%tr 
 				%th [colspan => 2] Raw html
 			%tr 
 				%td [colspan => 2]
-					{$mail["bodyHtml"]}
+					{$mail["html"]}
 		{else}
 			%tr 
 				%th [colspan => 2] Text version

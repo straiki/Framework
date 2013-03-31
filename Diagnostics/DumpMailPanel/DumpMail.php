@@ -2,19 +2,24 @@
 
 namespace Schmutzka\Diagnostics\Panels;
 
-class DumpMail extends \Schmutzka\Application\UI\Control implements \Nette\Diagnostics\IBarPanel
+use Nette,
+	Nette\Diagnostics\Debugger,
+	Schmutzka;
+
+class DumpMail extends Schmutzka\Application\UI\Control implements Nette\Diagnostics\IBarPanel
 {
 
-	/** @var \SessionSection */
+	/** @var Nette\Http\SessionSection */
 	private $sessionData;
 
 	/** @var array */
 	private $data = array();
 
 
-	public function __construct(\Nette\Http\Session $session)
+	public function __construct(Nette\Http\Session $session, Nette\Application\Application $application)
 	{
 		$this->sessionData = $session->getSection("dumpMail");
+		parent::__construct($application->presenter, "dumpMailPanel");
 	}
 
 
@@ -26,19 +31,10 @@ class DumpMail extends \Schmutzka\Application\UI\Control implements \Nette\Diagn
 	private function getData($data)
 	{
 		$return = array();
-
-		foreach ($data as $row) {
-			$headers = $row->getHeaders();
-			$mail = array(
-				"from" => isset($headers["From"]) ? $headers["From"] : NULL,
-				"to" => $headers["To"],
-				"bcc" => isset($headers["Bcc"]) ? $headers["Bcc"] : NULL,
-				"subject" => isset($headers["Subject"]) ? $headers["Subject"] : NULL,
-				"body" => $row->getBody(),
-				"bodyHtml" => $row->getHtmlBody(),
-			);
-
-			$return[] = $mail;
+		foreach ($data as $key => $row) {
+			if (is_array($row) && isset($row["to_email"])) {
+				$return[] = $row;
+			}
 		}
 
 		return $return;
@@ -77,11 +73,14 @@ class DumpMail extends \Schmutzka\Application\UI\Control implements \Nette\Diagn
 
 	/**
 	 * Registers panel to Debug bar
+	 * @return UserPanel
 	 */
-	static function register()
+	public static function register($session, $presenter)
 	{
-		Debugger::addPanel(new self);
-	}
+		$panel = new self($session, $presenter);
+		Debugger::addPanel($panel);
 
+		return $panel;
+	}
 
 }	
