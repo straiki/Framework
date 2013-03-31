@@ -10,9 +10,6 @@ class AdminPresenter extends \FrontModule\BasePresenter
 	/** @var string */
 	protected $unloggedRedirect = "Homepage:default";
 
-	/** @var bool @todo check service existance */
-	protected $useAcl = TRUE;
-
 	/** @var array */
 	private $allowedRoles = array("admin");
 
@@ -20,6 +17,7 @@ class AdminPresenter extends \FrontModule\BasePresenter
 	public function startup()
 	{
 		parent::startup();
+
 		$currentSite = (ltrim($this->name . ":" . $this->view, "Admin:"));
 		if (! $this->user->isLoggedIn()) {
 			if ($this->unloggedRedirect != $currentSite) {
@@ -27,7 +25,7 @@ class AdminPresenter extends \FrontModule\BasePresenter
 				$this->redirectOnLogout();
 			}
 
-		} elseif ($this->useAcl && ! $this->user->isAllowed($this->name, $this->action)) {
+		} elseif ($this->context->hasService("Nette\Security\IAuthorizator") && ! $this->user->isAllowed($this->name, $this->action)) {
 			$this->flashMessage("Na vstup do této sekce nemáte dostatečné oprávnění.", "warning");
 			$this->redirectOnLogout();
 		}
@@ -35,7 +33,6 @@ class AdminPresenter extends \FrontModule\BasePresenter
 
 
 	/**
-	 * Css component
 	 * @return WebLoader\Nette\CssLoader
 	 */
 	protected function createComponentAdminCss()
@@ -45,7 +42,6 @@ class AdminPresenter extends \FrontModule\BasePresenter
 
 
 	/**
-	 * Js component 
 	 * @return WebLoader\Nette\JavaScriptLoader
 	 */
 	protected function createComponentAdminJs()
