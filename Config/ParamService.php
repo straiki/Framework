@@ -3,7 +3,8 @@
 namespace Schmutzka\Config;
 
 use Nette;
-use Schmutzka\Utils\Neon;
+use Nette\Utils\Strings;
+use Schmutzka\Utils\Name;
 
 class ParamService extends Nette\Object
 {
@@ -38,8 +39,7 @@ class ParamService extends Nette\Object
 	 */
 	public function getActiveModules()
 	{
-		$data = Neon::fromFile("cms.neon");
-		$modules = $data["parameters"]["cmsSetup"]["modules"];
+		$modules = $this->params["cmsSetup"]["modules"];
 
 		$array = array();
 		foreach ($modules as $key => $row) {
@@ -57,12 +57,14 @@ class ParamService extends Nette\Object
 	 * @param string
 	 * @return array
 	 */
-	public function getModuleParams($module)
+	public function getModuleParams($key)
 	{
-		$data = Neon::fromFile("cms.neon");
-		$modules = $data["parameters"]["cmsSetup"]["modules"];
+		if (Strings::contains($key, "\\")) {
+			$key = Name::moduleFromNamespace($key, "module");
+		}
 
-		return $modules[$module];
+		$modules = $this->params["cmsSetup"]["modules"];
+		return $modules[$key];
 	}
 	
 }
