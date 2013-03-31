@@ -18,10 +18,6 @@ abstract class Base extends Nette\Object
 	protected $db;
 
 
-	/**
-	 * @param NotORM
-	 * @param Nette\Application\Application
-	 */
 	public function __construct(NotORM $db, Nette\Application\Application $application)
 	{
 		$this->db = $db;
@@ -40,7 +36,8 @@ abstract class Base extends Nette\Object
 	final public function table()
 	{
 		// todo: autodected array?
-		return call_user_func_array(array($this->db, $this->tableName), func_get_args());
+		$args  = (array_filter(func_get_args()) ?: array());
+		return call_user_func_array(array($this->db, $this->tableName), $args);
 	}
 
 
@@ -164,12 +161,15 @@ abstract class Base extends Nette\Object
 
 	/**
 	 * Get table rows as pairs
-	 * @param string $column
+	 * @param string
+	 * @param int
+	 * @param array
+	 * @param string
 	 * @return array
 	 */
-	public function fetchPairs($id = "id", $column = NULL, $key = array())
+	public function fetchPairs($id = "id", $column = NULL, $key = array(), $order = NULL)
 	{
-		return $this->table($key)->fetchPairs($id, $column);
+		return $this->table($key)->order($order)->fetchPairs($id, $column);
 	}
 
 
@@ -234,7 +234,7 @@ abstract class Base extends Nette\Object
 
 	/**
 	 * Get lang from url if set
-	 * @param Nette\Application\Appliaction
+	 * @param Nette\Application\Application
 	 * @return string|NULL
 	 */
 	private function getLang(Nette\Application\Application $application)
