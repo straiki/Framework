@@ -24,7 +24,7 @@ $pageRoute = new PageRoute("<page>/", array(
 				if(isset($page["NAME"])) {
 					return Strings::webalize($page["NAME"]);
 				}
-				elseif(is_array($page)) {					
+				elseif(is_array($page)) {
 					return Strings::webalize($page[0]["NAME"]);
 				}	
 				else {
