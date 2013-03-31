@@ -36,6 +36,7 @@ class Name extends Nette\Object
 	 * Modul/presenter/view
 	 * @param Presenter
 	 * @param string
+	 * @return string
 	 */
 	public static function mpv($activePresenter, $part = NULL)
 	{
@@ -59,6 +60,21 @@ class Name extends Nette\Object
 		} 
 
 		return array($module, $presenter, $view);
+	}
+
+
+	/**
+	 * Modul from namespace
+	 * @param string
+	 * @return string
+	 */
+	public static function moduleFromNamespace($namespace)
+	{
+		$temp = explode("\\", $namespace);
+		$module = substr($temp[0], 0, -6);
+		$module = lcfirst($module);
+
+		return $module;
 	}
 
 }
