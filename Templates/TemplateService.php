@@ -14,6 +14,9 @@ class TemplateService extends Nette\Object
 	/** @var NetteTranslator\Gettext */
 	private $translator;
 
+	/** @var Nette\Latte\Engine */
+	private $latte;
+
 
 	/**
 	 * @param Schmutzka\Templates\Helpers
@@ -44,11 +47,22 @@ class TemplateService extends Nette\Object
 		}
 
 		$template->registerFilter(new Nette\Templating\Filters\Haml);
-		$template->registerFilter(new Nette\Latte\Engine);
+		$template->registerFilter($this->latte);
 
 		$template->registerHelperLoader(array($this->helpers, "loader"));
 
 		return $template;
+	}
+
+
+	/**
+	 * Set latte engine
+	 * @param Nette\Latte\Engine
+	 */
+	public function setLatte(Nette\Latte\Engine $latte)
+	{
+		$this->latte = $latte;
+		return $this;
 	}
 
 }
