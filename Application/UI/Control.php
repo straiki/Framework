@@ -3,21 +3,42 @@
 namespace Schmutzka\Application\UI;
 
 use Nette;
+use Schmutzka;
 use Components;
+use NetteTranslator;
 
 abstract class Control extends Nette\Application\UI\Control
 {
+	/** @var NetteTranslator\Gettext */
+	protected $translator;
 
-	/**	 
+	/** @var Schmutzka\Templates\TemplateService */
+	private $templateService;
+
+
+	function injectBaseServices(Schmutzka\Templates\TemplateService $templateService, NetteTranslator\Gettext $translator = NULL)
+	{
+		$this->templateService = $templateService;
+		$this->translator = $translator;
+	}
+
+
+	/**
 	 * Create template and autoset file
 	 * @param string
 	 * @param bool
-	 * @return Nette\Templating\FileTemplate;
+	 * @return Nette\Templating\FileTemplate
 	 */
 	public function createTemplate($class = NULL, $autosetFile = TRUE)
 	{
 		$template = parent::createTemplate($class);
-		$this->parent->templateService->configure($template);
+
+		if ($this->templateService === NULL) {
+			d("missing template service in Control");
+			dd($this);
+		}
+
+		$this->templateService->configure($template);
 
 		if ($autosetFile && ! $template->getFile() && file_exists($this->getTemplateFilePath())) {
 			$template->setFile($this->getTemplateFilePath());
@@ -43,6 +64,7 @@ abstract class Control extends Nette\Application\UI\Control
 	 */	
 	public function createTemplateFromFile($file)
 	{	
+		dd("where is this used? to stupid shortcut");
 		$template = $this->createTemplate(NULL, FALSE);
 		$template->setFile($file);
 
@@ -65,13 +87,10 @@ abstract class Control extends Nette\Application\UI\Control
 	/**
 	 * Renders the default template
 	 */
-	 public function render()
+	public function render()
 	{
 		$this->template->render();
 	}
-
-
-	/********************* components *********************/
 
 
 	/**
@@ -81,24 +100,6 @@ abstract class Control extends Nette\Application\UI\Control
 	protected function createComponentFlashMessage()
 	{
 		return new Components\FlashMessageControl;
-	}
-
-
-	/********************** localization **********************/
-
-
-	/**
-	 * Translate
-	 * @param string
-	 */
-	public function translate($string)
-	{
-		dd("Control - translator - is neccessary?");
-		if ($this->parent->translator) {
-			return $this->parent->translator->translate($string);
-		}		
-
-		return $string;
 	}
 
 }
