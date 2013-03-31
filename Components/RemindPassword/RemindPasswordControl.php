@@ -2,18 +2,16 @@
 
 namespace Components;
 
-use Schmutzka\Application\UI\Control,
-	Schmutzka\Forms\Form,
-	Nette\Mail\Message;
+use Schmutzka;
+use Nette;
+use Models;
+use Schmutzka\Forms\Form;
+use Nette\Utils\Strings;
+use Schmutzka\Utils\Password;
+use Nette\Mail\Message;
 
-class RemindPasswordControl extends Control
+class RemindPasswordControl extends Schmutzka\Application\UI\Control
 {
-	/** @var \Nette\DI\Container  */
-	private $context;
-
-	/** @var Models\User */
-	private $userModel;
-
 	/** @var string */
 	public $company = "OurCompany.com";
 
@@ -32,12 +30,29 @@ class RemindPasswordControl extends Control
 	/** @var bool */
 	public $confirmFirst = FALSE;
 
+	/** @var Models\User */
+	private $userModel;
 
-	public function __construct(\Nette\DI\Container $context)
+	/** @var Nette\Mail\Mailer */
+	private $mailer;
+
+	/** @var string */
+	private $salt;
+
+
+	/**
+	 * @param Models\User
+	 * @param Nette\Mail\Mailer
+	 * @param Nette\DI\Container
+	 */
+	public function __construct(Models\User $userModel, Nette\Mail\IMailer $mailer, Nette\DI\Container $context)
 	{
-		parent::__construct();
-		$this->context = $context;
-		$this->userModel = $this->context->models->user;
+		$this->userModel = $userModel;
+		$this->mailer = $mailer;
+
+		if (isset($context->params["salt"])) {
+			$this->salt = $context->params["salt"];
+		}
 	}
 
 
@@ -47,86 +62,66 @@ class RemindPasswordControl extends Control
 	protected function createComponentRemindPasswordForm()
 	{
 		$form = new Form;
-
 		$form->addText("email","Váš email:")
 			->addRule(Form::FILLED,"Vyplňte email.")
 			->addRule(Form::EMAIL, "Email nemá správný formát.");
 		$form->addSubmit("send","Zaslat nové heslo");
-
-		$form->onSuccess[] = callback($this, "remindPasswordFormSent");
-
 		return $form;
 	}
 
 
 	/**
 	 * Process remind form
-	 * @param form
 	 */
 	public function remindPasswordFormSent(Form $form)
 	{
-		// translate values
+		$values = $form->values;
 		$this->subject = $this->translate($this->subject);
 
-		$values = $form->values;
-		$record = $this->userModel->item(array("email" => $values["email"]));
+		if ($record = $this->userModel->item(array("email" => $values["email"]))) {
 
-		if ($record) {
+			$message = new Message;
+			$message->setFrom($this->from)
+				->addTo($values["email"]);
 
-			// #1 - perform changes
-			if ($this->confirmFirst === FALSE) { // reset
-				$password = "V".substr(uniqid(),6,7);
-				$this->userModel->update(array("password" => sha1($password)), array("email" => $values["email"]));
+			if ($this->confirmFirst) { // A. send confirm first
+				$remind = Strings::random(6);
+				$remindHashed = Password::saltHash($remind, $this->salt);
+				$values["remind"] = $remind;
 
-			} else { // ask first
-				$remindHash = sha1("V".substr(uniqid(),6,7));
-				$this->userModel->update(array("remindHash" => sha1($remindHash)), array("email" => $values["email"]));
+				$this->userModel->update(array(
+					"remindHash" => $remindHashed,
+				), array(
+					"email" => $values["email"]
+				));
+	
+				$template = $this->mailer->getCustomTemplate("REMIND_PASSWORD_CONFIRM", $values, TRUE);
+				$this->getPresenter()->flassMessage("Na Váš email byla odeslána zpráva k ověření.","flash-success");
+
+			} else { // B. reset
+				$password = Strings::random(14);
+				$passwordHashed = Password::saltHash($password, $this->salt);
+				$values["new_password"] = $password;
+
+				$this->userModel->update(array(
+					"password" => $passwordHashed,
+				), array(
+					"email" => $values["email"]
+				));
+
+				$template = $this->mailer->getCustomTemplate("REMIND_PASSWORD", $values, TRUE);
+				$this->getPresenter()->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","flash-success");
 			}
 
-
-			// #2 - create email with template
-			$mail = new Message;
-			$mail->setFrom($this->from)
-				->addTo($values["email"])
-				->setSubject($this->company." | ".$this->subject);
-
-			if ($this->emailTemplatePath) { // ifset, use one
-				$filePath = $this->context->parameters["appDir"] . "/" . $this->emailTemplatePath;
-
-			}	else {
-				$filePath = ($this->confirmFirst === FALSE ? __DIR__ . "/templates/resetPassword.latte" : __DIR__ . "/templates/remindPasswordRequest.latte");
-			}
-			$template = $this->createTemplate()->setFile($filePath);
-
-
-			// #3 - pass params
-			$template->company = $this->company;
-
-			if ($this->confirmFirst === FALSE) { // reset
-				$template->password = $password;
-				$this->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","flash-success");
-			}
-			else { // ask first
-				$template->remindHash = $remindHash;
-				$this->flashMessage("Na Váš email byla odeslána zpráva k ověření.","flash-success");
-			}
-
-
-			// #4 - connect and send!
-			$mail->setHtmlBody($template)
-				->send();
+			$message->setSubject($template["subject"]);
+			$message->setHtmlBody($template["body"]);
+			$this->mailer->send($message);
 
 		} else {
-			$this->flashMessage("Tento uživatel neexistuje.","flash-error");
+			$this->getPresenter()->flashMessage("Tento uživatel neexistuje.","flash-error t");
 		}
 
 		$this->redirect("this");
-	}
-
-
-	public function render()
-	{
-		$this->template->render();
 	}
 
 
