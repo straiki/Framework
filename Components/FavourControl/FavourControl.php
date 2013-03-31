@@ -3,19 +3,21 @@
 namespace Components;
 
 use Nette\Utils\Html;
+use Schmutzka;
 
-class FavourControl extends \Schmutzka\Application\UI\Control
+class FavourControl extends Schmutzka\Application\UI\Control
 {
+	/** @var string */
+	public $favoriteClass = "favourite";
 
 	/** @var string */
-	public $favoriteClass = "favorite";
+	public $nonFavoriteClass = "nonFavourite";
 
-	/** @var string */
-	public $nonFavoriteClass = "nonFavorite";
-
-	/** @var bool */	
+	/** @var bool */
 	public $useAjax = TRUE;
 
+	/** @var bool */
+	public $useTooltip = TRUE;
 
 	/** @var \Model */
 	private $model;
@@ -30,6 +32,12 @@ class FavourControl extends \Schmutzka\Application\UI\Control
 	private $searched;
 
 
+	/**
+	 * @param model
+	 * @param int
+	 * @param string
+	 * @param mixed
+	 */
 	public function __construct($model, $userId, $tableKey, $searched = NULL)
 	{
 		parent::__construct();
@@ -82,6 +90,9 @@ class FavourControl extends \Schmutzka\Application\UI\Control
 	}
 
 
+	/**
+	 * @param int
+	 */
 	public function render($id)
 	{
 		$item = $this->getItemKey($id);
@@ -92,6 +103,7 @@ class FavourControl extends \Schmutzka\Application\UI\Control
 		$this->template->favoriteClass = $this->favoriteClass;
 		$this->template->nonFavoriteClass = $this->nonFavoriteClass;
 		$this->template->useAjax = $this->useAjax;
+		$this->template->useTooltip = $this->useTooltip;
 	
 		$this->template->render();
 	}
