@@ -103,22 +103,29 @@ factories:
 	userGrid: UserModule\Grids\UserGrid
 
 
+# @todo url filter!
+
+
 webloader:
 	css:
 		admin:
 			files:
 				- %assetsDir%/css/bootstrap/bootstrap.min.css
 				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
-				- %assetsDir%/css/jquery-ui.css
-
-				# use propper css from bought template!
-				- %assetsDir%/css/cms/fullcale.css
-				- %assetsDir%/css/cms/unicorn0.css
-				- %assetsDir%/css/cms/unicorn1.css
-				- %assetsDir%/css/cms/base.css
-				- screenAdmin.css # move to adminBase asset
-
+				- %assetsDir%/css/jquery/jquery-ui.css
+				- %assetsDir%/css/unicorn/unicorn.main.css
+				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/chosen/chosen.css
+
+			filters:
+				- @lessFilter
+
+		adminLogin:
+			files:
+				- %assetsDir%/css/bootstrap/bootstrap.min.css
+				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/unicorn/unicorn.login.css
+				- %assetsDir%/css/cms/cms.login.css
 			filters:
 				- @lessFilter
 
@@ -153,3 +160,8 @@ webloader:
 				- scriptsAdmin.js 
 
 				- %assetsDir%/js/chosen/chosen.jquery.min.js
+
+		adminLogin:
+			files:
+				- %assetsDir%/js/jquery/jquery-1.7.1.min.js
+				- %assetsDir%/js/unicorn/unicorn.login.js

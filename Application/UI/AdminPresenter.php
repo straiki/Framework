@@ -2,16 +2,12 @@
 
 namespace Schmutzka\Application\UI;
 
-use Schmutzka\Utils\Name;
 use WebLoader;
 
 class AdminPresenter extends \FrontModule\BasePresenter
 {
 	/** @var string */
 	protected $unloggedRedirect = "Homepage:default";
-
-	/** @var array */
-	private $allowedRoles = array("admin");
 
 
 	public function startup()

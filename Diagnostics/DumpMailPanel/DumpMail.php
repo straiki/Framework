@@ -16,11 +16,16 @@ class DumpMail extends Schmutzka\Application\UI\Control implements Nette\Diagnos
 	private $data = array();
 
 
+	/**
+	 * @param Nette\Http\Session
+	 * @param Nette\Application\Application
+	 */
 	public function __construct(Nette\Http\Session $session, Nette\Application\Application $application)
 	{
 		$this->sessionData = $session->getSection("dumpMail");
 		parent::__construct($application->presenter, "dumpMailPanel");
 	}
+
 
 
 	/**

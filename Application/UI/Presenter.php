@@ -35,10 +35,6 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	protected $onLogoutLink;
 
-	/** @var bool */
-	protected $useMobileTemplates = FALSE;
-
-
 
 	public function startup()
 	{
@@ -54,16 +50,12 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 			if (isset($this->paramService->logUserActivity)) {
 				$this->user->logUserActivity($this->paramService->logUserActivity);
 			}
-
-		} elseif ($this->isRequestStoreable($this->presenter, $this->signal)) {
-			$this->baseSession->requestBacklink = $this->storeRequest();
 		}
 
-		$this->module = Name::mpv($this->presenter, "module");
+		if ($this->isRequestStoreable($this->presenter, $this->signal)) {
+			$this->baseSession->requestBacklink = $this->storeRequest();
+		}
 	}
-
-
-	/* ************************ handlers ************************ */
 
 
 	/**
@@ -95,7 +87,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	}
 
 
-	/* *********************** templates ************************ */
+	/********************** templates **********************/
 
 
 	/**	 
@@ -110,43 +102,20 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	}
 
 
-	/**
-	 * Find template files
-	 */
-	public function formatTemplateFiles()
-	{
-		$templateFiles = parent::formatTemplateFiles();
-
-		if ($this->useMobileTemplates && Browser::isMobile()) {
-			$templateFiles = array_map(function($path) {
-					return str_replace("/templates", "/templatesMobile", $path);
-			}, $templateFiles);
-		}
-
-		return $templateFiles;
-	}
-
-
 	/**	
-	 * Find template layout
+	 * Format template layout
 	 */
 	public function formatLayoutTemplateFiles()
 	{
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
-		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte"; // admin layout
-		$layoutTemplateFiles[] = LIBS_DIR . "/Schmutzka/Modules/@layout.latte"; // cms layout
-
-		if ($this->useMobileTemplates && Browser::isMobile()) {
-			$layoutTemplateFiles = array_map(function($path) {
-					return str_replace("/templates", "/templatesMobile", $path);
-			}, $layoutTemplateFiles);
-		}
+		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte";
+		$layoutTemplateFiles[] = LIBS_DIR . "/Schmutzka/Modules/@" . ($this->layout ?: "layout") . ".latte";
 
 		return $layoutTemplateFiles;
 	}
 
 
-	/* *********************** components ************************ */
+	/********************** components **********************/
 
 
 	/**
@@ -185,22 +154,22 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	}
 
 
-	/********************** module helpers @todo move to specifi module class **********************/
+	/********************** module helpers **********************/
 
 
 	/**
 	 * Delete helper
-	 * @param Models\*
+	 * @param Schmutzka\Models\*
 	 * @param int
 	 * @param string
 	 */
 	protected function deleteHelper($model, $id, $redirect = "default")
 	{
 		if ($model->delete($id)) {
-			$this->flashMessage("Záznam byl úspěšně smazán.","flash-success"); 
+			$this->flashMessage("Záznam byl úspěšně smazán.", "success"); 
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "flash-error"); 
+			$this->flashMessage("Tento záznam neexistuje.", "error"); 
 		} 
 
 		if ($redirect) {
@@ -210,22 +179,25 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * Edit item
-	 * @param Models\*
+	 * Load item helper
+	 * @param Schmutzka\Models\*
 	 * @param int
 	 * @param string
 	 */
-	protected function loadItem($model, $id, $redirect = "default")
+	protected function loadItemHelper($model, $id, $redirect = "default")
 	{
 		if ($item = $model->item($this->id)) {
 			$this->template->item = $item;
 			return $item;
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "flash-error");
+			$this->flashMessage("Tento záznam neexistuje.", "error");
 			$this->redirect($redirect, array("id" => NULL));
 		}
 	}
+
+
+	/********************** helpers **********************/
 
 
 	/**
@@ -249,25 +221,5 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 		return TRUE;
 	}
-
-
-	/**
-	 * Edit item
-	 * @param Models\*
-	 * @param int
-	 * @param string
-	 */
-	protected function loadEditItem($model, $id, $redirect = "default")
-	{
-		if ($item = $model->item($this->id)) {
-			$this->template->item = $item;
-
-		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "error");
-			$this->redirect($redirect, array("id" => NULL));
-		}
-	}
-
-
 
 }

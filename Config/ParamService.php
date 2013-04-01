@@ -15,9 +15,9 @@ class ParamService extends Nette\Object
 	/**
 	 * @param array
 	 */
-	public function __construct($parameters) 
-	{ 
-		$this->params = $parameters;
+	public function __construct($parameters)
+	{
+		$this->params = Nette\ArrayHash::from($parameters);
 	}
 
 
@@ -27,8 +27,8 @@ class ParamService extends Nette\Object
 	 */
 	public function &__get($name)
 	{
-		if ($name != "params" && isset($this->params[$name])) {
-			return $this->params[$name];
+		if ($name != "params" && isset($this->params->{$name})) {
+			return $this->params->{$name};
 		}
 	}
 
@@ -39,12 +39,12 @@ class ParamService extends Nette\Object
 	 */
 	public function getActiveModules()
 	{
-		$modules = $this->params["cmsSetup"]["modules"];
+		$modules = $this->params->cmsSetup->modules;
 
 		$array = array();
 		foreach ($modules as $key => $row) {
-			if ($row["active"]) {
-				$array[$key] = $row["title"];
+			if ($row->active) {
+				$array[$key] = $row->title;
 			}
 		}
 
@@ -63,7 +63,7 @@ class ParamService extends Nette\Object
 			$key = Name::moduleFromNamespace($key, "module");
 		}
 
-		$modules = $this->params["cmsSetup"]["modules"];
+		$modules = $this->params->cmsSetup->modules;
 		return $modules[$key];
 	}
 	

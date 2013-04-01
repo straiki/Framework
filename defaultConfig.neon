@@ -47,6 +47,7 @@ services:
 	helpers: Schmutzka\Templates\Helpers
 	localization: Schmutzka\Localization
 	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
+	lessc: lessc
 
 
 factories:
