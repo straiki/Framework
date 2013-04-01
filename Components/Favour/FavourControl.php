@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * 2DO - onclick style switch - quick :)
+ */
+
 namespace Components;
 
 use Nette\Utils\Html;
