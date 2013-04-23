@@ -18,6 +18,10 @@ abstract class Base extends Nette\Object
 	protected $db;
 
 
+	/**
+	 * @param NotORM
+	 * @param Nette\Application\Application
+	 */
 	public function __construct(NotORM $db, Nette\Application\Application $application)
 	{
 		$this->db = $db;
@@ -35,8 +39,11 @@ abstract class Base extends Nette\Object
 	 */
 	final public function table()
 	{
-		// todo: autodected array?
-		$args  = (array_filter(func_get_args()) ?: array());
+		$args = func_get_args();
+		if (count($args) == 1 && is_numeric($args[0])) {
+			array_unshift($args, "id");
+		}
+
 		return call_user_func_array(array($this->db, $this->tableName), $args);
 	}
 
@@ -44,7 +51,7 @@ abstract class Base extends Nette\Object
 	/********************** basic operations **********************/
 
 
-	/** 
+	/**
 	 * @param array
 	 */
 	public function all($key = array())
@@ -58,7 +65,7 @@ abstract class Base extends Nette\Object
 	}
 
 
-	/** 
+	/**
 	 * @param array
 	 * @return int
 	 */
@@ -91,7 +98,7 @@ abstract class Base extends Nette\Object
 	public function update($array, $key)
 	{
 		if (is_array($key)) {
-			$this->table($key)->update($array);	
+			$this->table($key)->update($array);
 
 		} else {
 			$this->table("id", $key)->update($array);
@@ -161,15 +168,12 @@ abstract class Base extends Nette\Object
 
 	/**
 	 * Get table rows as pairs
-	 * @param string
-	 * @param int
-	 * @param array
-	 * @param string
+	 * @param string $column
 	 * @return array
 	 */
-	public function fetchPairs($id = "id", $column = NULL, $key = array(), $order = NULL)
+	public function fetchPairs($id = "id", $column = NULL, $key = array())
 	{
-		return $this->table($key)->order($order)->fetchPairs($id, $column);
+		return $this->table($key)->fetchPairs($id, $column);
 	}
 
 
@@ -209,7 +213,7 @@ abstract class Base extends Nette\Object
 		return $this->table()->order("$column DESC")->fetchSingle($column);
 	}
 
-	
+
 	/**
 	 * Insert, update on duplicate key
 	 * @param array
@@ -221,7 +225,7 @@ abstract class Base extends Nette\Object
 			if (!$unique) {
 				return $this->table()->insert($data);
 			}
-	
+
 			$unique = array("id" => $unique);
 		}
 
@@ -234,7 +238,7 @@ abstract class Base extends Nette\Object
 
 	/**
 	 * Get lang from url if set
-	 * @param Nette\Application\Application
+	 * @param Nette\Application\Appliaction
 	 * @return string|NULL
 	 */
 	private function getLang(Nette\Application\Application $application)
