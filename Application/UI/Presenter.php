@@ -17,7 +17,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	public $module;
 
-	/** @inject @var NetteTranslator\Gettext */
+	/** @inject @var NetteTranslator\Gettext|NULL */
 	public $translator;
 
 	/** @inject @var Nette\Caching\Cache */
@@ -31,7 +31,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 	/** @var Nette\Http\SessionSection */
 	protected $baseSession;
-	
+
 	/** @var string */
 	protected $onLogoutLink;
 
@@ -44,7 +44,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 		$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
 		$this->baseSession = $this->session->getSection("baseSession_" . $sectionKey);
-		$this->user->storage->setNamespace("user_ " . $sectionKey); 
+		$this->user->storage->setNamespace("user_ " . $sectionKey);
 
 		if ($this->user->loggedIn) {
 			if (isset($this->paramService->logUserActivity)) {
@@ -66,7 +66,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 		$this->user->logout();
 		$this->flashMessage("Byli jste odhlášeni.", "success timeout");
 		$this->redirectOnLogout();
-	} 
+	}
 
 
 	/**
@@ -90,7 +90,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/********************** templates **********************/
 
 
-	/**	 
+	/**
 	 * Create template
 	 * @param string
 	 */
@@ -102,7 +102,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	}
 
 
-	/**	
+	/**
 	 * Format template layout
 	 */
 	public function formatLayoutTemplateFiles()
@@ -119,20 +119,27 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * @return Components\TitleControl
+	 * Handles requests to create component
+	 * @param string
+	 * @return Nette\ComponentModel\IComponent
 	 */
-	protected function createComponentTitle()
+	protected function createComponent($name)
 	{
-		return $this->context->createTitleControl();
-	}
+		$component = parent::createComponent($name);
 
+		if ($component === NULL) {
+			if (method_exists($this->context, ($create = "create" .  ucfirst($name)))) {
+				$component = call_user_func(array($this->context, $create));
 
-	/**
-	 * @return Components\FlashMessage
-	 */
-	protected function createComponentFlashMessage()
-	{
-		return $this->context->createFlashMessageControl();
+			} elseif (method_exists($this->context, ($createControl = $create . "Control"))) {
+				$component = call_user_func(array($this->context, $createControl));
+
+			} elseif (method_exists($this->context, ($createForm = $create . "Form"))) {
+				$component = call_user_func(array($this->context, $createForm));
+			}
+		}
+
+		return $component;
 	}
 
 
@@ -166,14 +173,14 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	protected function deleteHelper($model, $id, $redirect = "default")
 	{
 		if ($model->delete($id)) {
-			$this->flashMessage("Záznam byl úspěšně smazán.", "success"); 
+			$this->flashMessage("Záznam byl úspěšně smazán.", "success");
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "error"); 
-		} 
+			$this->flashMessage("Tento záznam neexistuje.", "error");
+		}
 
 		if ($redirect) {
-			$this->redirect($redirect, array("id" => NULL)); 
+			$this->redirect($redirect, array("id" => NULL));
 		}
 	}
 
