@@ -1,6 +1,6 @@
 <?php
 
-namespace Schmutzka\Forms;
+namespace Schmutzka\Application\UI;
 
 use Nette;
 use Nette\Utils\Html;
@@ -19,20 +19,13 @@ class Form extends Nette\Application\UI\Form
 	const TIME = "Schmutzka\Forms\Rules::validateTime";
 	const EXTENSION = "Schmutzka\Forms\Rules::extension";
 
-
-	/** @var string */
-	public $id;
-
-	/** @var string */
-	public $target;
-
 	/** @var string */
 	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
 
 	/** @var bool */
 	public $useBootstrap = TRUE;
 
-	/** @var \Translator */
+	/** @var Nette\ITranslator */
 	protected $translator = NULL;
 
 	/** @var callable */
@@ -50,6 +43,12 @@ class Form extends Nette\Application\UI\Form
 
 	/** @var bool */
 	private $isBuilt = FALSE;
+
+	/** @var string */
+	private $id;
+
+	/** @var string */
+	private $target;
 
 
 	/**
@@ -121,17 +120,13 @@ class Form extends Nette\Application\UI\Form
 
 	/**
 	 * Set defaults accepts array, object or empty string
-	 * @param mixed
+	 * @param array|object
+	 * @param bool
 	 */
 	public function setDefaults($defaults, $erase = FALSE)
 	{
-		if (is_array($defaults)) {
-			parent::setDefaults($defaults, $erase);
-		}
-
-		if (is_object($defaults)) {
-			parent::setDefaults(get_object_vars($defaults), $erase);
-		}
+		$defaults = is_object($defaults) ? get_object_vars($defaults) : $defaults;
+		parent::setDefaults($defaults, $erase);
 
 		return $this;
 	}
@@ -144,10 +139,7 @@ class Form extends Nette\Application\UI\Form
 	public function addError($message)
 	{
 		$this->valid = FALSE;
-
-		if ($message) {
-			$this->flashMessage($message, "error");
-		}
+		$this->flashMessage($message, "error");
 	}
 
 
@@ -223,6 +215,7 @@ class Form extends Nette\Application\UI\Form
 		}
 
 		foreach ($this->typeClass as $key => $value) { 
+			dd(__CLASS__, "imlement in some other way");
 			unset($values[$key]);
 		}
 
@@ -232,6 +225,7 @@ class Form extends Nette\Application\UI\Form
 		} elseif (method_exists($this->parent, lcfirst($this->getName()) . "Processor") && is_callable($this->processor)) { // find and use values processor if exists
 			$values = call_user_func($this->processor, $values);
 		}
+
 		if ($removeEmpty) { 
 			$values = array_filter($values); 
 		}
@@ -253,6 +247,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Set id for the form
 	 * @param string
+	 * @return $this
 	 */
 	public function setId($name)
 	{
@@ -264,6 +259,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Set target for the form
 	 * @param string
+	 * @return $this
 	 */
 	public function setTarget($name)
 	{
@@ -276,7 +272,7 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Adds a radio list
+	 * @retrun RadioList
 	 */
 	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
 	{
@@ -305,7 +301,6 @@ class Form extends Nette\Application\UI\Form
 
 	/**
 	 * @return UploadControl
-
 	 */
 	public function addUpload($name, $label = NULL)
 	{
@@ -319,14 +314,13 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Add submit 
 	 * @param string
+	 * @param string
 	 */
-	public function addSubmit($name = "send", $label = "Uložit", $class = "btn btn-primary")
+	public function addSubmit($name = "send", $label = "Uložit")
 	{
-		if (isset($this->typeClass[$name])) {
-			$class = $this->typeClass[$name];
-		}
-
 		$item = parent::addSubmit($name, $label);
+
+		$class = isset($this->typeClass[$name]) ? $this->typeClass[$name] : "btn btn-primary";
 		$item->setAttribute("class", $class);
 
 		return $item;
@@ -384,8 +378,9 @@ class Form extends Nette\Application\UI\Form
 	 * @param string
 	 * @param int
 	 */
-	public function addMultipleFileUpload($name, $label = NULL, $maxFiles=999)
+	public function addMultipleFileUpload($name, $label = NULL, $maxFiles = 999)
 	{
+		dd("refactor");
 		return $this[$name] = new MultipleFileUpload($label, $maxFiles);
 	}
 
@@ -398,6 +393,7 @@ class Form extends Nette\Application\UI\Form
 	 */
 	public function translate($string)
 	{
+		dd("remove");
 		return $this->translator->translate($string);
 	}
 
@@ -405,6 +401,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Create template
 	 * @param string
+	 * @return Nette\Templating\FileTemplate
 	 */
 	public function createTemplate($file = NULL)
 	{

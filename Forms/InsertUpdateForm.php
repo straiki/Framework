@@ -2,11 +2,10 @@
 
 namespace Schmutzka\Forms;
 
-use Schmutzka\Forms\Form;
+use Schmutzka\Application\UI\Form;
 
 class InsertUpdateForm extends  Form
 {
-
 	/** @persistent */
 	public $id;
 
@@ -27,7 +26,6 @@ class InsertUpdateForm extends  Form
 
 	/** @var bool */
 	public $nullId = TRUE;
-
 
 	/** @persistent */
 	private $userId;
@@ -53,8 +51,8 @@ class InsertUpdateForm extends  Form
 		if ($this->id) {
 			$this["send"]->caption = $this->updateCaption;
 			$this->setDefaults($this->model->item($this->id));
-		}
-		else {
+
+		} else {
 			$this["send"]->caption = $this->insertCaption;
 		}
 	}
@@ -75,6 +73,7 @@ class InsertUpdateForm extends  Form
 			if ($this->nullId) {
 				$this->id = NULL;
 			}
+
 			$this->redirect($this->redirectUpdate, array("id" => $this->id));
 
 		} else {
