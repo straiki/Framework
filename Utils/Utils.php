@@ -2,9 +2,8 @@
 
 namespace Schmutzka;
 
-use Schmutzka\Structures\XmlToArray;
-
 /**
+ * xmlToArray(SimpleXMLElement/string)
  * getFirstSet(...)
  * getEmailServer($email, $url = FALSE)
  * getWhatpulseUserStats($id)
@@ -12,6 +11,21 @@ use Schmutzka\Structures\XmlToArray;
 
 class Utils extends \Nette\Object
 {
+
+	/**
+	 * Convert xml object/file to array
+	 * @param SimpleXMLElement|string
+	 * @return array
+	 */
+	public static function xmlToArray($xml)
+	{
+		if (is_file($xml)) {
+			$xml = simplexml_load_file($xml);
+		}
+
+		return json_decode(json_encode((array) $xml), 1);
+	}
+
 
 	/**
 	 * Return first set argument
@@ -62,9 +76,8 @@ class Utils extends \Nette\Object
 		$url = "http://api.whatpulse.org/user.php?UserID=" . $uid;
 		$data = file_get_contents($url);
 
-		$data = new XmlToArray($data);
-		$data = $data->array;
-		$data = $data["WhatPulse"][0];
+		$data = self::xmlToArray($data);
+		$data = $data["WhatPulse"];
 
 		return $data;
 	}

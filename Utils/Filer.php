@@ -28,8 +28,7 @@ class Filer extends Nette\Object
 	 */
 	public static function extension($name) 
 	{
-
-	$extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		$extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		if (isset(self::$convertExtension[$extension])) {
 			$extension = self::$convertExtension[$extension];
 		}
@@ -63,8 +62,9 @@ class Filer extends Nette\Object
 	 * Let download file under different name
 	 * @param string
 	 * @param string
+	 * @param string
 	 */
-	public static function downloadAs($file, $name)
+	public static function downloadAs($file, $name, $type = NULL)
 	{
 		// @use http://api.nette.org/2.0/Nette.Application.Responses.FileResponse.html if possible
 		// http://forum.nette.org/cs/7889-nefukcni-fileresponse-v-google-chrome
@@ -76,7 +76,7 @@ class Filer extends Nette\Object
 			$content = $file;
 		}
 
-		header('Content-type: ' . MimeTypeDetector::fromString($content));
+		header('Content-type: ' . $type ?: MimeTypeDetector::fromString($content));
 		header('Content-Disposition: attachment; filename="'. $name .'"');
 		readfile($file);
 		die;

@@ -55,9 +55,8 @@ factories:
 	flashMessageControl: Components\FlashMessageControl
 	registrationControl: Components\RegistrationControl
 	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
-
 	loginForm: Schmutzka\Forms\LoginForm
-
+	gaControl: Components\GaControl
 
 
 extensions:
