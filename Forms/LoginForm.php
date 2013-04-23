@@ -4,6 +4,7 @@ namespace Schmutzka\Forms;
 
 use Nette;
 use Schmutzka;
+use Schmutzka\Application\UI\Form;
 
 class LoginForm extends Form
 {
@@ -22,18 +23,17 @@ class LoginForm extends Form
 	/** @var array */
 	public $onLoginError = array();
 
-	/** @var Schmutzka\Security\User */	
-	private $user;
+	/** @inject @var Schmutzka\Security\User */
+	public $user;
 
 	/** @var Nette\Http\SessionSection */
-	private $mySession;
+	private $baseSession;
 
 
-
-	final function inject(Schmutzka\Security\User $user, Nette\Http\Session $session)
+	public function inject(Nette\Http\Session $session)
 	{
-		$this->user = $user;
-		$this->mySession = $session->getSection("mySession");
+		$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
+		$this->baseSession = $session->getSection("baseSession_" . $sectionKey);
 	}
 
 
@@ -84,7 +84,7 @@ class LoginForm extends Form
 			}
 
 			$this->presenter->flashMessage($this->flashContent, "success");
-			$this->presenter->restoreRequest($this->mySession->backlink);
+			$this->presenter->restoreRequest($this->baseSession->backlink);
 			$this->presenter->redirect("Homepage:default");
 
 		} catch (\Nette\Security\AuthenticationException $e) {
@@ -93,7 +93,7 @@ class LoginForm extends Form
 				$this->onLoginError($values);
 			}
 
-			$this->presenter->flashMessage($e->getMessage(), "error"); 
+			$this->presenter->flashMessage($e->message, "error"); 
 		}
 	}
 

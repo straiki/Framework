@@ -32,28 +32,17 @@ class RegistrationControl extends Control
 	/** @var bool */
 	public $confirmationEmail = TRUE;
 
-	/** @var Nette\Mail\IMailer */
-	private $mailer;
+	/** @inject @var Nette\Mail\IMailer */
+	public $mailer;
 
-	/** @var Schmutzka\Models\User  */
-	private $userModel;
+	/** @inject @var Schmutzka\Models\User  */
+	public $userModel;
 
-	/** @var Schmutzka\Security\User */
-	private $user;
+	/** @inject @var Schmutzka\Security\User */
+	public $user;
 
-	/** @var Schmutzka\Config\ParamService */
-	private $paramService;
-
-
-	public function __construct(Schmutzka\Security\User $user, Schmutzka\Models\User $userModel, Schmutzka\Config\ParamService $paramService, Nette\Application\Application $application, Nette\Mail\IMailer $mailer)
-	{
-		$this->userModel = $userModel;
-		$this->user = $user;
-		$this->mailer = $mailer;
-		$this->paramService = $paramService;
-
-		parent::__construct($application->presenter, "registrationControl");
-	}
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
 
 
 	/**
@@ -61,21 +50,22 @@ class RegistrationControl extends Control
 	 */
 	protected function createComponentRegistrationForm()
 	{
+		$userModel = $this->userModel;
+
 		$form = new Form;
 
 		$form->addText("login", "Váš login:")
 			->addRule(Form::FILLED,"Zadejte login")
 			->addRule(Form::PATTERN, "Login musí mít délku aspoň 5 znaků a smí obsahovat pouze znaky a-z, A-Z, 0-9, '_' a '-'.","[a-zA-Z0-9_-]{5,}")
-			->addRule(function ($input) {
-				return ! $this->userModel->item(array("login" => $input->value));
+			->addRule(function ($input) use ($userModel) {
+				return ! $userModel->item(array("login" => $input->value));
 			}, "Zadaný login již existuje.");
-
 
 		$form->addText("email", "Váš email:")
 			->addRule(Form::FILLED, "Vyplňte email")
 			->addRule(Form::EMAIL, "Email nemá správný formát")
-			->addRule(function ($input) {
-				return ! $this->userModel->item(array("email" => $input->value));
+			->addRule(function ($input) use ($userModel) {
+				return ! $userModel->item(array("email" => $input->value));
 			}, "Zadaný email již existuje.");
 
 		$form->addPassword("password", "Heslo:")
@@ -104,21 +94,21 @@ class RegistrationControl extends Control
 		$values["password"] = Password::saltHash($values["password"], isset($this->paramService->salt) ? $this->paramService->salt : NULL);
 		$values["created"] = new Nette\DateTime;
 
-		/*if ($this->requireAuthorization) {
+		if ($this->requireAuthorization) {
 			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
-		}*/
+		}
 
 		if ($this->detectLang) {
 			$values["lang"] = $this->translator->getLang();
 		}
 
-		// $this->userModel->insert($values);
+		$this->userModel->insert($values);
 		$values = $rawValues + $values;
 
 		// what to do now?
 		if ($this->requireAuthorization) {
 			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
-			$this->sendAuthorizationEmail($values);		
+			$this->sendAuthorizationEmail($values);
 		}
 
 		if ($this->loginAfter) {

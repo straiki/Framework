@@ -4,6 +4,7 @@ namespace Schmutzka\Forms;
 
 use Nette;
 use Schmutzka\Mail\Message;
+use Schmutzka\Application\UI\Form;
 
 class ContactForm extends Form
 {
@@ -34,23 +35,11 @@ class ContactForm extends Form
 	/** @var array */
 	public $logSender = array("login");
 
-	/** @var Nette\Security\User*/
-	private $user;
+	/** @inject @var Nette\Security\User*/
+	public $user;
 
-	/** @var Nette\Mail\IMailer */
-	private $mailer;
-
-
-	/**
-	 * @param Nette\Security\User
-	 * @param Nette\Mail\IMailer
-	 */
-	public function __construct(Nette\Security\User $user, Nette\Mail\IMailer $mailer)
-	{
-		parent::__construct();
-		$this->user = $user;
-		$this->mailer = $mailer;
-	}
+	/** @inject @var Nette\Mail\IMailer */
+	public $mailer;
 
 
 	public function build()
