@@ -1,0 +1,30 @@
+#calendarControl.week
+
+	%h3 {= $monthNames[date("n",strtotime($activeMonth))]|firstUpper} {$activeWeek}. {_"týden"}
+
+	#navigation
+		<a class="prev" href="{plink this activeMonth => $prevMonth, activeWeek => $prevWeek}">&laquo; Předchozí týdem</a>
+		<a class="next" href="{plink this activeMonth => $nextMonth, activeWeek => $nextWeek}">Další týden &raquo;</a>
+
+
+	%table.calendar.table.table-bordered
+		%tr.calendar-row
+			<th width="14%">{!$dayNames|implode:'</th><th width="14%">'}
+		<tr class="calendar-row">
+
+			{foreach $weekData as $date => $dayInfo}
+				<td n:class="calendar-day, $dayInfo['active'] ? active">
+					
+					<div n:class="day-number, $dayInfo['active'] ? active"><nobr>{$date|date:"j.n."}</nobr></div>
+						{if $dayInfo["active"]}
+							%ul
+								{foreach $dayInfo["actions"] as $action}
+									%li [n:class => "'calendarCategory' . $action["category_id"]"]
+										{$action["time"]|date:"H:i"} - {$action["category_id"]|inArray:$calendarCategoryList|translate}
+								{/foreach}
+						{/if}
+				</td>
+
+			{/foreach}
+
+		</tr>
