@@ -1,0 +1,9 @@
+{define #content}
+#homepage.press
+
+	{if !$user->loggedIn}
+		%h2 Přihlášení
+		{control loginForm}
+	{/if}
+
+{/define}

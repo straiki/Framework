@@ -1,0 +1,30 @@
+{define #contentHeader}
+	{if !$user->loggedIn}	
+		%h1 {_"Přihlášení"}
+
+	{else}
+		%h1 {_"Vítejte v administraci"}
+	{/if}
+{/define}
+
+
+{define #breadcrumb}
+	{if !$user->loggedIn}
+		<a n:href="default" class="current">{_"Přihlášení"}</a>
+
+	{else}
+		<a n:href="default" class="current">{_"Dashboard"}</a>
+	{/if}
+{/define}
+
+
+{define #content}
+
+{if !$user->loggedIn}
+	{control loginForm}
+{else}
+
+	%p Začněte výběrem položky v menu
+{/if}
+
+{/define}
