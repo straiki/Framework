@@ -25,21 +25,11 @@ class Form extends Nette\Application\UI\Form
 	/** @var bool */
 	public $useBootstrap = TRUE;
 
-	/** @var Nette\ITranslator */
-	protected $translator = NULL;
-
 	/** @var callable */
 	protected $processor;
 
-	/** @var array */
-	private $typeClass = array(
-		"send" => "btn btn-primary",
-		"cancel" => "btn",
-		"reset" => "btn",
-		"remove" => "btn btn-danger",
-		"delete" => "btn btn-danger",
-		"add" => "btn btn-success",
-	);
+	/** @var GettextTranslator\Translator */
+	protected $translator;
 
 	/** @var bool */
 	private $isBuilt = FALSE;
@@ -49,6 +39,12 @@ class Form extends Nette\Application\UI\Form
 
 	/** @var string */
 	private $target;
+
+
+	public function injectTranslator(GettextTranslator\Translator $translator = NULL)
+	{
+		$this->translator = $translator;
+	}
 
 
 	/**
@@ -159,8 +155,7 @@ class Form extends Nette\Application\UI\Form
 			$this->afterBuild();
 		}
 
-		if ($presenter->context->hasService("translator")) { // automatic translator
-			$this->translator = $presenter->context->translator;
+		if ($this->translator) {
 			$this->setTranslator($this->translator);
 		}
 
@@ -180,7 +175,6 @@ class Form extends Nette\Application\UI\Form
 	 */
 	protected function attachHandlers($presenter)
 	{
-		// $formNameSent = lcfirst($this->getName())."Sent";
 		$formNameSent = "process" . lcfirst($this->getName());
 
 		$possibleMethods = array(
@@ -205,18 +199,15 @@ class Form extends Nette\Application\UI\Form
 	public function getValues($removeEmpty = FALSE)
 	{
 		$values = parent::getValues(TRUE);
-	
+
 		if ($this->getHttpData()) {
 			foreach ($this->getHttpData() as $key => $value) {
-				if (empty($values[$key]) && $value && !isset($this->typeClass[rtrim($key,"_")]) && $key != "_token_") {
+				if ($this[$key] instanceof Nette\Forms\Controls\SubmitButton) {
+
+				} elseif (empty($values[$key]) && $value && $key != "_token_") {
 					$values[$key] = $value;
 				}
 			}
-		}
-
-		foreach ($this->typeClass as $key => $value) { 
-			dd(__CLASS__, "imlement in some other way");
-			unset($values[$key]);
 		}
 
 		if ($this->processor && is_callable($this->processor)) {
@@ -226,8 +217,8 @@ class Form extends Nette\Application\UI\Form
 			$values = call_user_func($this->processor, $values);
 		}
 
-		if ($removeEmpty) { 
-			$values = array_filter($values); 
+		if ($removeEmpty) {
+			$values = array_filter($values);
 		}
 
 		return $values;
@@ -247,7 +238,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Set id for the form
 	 * @param string
-	 * @return $this
+	 * @return this
 	 */
 	public function setId($name)
 	{
@@ -259,7 +250,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * Set target for the form
 	 * @param string
-	 * @return $this
+	 * @return this
 	 */
 	public function setTarget($name)
 	{
@@ -269,34 +260,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/* ****************************** improved inputs ****************************** */
-
-
-	/**
-	 * @retrun RadioList
-	 */
-	public function addRadioList($name, $label = NULL, array $items = NULL, $sep = NULL)
-	{
-		$item = parent::addRadioList($name, $label, $items);
-
-		$sep = trim($sep, "<>");
-		$item->getSeparatorPrototype()->setName($sep);
-
-		return $item;
-	}
-
-
-	/**
-	 * @return CheckboxList
-	 */
-	public function addCheckboxList($name, $label = NULL, $cols = NULL, $sep = NULL)
-	{
-		$item = $this[$name] = new Controls\CheckboxList($label, $cols, NULL);
-
-		$sep = Html::el($sep);
-		$item->setSeparator($sep);	
-
-		return $item;
-	}
 
 
 	/**
@@ -312,18 +275,13 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Add submit 
+	 * Add submit
 	 * @param string
 	 * @param string
 	 */
 	public function addSubmit($name = "send", $label = "Uložit")
 	{
-		$item = parent::addSubmit($name, $label);
-
-		$class = isset($this->typeClass[$name]) ? $this->typeClass[$name] : "btn btn-primary";
-		$item->setAttribute("class", $class);
-
-		return $item;
+		return parent::addSubmit($name, $label);
 	}
 
 
@@ -349,8 +307,8 @@ class Form extends Nette\Application\UI\Form
 	}
 
 
-	/** 
-	 * Adds suggest 
+	/**
+	 * Adds suggest
 	 * @param string
 	 * @param string
 	 * @param array
@@ -386,16 +344,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/********************** helpers **********************/
-
-
-	/**
-	 * Translate shortuct
-	 */
-	public function translate($string)
-	{
-		dd("remove");
-		return $this->translator->translate($string);
-	}
 
 
 	/**
