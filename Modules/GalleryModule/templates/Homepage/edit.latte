@@ -1,0 +1,29 @@
+{define #contentHeader}
+	%h1 {$item["name"]}
+{/define} 
+ 
+{define #breadcrumb}
+	<a n:href="default, id => NULL" class="tip-bottom">{_"Fotogalerie"}</a>
+	<a n:href="edit" class="current">{_"Úprava"}</a>
+{/define}
+
+
+
+{define #content}
+
+{control galleryForm}
+
+%h3 {_"Obrázky galerie"}
+
+#galleryFileList
+	{if count($galleryFileList) === 1}
+		%p.flash.flash-warning {_"Odstraněním poslední fotky odstraníte i fotogalerii."}
+	{/if}
+	{foreach $galleryFileList as $row}
+		.image.pull-left.center.well
+			<img src="{$dirThumb}{$row['name']}">
+			%br
+			<a n:href="deleteFile!, fileId => $row['id']" class="del confirm" n:tooltip="Odstranit foto">&nbsp;</a>
+	{/foreach}
+
+{/define}
