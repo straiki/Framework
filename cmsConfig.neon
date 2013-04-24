@@ -10,18 +10,17 @@ parameters:
 			page:
 				active: FALSE
 				title: Stránky
-				categories: TRUE
-				categories_multi: FALSE
 				show_in_sliderbox: FALSE
 				publish_state: TRUE # změna stavu publikování
 				custom_url: TRUE # <page>/url? page router?
 				perex_short: TRUE
-				perex_long: TRUE 
+				perex_long: TRUE
 				# promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie - u stránek není nutné
 				attachment_gallery: TRUE # možnost připojit galerii
 				attachment_files: TRUE # možnost připojit soubory
 				admin_note: TRUE # interní poznámka
 				content_history: TRUE # vést changelog a historii zmeň obsahu
+				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
 
 			article:
 				active: FALSE
@@ -33,14 +32,15 @@ parameters:
 				publish_state: TRUE # změna stavu publikování
 				custom_url: TRUE # <page>/url? page router?
 				perex_short: TRUE
-				perex_long: TRUE 
+				perex_long: TRUE
 				promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie
 				attachment_gallery: TRUE # možnost připojit galerii
 				attachment_files: TRUE # možnost připojit soubory
 				admin_note: TRUE # interní poznámka
 				content_history: TRUE # vést changelog a historii zmeň obsahu
+				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
 
-			event: 
+			event:
 				active: FALSE
 				title: Akce
 				categories: NULL
@@ -60,10 +60,12 @@ parameters:
 				image_width: 800
 				image_height: 600
 				image_thumb_height: 127
+				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
 
 			email:
 				active: FALSE
 				title: Email
+				useLogger: FALSE
 
 			user:
 				active: FALSE
@@ -88,22 +90,24 @@ services:
 	galleryFileModel: Schmutzka\Models\GalleryFile
 	fileModel: Schmutzka\Models\File
 	customEmail: Schmutzka\Models\CustomEmail
-	emailLog: Schmutzka\Models\EmailLog	
+	emailLog: Schmutzka\Models\EmailLog
+	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
 
 
 factories:
 	articleForm: ArticleModule\Forms\ArticleForm
+	articleCategoryForm: ArticleModule\Forms\ArticleCategoryForm
 	galleryForm: GalleryModule\Forms\GalleryForm
 	pageForm: PageModule\Forms\PageForm
 	userForm: UserModule\Forms\UserForm
 
 	articleGrid: ArticleModule\Grids\ArticleGrid
+	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
 	galleryGrid: GalleryModule\Grids\GalleryGrid
 	pageGrid: PageModule\Grids\PageGrid
 	userGrid: UserModule\Grids\UserGrid
 
 
-# @todo url filter!
 
 
 webloader:
@@ -116,9 +120,11 @@ webloader:
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/chosen/chosen.css
+				- %assetsDir%/css/cms/cms.base.css
 
 			filters:
 				- @lessFilter
+				- @cmsPathFilter
 
 		adminLogin:
 			files:
@@ -128,6 +134,7 @@ webloader:
 				- %assetsDir%/css/cms/cms.login.css
 			filters:
 				- @lessFilter
+				- @cmsPathFilter
 
 	js:
 		admin:
@@ -155,9 +162,9 @@ webloader:
 
 				- TinyMCE/tiny_mce/jquery.tinymce.js
 				- TinyMCE/TinyMCE.js
-	
+
 				- jquery/jquery.livequery.min.js # mfu
-				- scriptsAdmin.js 
+				- scriptsAdmin.js
 
 				- %assetsDir%/js/chosen/chosen.jquery.min.js
 
