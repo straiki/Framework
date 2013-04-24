@@ -25,9 +25,9 @@ class CustomEmailForm extends Form
 	 * @param Nette\Security\User
 	 * @param int
 	 */
-	public function __construct(Models\CustomEmail $customEmailModel, Nette\Security\User $user, $id) 
-	{ 
-		parent::__construct(); 
+	public function __construct(Models\CustomEmail $customEmailModel, Nette\Security\User $user, $id)
+	{
+		parent::__construct();
 		$this->customEmailModel = $customEmailModel;
 		$this->user = $user;
 		$this->id = $id;
@@ -95,7 +95,7 @@ class CustomEmailForm extends Form
 			$this->customEmailModel->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.", "flash-success");
+		$this->flashMessage("Uloženo.", "success");
 		$this->redirect("default", array("id" => NULL));
 	}
 

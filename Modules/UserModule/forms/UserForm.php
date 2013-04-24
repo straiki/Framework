@@ -6,7 +6,7 @@ use Schmutzka;
 use Schmutzka\Application\UI\Form;
 use Nette\Utils\Html;
 
-class UserForm extends  Form
+class UserForm extends Form
 {
 	/** @persistent */
 	public $id;
@@ -27,9 +27,6 @@ class UserForm extends  Form
 	public $regexp = array();
 
 	/** @inject @var Schmutzka\Models\User */
-	public $userModel;
-
-	/** @inject @var Schmutzka\Config\ParamService */
 	public $userModel;
 
 	/** @var array */
@@ -104,7 +101,8 @@ class UserForm extends  Form
 
 	protected function afterBuild()
 	{
-		$this->addSubmit("send", "Uložit"); // intentionally - enables override by custom form
+		$this->addSubmit("send", "Uložit") // intentionally - enables override by custom form
+			->setAttribute("class", "btn btn-primary");
 
 		if ($this->id) {
 			if ($defaults = $this->userModel->item($this->id)) {

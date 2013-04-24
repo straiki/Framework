@@ -7,11 +7,11 @@ class StaticCodebookForm extends Form
 
 	/** @var string */
 	public $flashText = "Údaje uloženy.";
-	
+
 
 	/** @var \Models\Codebook */
 	private $model;
-	
+
 
 	public function __construct($model)
 	{
@@ -29,19 +29,19 @@ class StaticCodebookForm extends Form
 		$defaults = $this->model->all()->fetchPairs("name", "value");
 		$this->setDefaults($defaults);
 	}
-	
+
 
 	public function process(StaticCodebookForm $form)
 	{
 		$values = $form->values;
 		foreach ($values as $key => $name) {
 			$this->model->upsert(
-				array("name" => $key, "value" => $name), 
+				array("name" => $key, "value" => $name),
 				array("name" => $key)
 			);
 		}
 
-		$this->flashMessage($this->flashText, "flash-success");
+		$this->flashMessage($this->flashText, "success");
 		$this->redirect("this");
 	}
 

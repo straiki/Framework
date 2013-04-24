@@ -17,27 +17,9 @@ class CategoryPresenter extends \AdminModule\BasePresenter
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
-		$this->loadItem($this->articleCategoryModel, $id);
-	} 
-
-
-	/**
-	 * Article category form
-	 */
-	public function createComponentArticleCategoryForm()
+	public function renderEdit($id)
 	{
-		return new Forms\CategoryForm($this->articleCategoryModel, $this->id);
-	}
-
-
-	/**
-	 * Article category grid
-	 */
-	protected function createComponentArticleCategoryGrid()
-	{
-		return new Grids\CategoryGrid($this->articleCategoryModel);
+		$this->loadItemHelper($this->articleCategoryModel, $id);
 	}
 
 }

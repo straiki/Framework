@@ -15,20 +15,20 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	 * Delete
 	 * @param int
 	 */
-	public function handleDelete($id) 
-	{ 
+	public function handleDelete($id)
+	{
 		if ($user = $this->userModel->item($id)) {
 			if (in_array($user["role"], array("admin", "superadmin"))) {
-				$this->flashMessage("Tento uživatelský účet nelze smazat.","flash-error");
+				$this->flashMessage("Tento uživatelský účet nelze smazat.","error");
 
 			} else {
 				$this->userModel->delete($id);
-				$this->flashMessage("Záznam byl úspěšně smazán.","flash-success"); 
+				$this->flashMessage("Záznam byl úspěšně smazán.","success");
 			}
 
-		} else { 
-			$this->flashMessage("Tento záznam neexistuje.", "flash-error"); 
-		} 
+		} else {
+			$this->flashMessage("Tento záznam neexistuje.", "error");
+		}
 
 		$this->redirect("this");
 	}
@@ -37,9 +37,9 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
-		$this->loadItem($this->userModel, $id);
+	public function renderEdit($id)
+	{
+		$this->loadItemHelper($this->userModel, $id);
 	}
 
 
@@ -51,15 +51,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		$form = $this->context->createUserForm();
 		$form->id = $this->id;
 		return $form;
-	}
-
-
-	/**
-	 * User grid
-	 */
-	protected function createComponentUserGrid()
-	{
-		return $this->context->createUserGrid();
 	}
 
 }

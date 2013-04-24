@@ -2,60 +2,31 @@
 
 namespace EventModule\Forms;
 
-use Schmutzka\Forms\Form;
-use Models;
 use Nette;
 use Nette\Utils\Strings;
-use Schmutzka\Utils\Filer;
 use Schmutzka;
+use Schmutzka\Forms\ModuleForm;
+use Schmutzka\Appliaction\UI\Form;
+use Schmutzka\Utils\Filer;
 
-class EventForm extends Form
+class EventForm extends ModuleForm
 {
 	/** @persistent */
 	public $id;
 
-	/** @var Models\Event */
-	private $eventModel;
+	/** @inject @var Schmutzka\Models\Event */
+	public $eventModel;
 
-	/** @var Models\EventCategory */
-	private $eventCategoryModel;
+	/** @inject @var Schmutzka\Models\EventCategory */
+	public $eventCategoryModel;
 
-	/** @var Schmutzka\Services\ParamService */
-    private $paramService;
-
-	/** @var Schmutzka\Security\User */
-	private $user;
-
-	/** @var Models\Gallery */
-	private $galleryModel;
+	/** @inject @var Schmutzka\Models\Gallery */
+	public $galleryModel;
 
 	/** @var filepath */
 	private $folder = "upload/event/";
 
 
-	/**
-	 * @param Models\Event
-	 * @param Models\EventCategory
-	 * @param Schmutzka\Security\User
-	 * @param Schmutzka\Services\ParamService
-	 * @param Models\GalleryModel
-	 * @param int
-	 */
-	public function __construct(Models\Event $eventModel, Models\EventCategory $eventCategoryModel, Schmutzka\Security\User $user, Schmutzka\Services\ParamService $paramService, Models\Gallery $galleryModel, $id) 
-	{ 
-		parent::__construct(); 
-		$this->eventModel = $eventModel;
-		$this->eventCategoryModel = $eventCategoryModel;
-		$this->user = $user;
-		$this->paramService = $paramService;
-		$this->galleryModel = $galleryModel;
-		$this->id = $id;
-	}
-
-
-	/**
-	 * Build form
-	 */
 	public function build()
     {
 		parent::build();
@@ -72,7 +43,7 @@ class EventForm extends Form
 		$this->addDatepicker("date","Datum akce:")
 			->addRule(Form::FILLED, "Povinné")
 			->addRule(Form::DATE, "Čas nemá správný formát");
-		
+
 		$this->addText("time","Čas akce:")
 			->addCondition(Form::FILLED)
 				->addRule(Form::TIME, "Čas nemá správný formát");
@@ -125,7 +96,7 @@ class EventForm extends Form
 		}
 
 		$values = $form->values;
-		
+
 		if (!$values["time"]) {
 			$values["time"] = NULL;
 		}
@@ -154,7 +125,7 @@ class EventForm extends Form
 			$this->eventModel->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.","flash-success");
+		$this->flashMessage("Uloženo.", "success");
 		$this->redirect("default", array("id" => NULL));
 	}
 

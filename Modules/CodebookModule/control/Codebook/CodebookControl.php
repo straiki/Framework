@@ -21,18 +21,18 @@ class CodebookControl extends Control
 	/** @var bool */
 	public $activeRank = TRUE;
 
-	/** @var string */	
+	/** @var string */
 	public $whereUsed = NULL;
 
-	/** @var string */	
+	/** @var string */
 	public $withCount = FALSE;
 
-	/** @var string */	
+	/** @var string */
 	public $activeConvert = FALSE;
 
-	/** @var int */	
+	/** @var int */
 	public $nextRank = 10;
-	
+
 
 	/** @var string */
 	private $codeType;
@@ -65,7 +65,7 @@ class CodebookControl extends Control
 	public function handleDelete($id)
 	{
 		$this->model->delete($id);
-		$this->flashMessage("Deleted.","flash-success");
+		$this->flashMessage("Deleted.","success");
 
 		if ($this->isAjax()) {
 			$this->invalidateControl("codebook");
@@ -133,7 +133,7 @@ class CodebookControl extends Control
 		$values["type"] = $this->codeType;
 
 		$this->model->upsert($values, $this->id);
-		$this->flashMessage("Saved.","flash-success");
+		$this->flashMessage("Saved.","success");
 
 
 		if($this->isAjax()) {
@@ -206,7 +206,7 @@ class CodebookControl extends Control
 		unset($options[$id]);
 
 		if(!count($options)) { // kontrola počtu položek
-			$this->flashMessage("Neexistuje žádná alternativní položka. Musíte ji nejdříve vytvořit.","flash-error");
+			$this->flashMessage("Neexistuje žádná alternativní položka. Musíte ji nejdříve vytvořit.","error");
 		}
 		else {
 			$this->template->showConverForm = TRUE;
@@ -221,7 +221,7 @@ class CodebookControl extends Control
 		else {
 			// $this->redirect("this", array("id" => NULL));
 		}
-	}	
+	}
 
 
 	/** @broken
@@ -265,7 +265,7 @@ class CodebookControl extends Control
 
 
 	/**
-	 * Checks variables 
+	 * Checks variables
 	 */
 	private function checkValues()
 	{
@@ -285,11 +285,11 @@ class CodebookControl extends Control
 		}
 
 		if ($this->withCount == TRUE AND !isset($whereUsedOk)) {
-			throw \Exception("Set $whereUsed first.");			
+			throw \Exception("Set $whereUsed first.");
 		}
 
 		if ($this->activeConvert == TRUE AND !$this->withCount == TRUE) {
-			throw \Exception("Enable $withCount first.");			
+			throw \Exception("Enable $withCount first.");
 		}
 	}
 

@@ -3,23 +3,13 @@
 namespace EmailModule\Forms;
 
 use Schmutzka\Forms\Form;
-use Models;
+use Schmutzka;
 use Nette;
 
 class SettingsForm extends Form
 {
-	/** @var Models\EmailSettings */
-	private $settingsModel;
-
-
-	/**
-	 * @param Models\EmailSettings
-	 */
-	public function __construct(Models\EmailSettings $settingsModel) 
-	{ 
-		parent::__construct(); 
-		$this->settingsModel = $settingsModel;
-	}
+	/** @inject @var Schmutzka\Models\EmailSettings */
+	public $emailSettingsModel;
 
 
 	/**
@@ -33,7 +23,7 @@ class SettingsForm extends Form
 		$this->addText("noreply_email_name","No-reply email - zobrazované jméno:");
 
 		$this->addSubmit();
-		$this->setDefaults($this->settingsModel->item(1));
+		$this->setDefaults($this->emailSettingsModel->item(1));
 	}
 
 
@@ -44,8 +34,8 @@ class SettingsForm extends Form
 	{
 		$values = $form->values;
 
-		$this->settingsModel->update($values, 1);
-		$this->flashMessage("Uloženo.","flash-success");
+		$this->emailSettingsModel->update($values, 1);
+		$this->flashMessage("Uloženo.","success");
 		$this->redirect("this");
 	}
 

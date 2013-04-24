@@ -42,11 +42,11 @@ class TreeCodebookControl extends \Schmutzka\Application\UI\Control
 	public function handleDelete($id)
 	{
 		if ($this->model->item(array("parent_id" => $id))) {
-			$this->flashMessage("This record cannot be deleted","flash-error");
+			$this->flashMessage("This record cannot be deleted","error");
 		}
 		else {
 			$this->model->delete($id);
-			$this->flashMessage("Deleted.","flash-success");
+			$this->flashMessage("Deleted.","success");
 		}
 
 		$this->redirect("this", array("id" => NULL));
@@ -83,7 +83,7 @@ class TreeCodebookControl extends \Schmutzka\Application\UI\Control
 		$this->template->itemResult = $this->model->getListOrdered($this->ord);
 
 		$tree = new Tree($this->template->itemResult);
-		$this->template->structure = $tree->structure;	
+		$this->template->structure = $tree->structure;
 
 		$this->template->render();
 	}
@@ -124,10 +124,10 @@ class TreeCodebookControl extends \Schmutzka\Application\UI\Control
 
 		try {
 			$this->model->upsert($values, $this->id);
-			$this->flashMessage("Saved.","flash-success");
+			$this->flashMessage("Saved.","success");
 		}
 		catch (\PDOException $e) {
-			$this->flashMessage("This combination already exists.","flash-error");
+			$this->flashMessage("This combination already exists.","error");
 		}
 
 		$this->redirect("this", array("id" => NULL));

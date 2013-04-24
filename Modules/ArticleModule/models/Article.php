@@ -26,7 +26,7 @@ class Article extends Base
 	 */
 	public function getItemFront($id)
 	{
-		$result = $this->table("id", $id)
+		$result = $this->table("article.id", $id)
 			->select("article.*, gallery_file.name as titlePhoto")
 			->where("publish_state", "public")
 			->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime);

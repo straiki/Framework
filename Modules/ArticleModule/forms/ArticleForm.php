@@ -2,20 +2,21 @@
 
 namespace ArticleModule\Forms;
 
-use Schmutzka\Application\UI\Form;
 use Nette;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Schmutzka;
+use Schmutzka\Application\UI\Form;
+use Schmutzka\Forms\Form;
 use Schmutzka\Utils\Filer;
 
-class ArticleForm extends Form
+class ArticleForm extends ModuleForm
 {
 	/** @persistent */
 	public $id;
 
 	/** @var string @persistent */
-	protected $type;
+	public $type;
 
 	/** @inject @var Schmutzka\Models\Article */
 	public $articleModel;
@@ -35,41 +36,32 @@ class ArticleForm extends Form
 	/** @inject @var Schmutzka\Models\File */
 	public $fileModel;
 
-	/** @inject @var Schmutzka\Config\ParamService */
-	public $paramService;
 
-	/** @inject @var Schmutzka\Security\User */
-	public $user;
-
-
-	/**
-	 * Build form
-	 */
 	public function build()
-    {
+	{
 		parent::build();
 
 		$this->addGroup("");
-		$this->addArticle("title", "Název stránky:")
+		$this->addText("title", "Název stránky:")
 			->addRule(Form::FILLED, "Povinné");
 
 		if ($this->moduleParams["categories"]) {
 			if ($this->moduleParams["categories_multi"]) {
-				$this->addMultiSelect($this->type . "_category_id", "Kategorie:")
+				$this->addMultiSelect("article_category_id", "Kategorie:")
 					->setAttribute("data-placeholder","Vyberte jednu či více kategorií")
 					->setAttribute("class","chosen width400");
 
 			} else {
-				$this->addSelect($this->type . "_category_id", "Kategorie:")
+				$this->addSelect("article_category_id", "Kategorie:")
 					->setPrompt("Vyberte kategorii");
 			}
 
 			$categoryList = $this->ArticleCategoryModel->fetchPairs("id", "name");
-			$this[$this->type . "_category_id"]->setItems($categoryList);
+			$this["article_category_id"]->setItems($categoryList);
 		}
 
 		if ($this->moduleParams["show_in_sliderbox"]) {
-			$this->addCheckBox($this->type . "_show_in_sliderbox", "Zobrazit ve SliderBoxu");
+			$this->addCheckBox("article_show_in_sliderbox", "Zobrazit ve SliderBoxu");
 		}
 
 		$this->addGroup("Publikování");
@@ -95,7 +87,7 @@ class ArticleForm extends Form
 		}
 
 		if ($this->moduleParams["custom_url"]) {
-			$this->addArticle("url", "Url adresa:")
+			$this->addText("url", "Url adresa:")
 				->setOption("description","Bude automaticky vygenerována z názvu.");
 		}
 
@@ -105,19 +97,19 @@ class ArticleForm extends Form
 			->setOption("description", Html::el('div')->setHtml("[page:5:Odkaz na stránku s id = 5], [article:5:Odkaz na článek s id = 5]"));
 
 		if ($this->moduleParams["perex_short"]) {
-			$this->addArticleArea("perex_short", "Perex (kratší):")
+			$this->addTextarea("perex_short", "Perex (kratší):")
 				->setOption("description", "Krátké shrnutí stránky zobrazující se např. pod nadpisem.")
 				->setAttribute("class", "tinymce");
 		}
 
 		if ($this->moduleParams["perex_long"]) {
-			$this->addArticleArea("perex_long", "Perex (delší):")
+			$this->addTextarea("perex_long", "Perex (delší):")
 				->setOption("description", "Shrnutí obsahu zobrazující se např. ve výpisu článků.")
 				->setAttribute("class", "tinymce");
 		}
 
-		$this->addArticlearea("content","Obsah:", NULL, 30)
-			->setAttribute("class","tinymce");
+		$this->addTextarea("content","Obsah:", NULL, 30)
+			->setAttribute("class", "tinymce");
 
 
 		if ($this->moduleParams["attachment_gallery"] || $this->moduleParams["attachment_files"]) {
@@ -136,7 +128,8 @@ class ArticleForm extends Form
 			}
 		}
 
-		$this->addSubmit();
+		$this->addSubmit("send", "Uložit")
+			->setAttribute("class", "btn btn-primary");
 
 		return $this;
 	}
@@ -151,8 +144,8 @@ class ArticleForm extends Form
 
 			$defaults = $this->articleModel->item($this->id);
 			if ($this->moduleParams["categories"] && $this->moduleParams["categories_multi"]) {
-				$categoryKey = $this->type . "_category_id";
-				$defaults[$categoryKey] = $this->ArticleInCategoryModel->fetchPairs($categoryKey, $categoryKey, array($this->type . "_id" => $this->id));
+				$categoryKey = "article_category_id";
+				$defaults[$categoryKey] = $this->ArticleInCategoryModel->fetchPairs($categoryKey, $categoryKey, array("article_id" => $this->id));
 			}
 
 			if ($this->moduleParams["access_to_roles"]) {
@@ -189,8 +182,8 @@ class ArticleForm extends Form
 
 		// multi categories
 		if ($this->moduleParams["categories"] && $this->moduleParams["categories_multi"]) {
-			$pageInCategory = $values[$this->type . "_category_id"];
-			unset($values[$this->type . "_category_id"]);
+			$articleInCategory = $values["article_category_id"];
+			unset($values["article_category_id"]);
 		}
 
 		if ($this->moduleParams["access_to_roles"]) {
@@ -208,13 +201,13 @@ class ArticleForm extends Form
 
 		// multi categories
 		if ($this->moduleParams["categories"] && $this->moduleParams["categories_multi"]) {
-			$this->ArticleInCategoryModel->{"saveCategoryTo" . ucfirst($this->type)}($this->id, $pageInCategory);
+			$this->articleInCategoryModel->saveCategoryToArticle($this->id, $articleInCategory);
 		}
 
 		if ($this->moduleParams["content_history"]) {
 			$array = array(
 				"content" => $values["content"],
-				$this->type . "_id" => $this->id,
+				"article_id" => $this->id,
 				"user_id" => $this->user->id,
 				"edited" => new Nette\DateTime
 			);
@@ -230,7 +223,7 @@ class ArticleForm extends Form
 					$array["key_id"] = $this->id;
 					$array["user_id"] = $this->user->id;
 					$array["created"] = new Nette\DateTime;
-					$array["type"] = $this->type . "_attachment";
+					$array["type"] = "article_attachment";
 					$this->fileModel->insert($array);
 				}
 			}
@@ -263,19 +256,6 @@ class ArticleForm extends Form
 		}
 
 		return $url;
-	}
-
-
-	/**
-	 * Get params
-	 */
-	protected function getModuleParams()
-	{
-		if ($this->moduleParams === NULL) {
-			$this->moduleParams = $this->paramService->getModuleParams("article");
-		}
-
-		return $this->moduleParams;
 	}
 
 }

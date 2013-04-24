@@ -112,7 +112,7 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	 */
 	public function renderEdit($id) 
 	{ 
-		$item = $this->loadItem($this->articleModel, $id);
+		$item = $this->loadItemHelper($this->articleModel, $id);
 
 		if ($this->moduleParams["attachment_files"]) {
 			$this->template->attachmentFiels = $this->fileModel->fetchByType("article_attachment", $id);
@@ -127,22 +127,5 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		}
 	} 
 
-
-	/**
-	 * @return ArticleModule\Forms\ArticleForm
-	 */
-	public function createComponentArticleForm()
-	{
-		return $this->context->createArticleForm();
-	}
-
-
-	/**
-	 * @return ArticleModule\Grids\ArticleGrid
-	 */
-	protected function createComponentArticleGrid()
-	{
-		return $this->context->createArticleGrid();
-	}
 
 }

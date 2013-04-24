@@ -33,7 +33,7 @@
 					{/foreach}
 			{/ifset}
 
-			{ifset $pickImage }
+			{ifset $pickImage}
 				
 				{foreach $gallery["files"] as $key => $row}
 					<a n:href="setImage!, fileId => $key">

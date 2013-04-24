@@ -14,12 +14,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	public $galleryFileModel;
 
 
-	/** 
+	/**
 	 * Delete gallery file
-	 * @param int 
-	 */ 
-	public function handleDeleteFile($fileId) 
-	{ 
+	 * @param int
+	 */
+	public function handleDeleteFile($fileId)
+	{
 		if ($galleryFile = $this->galleryFileModel->item($fileId)) {
 			$file = $this->dirs["system"] . $galleryFile["name"];
 			if (file_exists($file)) {
@@ -36,43 +36,31 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 			$newFileCount = $galleryItem["file_count"]-1;
 			if (!$newFileCount) {
 				$this->galleryModel->delete($this->id);
-				$this->flashMessage("Galerie byla úspěšně smazána.", "flash-success"); 
+				$this->flashMessage("Galerie byla úspěšně smazána.", "success");
 				$this->redirect("default", array("id" => NULL));
 
 			} else {
 				$this->galleryModel->update(array("file_count" => $newFileCount), $this->id);
-				$this->flashMessage("Záznam byl úspěšně smazán.","flash-success"); 
+				$this->flashMessage("Záznam byl úspěšně smazán.","success");
 			}
 
-		} else { 
-			$this->flashMessage("Tento záznam neexistuje.", "flash-error"); 
-		} 
+		} else {
+			$this->flashMessage("Tento záznam neexistuje.", "error");
+		}
 
-		$this->redirect("this", array("fileId" => NULL)); 
+		$this->redirect("this", array("fileId" => NULL));
 	}
 
 
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
-		$this->loadEditItem($this->galleryModel, $id);
+	public function renderEdit($id)
+	{
+		$this->loadItemHelper($this->galleryModel, $id);
 
 		$this->template->dirThumb = $this->dirs["viewThumb"];
 		$this->template->galleryFileList = $this->galleryFileModel->all(array("gallery_id" => $id));
-	} 
-
-
-	public function createComponentGalleryForm()
-	{	
-		return $this->context->createGalleryForm();
-	}
-
-
-	protected function createComponentGalleryGrid()
-	{
-		return new Grids\GalleryGrid($this->galleryModel);
 	}
 
 

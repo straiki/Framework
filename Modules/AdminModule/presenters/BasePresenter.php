@@ -23,8 +23,8 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 			$this->template->activeModules = $activeModules = $this->paramService->getActiveModules();
 			$this->template->cmsParams = $this->paramService->cmsSetup;
 
-			if (isset($this->params->cmsSetup->modules->{$this->module})) {
-				$this->template->moduleParams = $this->moduleParams = $this->params->cmsSetup->modules->{$this->module};
+			if (isset($this->paramService->cmsSetup->modules->{$this->module})) {
+				$this->template->moduleParams = $this->moduleParams = $this->paramService->cmsSetup->modules->{$this->module};
 			}
 
 			// layout setup
@@ -47,15 +47,6 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 		if (!$this->user->loggedIn) {
 			$this->layout = "layoutLogin";
 		}
-	}
-
-
-	/**
-	 * Login form
-	 */
-	protected function createComponentLoginForm()
-	{
-		return $this->context->createLoginForm();
 	}
 
 

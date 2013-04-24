@@ -2,43 +2,22 @@
 
 namespace EventModule\Forms;
 
-use Schmutzka\Forms\Form;
-use Models;
 use Nette;
-use Schmutzka;
 use Nette\Utils\Strings;
+use Schmutzka;
+use Schmutzka\Application\UI\Form;
 use Schmutzka\Utils\Filer;
 
 
-class EventCategoryForm extends Form
+class EventCategoryForm extends ModuleForm
 {
 	/** @persistent */
 	public $id;
 
-	/** @var Models\EventCategory */
-	private $eventCategoryModel;
-
-	/** @param Schmutzka\Services\ParamService */
-    private $paramService;
+	/** @inject @var Schmutzka\Models\EventCategory */
+	public $eventCategoryModel;
 
 
-	/**
-	 * @param Models\EventCategory
-	 * @param Schmutzka\Services\ParamService
-	 * @param int
-	 */
-	public function __construct(Models\EventCategory $eventCategoryModel, Schmutzka\Services\ParamService $paramService, $id) 
-	{ 
-		parent::__construct(); 
-		$this->eventCategoryModel = $eventCategoryModel;
-		$this->paramService = $paramService;
-		$this->id = $id;
-	}
-
-
-	/**
-	 * Build form
-	 */
 	public function build()
     {
 		parent::build();
@@ -80,7 +59,7 @@ class EventCategoryForm extends Form
 			$this->eventCategoryModel->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.","flash-success");
+		$this->flashMessage("Uloženo.", "success");
 		$this->redirect("default", array("id" => NULL));
 	}
 

@@ -2,21 +2,18 @@
 
 namespace PageModule\Forms;
 
-use Schmutzka\Application\UI\Form;
-# use Schmutzka\Forms\Form;
 use Nette;
 use Nette\Utils\Strings;
 use Nette\Utils\Html;
-use Schmutzka\Utils\Filer;
 use Schmutzka;
+use Schmutzka\Application\UI\Form;
+use Schmutzka\Forms\ModuleForm;
+use Schmutzka\Utils\Filer;
 
-class PageForm extends Form
+class PageForm extends ModuleForm
 {
 	/** @persistent */
 	public $id;
-
-	/** @var string @persistent */
-	public $type;
 
 	/** @inject @var Schmutzka\Models\Page */
 	public $pageModel;
@@ -29,12 +26,6 @@ class PageForm extends Form
 
 	/** @inject @var Schmutzka\Models\File */
 	public $fileModel;
-
-	/** @inject @var Schmutzka\Config\ParamService */
-	public $paramService;
-
-	/** @inject @var Schmutzka\Security\User */
-	public $user;
 
 
 	public function build()
@@ -96,7 +87,7 @@ class PageForm extends Form
 		}
 
 		$this->addTextarea("content","Obsah:", NULL, 30)
-			->setAttribute("class","tinymce");
+			->setAttribute("class", "tinymce");
 
 
 		if ($params["attachment_gallery"] || $params["attachment_files"]) {
@@ -115,7 +106,8 @@ class PageForm extends Form
 			}
 		}
 
-		$this->addSubmit();
+		$this->addSubmit("send", "Uložit")
+			->setAttribute("class", "btn btn-primary");
 
 		return $this;
 	}
@@ -134,7 +126,7 @@ class PageForm extends Form
 				$defaults["access_to_roles"] = unserialize($defaults["access_to_roles"]);
 			}
 
-			// $this->setDefaults($defaults);
+			$this->setDefaults($defaults);
 		}
 	}
 
@@ -153,8 +145,6 @@ class PageForm extends Form
 		$values["url"] = $this->getUrl($values["title"]);
 		$values["edited"] = new Nette\DateTime;
 		$values["user_id"] = $this->user->id;
-
-		dd($values);
 
 		// upload attachments
 		$attachments = array();
@@ -231,4 +221,5 @@ class PageForm extends Form
 
 		return $url;
 	}
+
 }

@@ -2,8 +2,6 @@
 
 namespace PageModule;
 
-use Forms;
-use Grids;
 
 class CategoryPresenter extends \AdminModule\BasePresenter
 {
@@ -17,27 +15,9 @@ class CategoryPresenter extends \AdminModule\BasePresenter
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
-		$this->loadItem($this->pageCategoryModel, $id);
-	} 
-
-
-	/**
-	 * Page category form
-	 */
-	public function createComponentPageCategoryForm()
+	public function renderEdit($id)
 	{
-		return new Forms\CategoryForm($this->pageCategoryModel, $this->id);
-	}
-
-
-	/**
-	 * Page category grid
-	 */
-	protected function createComponentPageCategoryGrid()
-	{
-		return new Grids\CategoryGrid($this->pageCategoryModel);
+		$this->loadItemHelper($this->pageCategoryModel, $id);
 	}
 
 }

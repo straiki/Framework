@@ -8,43 +8,45 @@ use Schmutzka;
 class ArticleGrid extends NiftyGrid\Grid
 {
 	/** @persistent */
-    public $id;
+	public $id;
 
-	/** @var Schmutzka\Models\Article */
-    private $articleModel;
+	/** @inject @var Schmutzka\Models\Article */
+	public $articleModel;
 
-	/** @var Schmutzka\Models\ArticleCategory */
-	private $articleCategoryModel;
+	/** @inject @var Schmutzka\Models\ArticleCategory */
+	public $articleCategoryModel;
 
-	/** @var array */
-    private $moduleParams;
+	/** @inject @var Schmutzka\Models\ArticleInCategory */
+	public $articleInCategoryModel;
 
-
-	public function inject(Schmutzka\Models\Article $articleModel, Schmutzka\Models\ArticleCategory $articleCategoryModel, Schmutzka\Config\ParamService $paramService)
-	{
-        $this->articleModel = $articleModel;
-		$this->articleCategoryModel = $articleCategoryModel;
-		$this->moduleParams = $paramService->getModuleParams($this->getReflection()->getName());
-	}
+	/** @inject @var Schmutzka\Models\User */
+	public $userModel;
 
 
 	/**
 	 * Configure
 	 * @param Presenter
 	 */
-    protected function configure($presenter)
-    {
-        $source = new NiftyGrid\DataSource($this->articleModel->all());
-        $this->setDataSource($source);
-		$this->useFlashMessage = FALSE;
+	protected function configure($presenter)
+	{
+		$moduleParams = $presenter->moduleParams;
 
-		// grid structure
-		$this->addColumn("title", "Název", "20%");
+		$source = new NiftyGrid\DataSource($this->articleModel->all());
+		$this->setDataSource($source);
+		$this->setModel($this->articleModel);
 
-		if ($this->moduleParams["categories"]) {
-			if ($this->moduleParams["categories_multi"]) {
-				$this->addColumn("article_category_id", "Kategorie", "20%")->setRenderer(function ($row) {
-					dd("TDO articleInCategory model!§!!!");
+		$this->addColumn("title", "Název");
+
+		if ($moduleParams["categories"]) {
+			if ($moduleParams["categories_multi"]) {
+				$articleInCategoryModel = $this->articleInCategoryModel;
+				$this->addColumn("article_category_id", "Kategorie", "40%")->setRenderer(function ($row) use ($articleInCategoryModel) {
+					$categories = "";
+					foreach ($articleInCategoryModel->getCategoryListByArticle($row->id) as $category) {
+						$categories .= $category . ", ";
+					}
+
+					echo rtrim($categories, ", ");
 				});
 
 			} else {
@@ -53,9 +55,10 @@ class ArticleGrid extends NiftyGrid\Grid
 		}
 
 		$this->addColumn("edited", "Upraveno", "15%")->setDateRenderer();
+		$this->addColumn("user_id", "Upravil", "15%")->setListRenderer($this->userModel->fetchPairs("id", "login"));
 
 		$this->addEditButton(NULL, TRUE);
-		$this->addDeleteButton(); 
-    }
+		$this->addDeleteButton();
+	}
 
 }

@@ -35,12 +35,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	/********************** handlers **********************/
 
 
-	/** 
+	/**
 	 * Delete attachment
-	 * @param int 
-	 */ 
-	public function handleDeleteAttachment($attachmentId) 
-	{ 
+	 * @param int
+	 */
+	public function handleDeleteAttachment($attachmentId)
+	{
 		$filePath = WWW_DIR . $this->fileModel->fetchSingle("name", $attachmentId);
 		if (file_exists($filePath)) {
 			unlink($filePath);
@@ -50,12 +50,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	}
 
 
-	/** 
+	/**
 	 * Open attachment
-	 * @param int 
-	 */ 
-	public function handleOpenAttachment($attachmentId) 
-	{ 
+	 * @param int
+	 */
+	public function handleOpenAttachment($attachmentId)
+	{
 		$file = $this->fileModel->item($attachmentId);
 		$filePath = WWW_DIR . $file["name"];
 		Filer::downloadAs($filePath, $file["name_origin"]);
@@ -82,13 +82,13 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		$this->loadTinymceVars();
 	}
 
-	
+
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
-		$this->loadItem($this->pageModel, $id);
+	public function renderEdit($id)
+	{
+		$this->loadItemHelper($this->pageModel, $id);
 
 		if ($this->moduleParams["attachment_files"]) {
 			$this->template->attachmentFiels = $this->fileModel->fetchByType("page_attachment", $id);
@@ -99,24 +99,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		}
 
 		$this->loadTinymceVars();
-	} 
-
-
-	/**
-	 * @return PageModule\Forms\PageForm
-	 */
-	public function createComponentPageForm()
-	{
-		return $this->context->createPageForm();
-	}
-
-
-	/**
-	 * @return PageModule\Grids\PageGrid
-	 */
-	protected function createComponentPageGrid()
-	{
-		return $this->context->createPageGrid();
 	}
 
 
@@ -125,7 +107,7 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 
 	/**
 	 * Load page list and article list
-	 * @param 
+	 * @param
 	 */
 	private function loadTinymceVars()
 	{

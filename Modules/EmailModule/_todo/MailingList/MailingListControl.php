@@ -46,7 +46,7 @@ class MailingListControl extends Control
 		return $form;
 	}
 
-	
+
 	/**
 	 * Add email to subscription
 	 * @form
@@ -60,7 +60,7 @@ class MailingListControl extends Control
 		));
 
 		if ($mailCheck) {
-			$this->flashMessage("Tento email je již přidán.","flash-error");
+			$this->flashMessage("Tento email je již přidán.","error");
 		}
 		else {
 			$regtime = date("Y-m-d H:i:s");
@@ -71,7 +71,7 @@ class MailingListControl extends Control
 			);
 
 			$this->models->mailingList->insert($item);
-			$this->flashMessage("Váš email byl přidán.","flash-success");
+			$this->flashMessage("Váš email byl přidán.","success");
 		}
 
 		$this->redirect("this");
@@ -87,14 +87,14 @@ class MailingListControl extends Control
 	/********************* send newsletter *********************/
 
 
-	protected function createComponentSendForm() 
-	{ 
-		$form = new Form; 
+	protected function createComponentSendForm()
+	{
+		$form = new Form;
 		$form->addTextarea("message")
 			->addRule(Form::FILLED,"Zadejte zprávu");
-		$form->addSubmit("send","Poslat"); 
+		$form->addSubmit("send","Poslat");
 
-		return $form; 
+		return $form;
 	}
 
 
@@ -128,8 +128,8 @@ class MailingListControl extends Control
 			$mail->setHtmlBody($template);
 			$mail->send();
 		}
-			
-		$this->flashMessage("Počet odeslaných zpráv: ". count($emailList), "flash-success");
+
+		$this->flashMessage("Počet odeslaných zpráv: ". count($emailList), "success");
 		$this->redirect("this");
 	}
 
@@ -151,12 +151,12 @@ class MailingListControl extends Control
 	public function handleUnsubscribe($hash)
 	{
 		if ($this->models->mailingList->delete(array("hash" => $hash))) {
-			$this->flashMessage("Byli jste úspěšně odhlášeni.","flash-success");
+			$this->flashMessage("Byli jste úspěšně odhlášeni.","success");
 		}
 		else {
-			$this->flashMessage("Zadali jste chybnou adresu, nebo byl tento email již odhlášen.","flash-error");
+			$this->flashMessage("Zadali jste chybnou adresu, nebo byl tento email již odhlášen.","error");
 		}
-		
+
 		$this->parent->redirect("Homepage:default");
 	}
 
