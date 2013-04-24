@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+%html
+	%head
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+		<meta name="author" content="FreexIT.eu">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="shortcut icon" href="{$basePath}/favicon.png">
+
+		{control adminCss}
+		{control adminJs}
+			
+		{if $presenter->module == "gallery"}
+			{!=MultipleFileUpload::getHead()}
+		{/if}
+
+		<div id="kcfinder_div"></div> 
+
+		%title
+			{capture $adminTitle}
+				{ifset $adminTitle}
+					{$adminTitle}
+				{else}
+					CMS Intuitivo
+				{/ifset}
+			{/capture}
+
+	%body
+		#header
+			%h1 <a n:href=":Admin:Homepage:default">{include #logoTitle}</a>
+
+		{*
+			#search
+				<input type="text" placeholder="Search here..."><button type="submit" class="tip-right" title="Search"><i class="icon-search icon-white"></i></button>
+		*}
+
+		#user-nav.navbar.navbar-inverse
+			%ul.nav.btn-group
+				{if $user->loggedIn}
+					%li.btn.btn-inverse 
+						<a n:href="logout!">
+							<i class="icon icon-share-alt"></i>
+							%span.text {_"Odhlásit se"}
+						</a>
+					%li.btn.btn-inverse
+						<a n:href=":Front:Homepage:">
+							<i class="icon icon-home"></i>
+							%span.text {_"Zpět na web"}
+						</a>
+				{/if}
+	
+		#sidebar
+			%ul
+				{if $user->loggedIn}
+					{include #activeModules}
+					{include #customModules}
+
+				{else}
+					%li [n:class => "$presenter->module == 'admin' ? 'active'"]
+						<a n:href=":Admin:Homepage:default">
+							<i class="icon icon-cog"></i>
+							{_"Přihlášení"}
+						</a>
+				{/if}
+
+		#content
+
+			{ifset #contentHeader}
+				#content-header
+					{include #contentHeader}
+			{/ifset}
+
+			{ifset #breadcrumb}
+				#breadcrumb
+					<a n:href=":Admin:Homepage:default" class="tip-bottom"><i class="icon-home"></i> Home</a>
+					{include #breadcrumb}
+			{/ifset}
+
+			{control flashMessage}
+
+			.container-fluid
+				.row-fluid
+					.span12
+						{include #content}
+
+
+{define #activeModules}
+
+	{ifset $activeModules["page"]}
+		<li n:class="submenu, $presenter->module == 'page' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-file
+				%span {$activeModules["page"]}
+			%ul
+				{include #menuItem, path => ":Page:Homepage:default", icon => "icon-th-list", name => "Přehled stránek"}
+				{include #menuItem, path => ":Page:Homepage:add", icon => "icon-plus", name => "Přidat stránku"}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["article"]}
+		<li n:class="submenu, $presenter->module == 'article' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-file
+				%span {$activeModules["article"]}
+			%ul
+				{include #menuItem, path => ":Article:Homepage:default", icon => "icon-th-list", name => "Přehled článků"}
+				{include #menuItem, path => ":Article:Homepage:add", icon => "icon-plus", name => "Přidat článek"}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["event"]}
+		<li n:class="submenu, $presenter->module == 'event' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-screenshot
+				%span {$activeModules["event"]}
+			%ul
+				{include #menuItem, path => ":Event:Homepage:default", icon => "icon-th-list", name => "Přehled akcí"}
+				{include #menuItem, path => ":Event:Homepage:add", icon => "icon-plus", name => "Přidat akci"}
+				{include #menuItem, path => ":Event:Category:default", icon => "icon-th-list", name => "Přehled kategorií"}
+				{include #menuItem, path => ":Event:Category:add", icon => "icon-plus", name => "Přidat kategorii"}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["gallery"]}
+		<li n:class="submenu, $presenter->module == 'gallery' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-picture
+				%span {$activeModules["gallery"]}
+			%ul
+				{include #menuItem, path => ":Gallery:Homepage:default", icon => "icon-th-list", name => "Přehled fotogalerií"}
+				{include #menuItem, path => ":Gallery:Homepage:add", icon => "icon-plus", name => "Přidat fotogalerii"}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["bulletin"]}
+		<li n:class="submenu, $presenter->module == 'bulletin' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-picture
+				%span {$activeModules["bulletin"]}
+			%ul
+				{include #menuItem, path => ":Bulletin:Homepage:default", icon => "icon-th-list", name => "Přehled měsíčníků"}
+				{include #menuItem, path => ":Bulletin:Homepage:add", icon => "icon-plus", name => "Přidat měsíčník"}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["email"]}
+		<li n:class="submenu, $presenter->module == 'email' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-envelope
+				%span {$activeModules["email"]}
+			%ul
+				{include #menuItem, path => ":Email:CustomEmail:default", icon => "icon-th-list", name => "Přehled šablon emailů"}
+				{include #menuItem, path => ":Email:CustomEmail:add", icon => "icon-plus", name => "Přidat šablonu"}
+				{include #menuItem, path => ":Email:Settings:default", icon => "icon-wrench", name => "Nastavení"}
+				{if $cmsParams["email_module_newsletter_active"]}
+					{include #menuItem, path => ":Email:Newsletter:default", icon => "icon-bullhorn", name => "Newsletter"}
+					{include #menuItem, path => ":Email:Newsletter:log", icon => "icon-th", name => "Evidence newsletterů"}
+				{/if}
+		</li>
+	{/ifset}
+
+	{ifset $activeModules["user"]}
+		<li n:class="submenu, $presenter->module == 'user' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-user
+				%span {$activeModules["user"]}
+			%ul
+				{include #menuItem, path => ":User:Homepage:default", icon => "icon-th-list", name => "Přehled uživatelů"}
+		</li>
+	{/ifset}
+
+{/define}
+
+
+{define #customModules}
+	{var $customModules = APP_DIR . "/templates/@adminModulesMenu.latte"}
+	{if file_exists($customModules)}
+		{include $customModules}
+	{/if}
+{/define}
+
+
+{define #logoTitle}
+	{var $logoTitle = APP_DIR . "/templates/@adminLogoTitle.latte"}
+	{if file_exists($logoTitle)}
+		{include $logoTitle}
+
+	{else}
+		{$adminTitle}
+	{/if}
+{/define}
+
+
+{define #menuItem}
+<li n:class="$presenter->isLinkCurrent($path) ? active">
+	<a n:href="{$path}">
+		<i class="icon {$icon}"></i> &nbsp; {_}{$name}{/_}
+	</a>
+</li>	
+{/define}
