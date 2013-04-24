@@ -1,0 +1,15 @@
+{define #contentHeader}
+	%h1 {$item["name"]}
+{/define} 
+
+{define #breadcrumb}
+	<a n:href="default, id => NULL" class="tip-bottom">{_"Správa šablon emailů"}</a>
+	<a n:href="edit" class="current">{_"Úprava šablony"}</a>
+{/define}
+
+
+{define #content}
+
+{control customEmailForm}
+
+{/define}
