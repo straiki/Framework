@@ -1,0 +1,15 @@
+{define #contentHeader}
+	%h1 {$item["name"]}
+{/define} 
+
+{define #breadcrumb}
+	<a n:href="default, id => NULL" class="tip-bottom">{_"Kategorie akcí"}</a>
+	<a n:href="edit" class="current">{_"Úprava"}</a>
+{/define}
+
+
+{define #content}
+
+{control eventCategoryForm}
+
+{/define}
