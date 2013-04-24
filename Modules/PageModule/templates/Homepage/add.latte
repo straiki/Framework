@@ -1,0 +1,17 @@
+{define #contentHeader}
+	%h1 {_"Nová stránka"}
+{/define} 
+
+{define #breadcrumb}
+	<a n:href="default" class="tip-bottom">{_"Správa stránek"}</a>
+	<a n:href="add" class="current">{_"Nová stránka"}</a>
+{/define}
+
+
+{define #content}
+
+{control js "TinyMCE/TinyMCE.js"}
+
+{control pageForm}
+
+{/define}

@@ -1,0 +1,38 @@
+{define #contentHeader}
+	%h1 {$item["title"]}
+{/define} 
+
+{define #breadcrumb}
+	<a n:href="default, id => NULL" class="tip-bottom">{_"Správa stránek"}</a>
+	<a n:href="edit" class="current">{_"Úprava stránky"}</a>
+{/define}
+
+
+{define #content}
+
+{control js "TinyMCE/TinyMCE.js"}
+
+{control pageForm}
+
+{if isset($attachmentFiels) && count($attachmentFiels)}
+	%br
+
+	%h4 Nahrané přílohy
+	%ul
+		{foreach $attachmentFiels as $row}
+			%li <a n:href="openAttachment!, attachmentId => $row['id']" n:tooltip="Stáhnout přílohu">{$row['name_origin']}</a> - <a n:href="deleteAttachment!, attachmentId => $row['id']" class="confirm">smazat</a>
+		{/foreach}
+{/if}
+
+
+{if isset($contentHistory)}
+	%br
+
+	%h4 Starší verze obsahu
+	%ul
+		{foreach $contentHistory as $row}
+			%li uložit {$row["login"]} - {$row["edited"]|date:"j. n. Y H:i:s"} - <a n:href="loadContentVersion!, versionId => $row['id']">obnovit</a> {first}(současná){/first}
+		{/foreach}
+{/if}
+
+{/define}
