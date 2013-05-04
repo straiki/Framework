@@ -1,0 +1,10 @@
+#logo {font:2.2em "Calibri", "Trebuchet MS", sans-serif;color:#FFF;text-align:center; margin-top:100px}
+
+#loginbox {height:240px;
+	.infoMessage {margin-bottom:20px}
+	.form-actions {padding:20px}
+}
+
+#recoverform {
+	.control-group {height:60px}
+}

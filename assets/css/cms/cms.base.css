@@ -5,6 +5,8 @@
 
 textarea.wider {width:700px;height:60px}
 
+#header h1 {line-height:1em; color:#FFF; font-size:32px; font-family: "Calibri"; text-align:center;width:180px;margin-left:1px}
+
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Admin
@@ -94,8 +96,6 @@ a.del {text-decoration:none;}
 
 .edit {.ico(edit, 50%, 50%)}
 
-
-
 .emailMe {.ico(emailMe)}
 
 .copy {.ico(copy, 50%, 50%)}
@@ -136,6 +136,7 @@ th.time, .time {.ico(time, 0%, 50%, 30px)}
 
 .right {text-align:right}
 .center {text-align:center;}
+td.center {text-align:center;}
 
 
 /* date-picker debug */
