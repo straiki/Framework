@@ -4,27 +4,18 @@ namespace Schmutzka\Application\UI;
 
 use Nette;
 use Schmutzka;
-use Components;
-use NetteTranslator;
 
 abstract class Control extends Nette\Application\UI\Control
 {
-	/** @var NetteTranslator\Gettext */
-	protected $translator;
+	/** @inject @var Nette\Localization\ITranslator */
+	public $translator;
 
-	/** @var Schmutzka\Templates\TemplateService */
-	private $templateService;
-
-
-	function injectBaseServices(Schmutzka\Templates\TemplateService $templateService, NetteTranslator\Gettext $translator = NULL)
-	{
-		$this->templateService = $templateService;
-		$this->translator = $translator;
-	}
+	/** @inject @var Schmutzka\Templates\TemplateService */
+	public $templateService;
 
 
 	/**
-	 * Create template and autoset file
+	 * Create template and set file
 	 * @param string
 	 * @param bool
 	 * @return Nette\Templating\FileTemplate
@@ -38,7 +29,7 @@ abstract class Control extends Nette\Application\UI\Control
 		$template = parent::createTemplate($class);
 		$this->templateService->configure($template);
 
-		if ($autosetFile && ! $template->getFile() && file_exists($this->getTemplateFilePath())) {
+		if (! $template->getFile() && file_exists($this->getTemplateFilePath())) {
 			$template->setFile($this->getTemplateFilePath());
 		}
 
@@ -65,16 +56,6 @@ abstract class Control extends Nette\Application\UI\Control
 	{
 		$class = $this->getReflection();
 		return dirname($class->getFileName()) . "/" . $class->getShortName() . ucfirst($name) . ".latte";
-	}
-
-
-	/**
-	 * FlashMessage component
-	 * @return Components\FlashMessageControl
-	 */
-	protected function createComponentFlashMessage()
-	{
-		return new Components\FlashMessageControl;
 	}
 
 }
