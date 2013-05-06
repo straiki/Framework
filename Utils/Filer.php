@@ -1,9 +1,5 @@
 <?php
 
-/**
- * @todo move to own *\Http\FileUpload
- */
-
 namespace Schmutzka\Utils;
 
 use Schmutzka\Utils\Name;
@@ -66,9 +62,6 @@ class Filer extends Nette\Object
 	 */
 	public static function downloadAs($file, $name, $type = NULL)
 	{
-		// @use http://api.nette.org/2.0/Nette.Application.Responses.FileResponse.html if possible
-		// http://forum.nette.org/cs/7889-nefukcni-fileresponse-v-google-chrome
-		
 		if (is_file($file)) {
 			$content = file_get_contents($file);
 

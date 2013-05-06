@@ -2,6 +2,7 @@
 
 namespace Schmutzka\Utils;
 
+use Nette;
 use Schmutzka\Utils\Arrays;
 
 class Strings extends \Nette\Object
@@ -14,21 +15,9 @@ class Strings extends \Nette\Object
 	 */
 	public static function split($value, $needle)
 	{
-		$array = \Nette\Utils\Strings::split($value, $needle);
+		$array = Nette\Utils\Strings::split($value, $needle);
 		$array = Arrays::clearEmpty($array);
 		return $array;
-	}	
-
-
-	/**
-	 * Mirror of Nette\Utils\Strings
-	 * @param string $name
-	 * @param array $args
-	 * @return mixed
-	 */
-	public static function __callStatic($name, $args)
-	{
-		return callback("\Nette\Utils\Strings", $name)->invokeArgs($args);
 	}
 
 }

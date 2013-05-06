@@ -28,7 +28,24 @@ class Name extends Nette\Object
 			$replace[$letter] = "_" . strtolower($letter);
 		}
 
-		return strtr($table, $replace); 
+		return strtr($table, $replace);
+	}
+
+
+	/**
+	 * Get component template name from class + check if exists
+	 * @param Nette\Application\UI\PresenterComponentReflection
+	 * @param string
+	 * @return string|NULL
+	 */
+	public static function templateFromReflection(Nette\Application\UI\PresenterComponentReflection $reflection, $name = NULL)
+	{
+		$file = dirname($reflection->getFileName()) . "/" . $reflection->getShortName() . ucfirst($name) . ".latte";
+		if (file_exists($file)) {
+			return $file;
+		}
+
+		return NULL;
 	}
 
 
@@ -57,7 +74,7 @@ class Name extends Nette\Object
 
 		} elseif ($part == "view") {
 			return $view;
-		} 
+		}
 
 		return array($module, $presenter, $view);
 	}

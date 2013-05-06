@@ -23,9 +23,9 @@ class Time extends Nette\Object
 	 */
 	public static function isBetween($date, $from, $to)
 	{	
-		$date = self::from($date);
-		$from = self::from($from);
-		$date = self::from($date);
+		$date = Nette\DateTime::from($date);
+		$from = Nette\DateTime::from($from);
+		$to = Nette\DateTime::from($to);
 
 		return ($date >= $from && $date <= $to);
 	}
@@ -303,6 +303,8 @@ class Time extends Nette\Object
 
 		return cal_days_in_month(CAL_GREGORIAN, $month, $year); 
 	}
+
+
 	/**
 	 * Get age from birthdate
 	 * @param date format/time()
