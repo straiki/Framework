@@ -2,15 +2,11 @@
 
 namespace Components;
 
-use Schmutzka;
-use Nette;
-use Models;
-use Schmutzka\Forms\Form;
-use Nette\Utils\Strings;
-use Schmutzka\Utils\Password;
+use Schmutzka\Application\UI\Control;
+use Schmutzka\Application\UI\Form;
 use Nette\Mail\Message;
 
-class RemindPasswordControl extends Schmutzka\Application\UI\Control
+class RemindPasswordControl extends Control
 {
 	/** @var string */
 	public $company = "OurCompany.com";
@@ -30,30 +26,14 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 	/** @var bool */
 	public $confirmFirst = FALSE;
 
-	/** @var Models\User */
-	private $userModel;
+	/** @inject @var Models\User */
+	public $userModel;
 
-	/** @var Nette\Mail\Mailer */
-	private $mailer;
+	/** @inject @var Nette\Mail\Mailer */
+	public $mailer;
 
-	/** @var string */
-	private $salt;
-
-
-	/**
-	 * @param Models\User
-	 * @param Nette\Mail\Mailer
-	 * @param Nette\DI\Container
-	 */
-	public function __construct(Models\User $userModel, Nette\Mail\IMailer $mailer, Nette\DI\Container $context)
-	{
-		$this->userModel = $userModel;
-		$this->mailer = $mailer;
-
-		if (isset($context->params["salt"])) {
-			$this->salt = $context->params["salt"];
-		}
-	}
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
 
 
 	/**
@@ -63,9 +43,10 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 	{
 		$form = new Form;
 		$form->addText("email","Váš email:")
-			->addRule(Form::FILLED,"Vyplňte email.")
-			->addRule(Form::EMAIL, "Email nemá správný formát.");
+			->addRule(Form::FILLED, "Vyplňte email.")
+			->addRule(Form::EMAIL, "Opravte formát emailu.");
 		$form->addSubmit("send","Zaslat nové heslo");
+
 		return $form;
 	}
 
@@ -125,8 +106,15 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 	}
 
 
+	public function render()
+	{
+		parent::useTemplate();
+		$this->template->render();
+	}
+
+
 	/* **************************** "Confirm first" hash authorization **************************** */
- 
+
 
 	/**
 	 * Authorize by hash
@@ -136,7 +124,6 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 	{
 		// translate
 		$this->subjectStep2 = $this->translate($this->subjectStep2);
-
 		$record = $this->userModel->item(array("remindHash" => $hash));
 
 
@@ -156,7 +143,7 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 			$mail->setFrom($this->from)
 				->addTo($record["email"])
 				->setSubject($this->company." | ".$this->subject);
-			
+
 			if ($this->emailTemplatePath) { // ifset, use one
 				$filePath = $this->context->parameters["appDir"] . "/" . $this->emailTemplatePath;
 
@@ -174,13 +161,13 @@ class RemindPasswordControl extends Schmutzka\Application\UI\Control
 			$mail->setHtmlBody($template);
 			$mail->send();
 
-			$this->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","flash-success");
+			$this->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.","success");
 
 		} else {
-			$this->flashMessage("Tato žádost již není platná.","flash-error");
+			$this->flashMessage("Tato žádost již není platná.","error");
 		}
 
 		$this->redirect("this");
 	}
-	
+
 }

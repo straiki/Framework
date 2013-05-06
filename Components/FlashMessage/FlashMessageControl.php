@@ -9,11 +9,10 @@ class FlashMessageControl extends Schmutzka\Application\UI\Control
 
 	public function render()
 	{
-		$flashes = array();
+		$flashes = $this->parent->template->flashes;
 		if ($this->translator) {
-			foreach ($this->parent->template->flashes as $row) {
-				$row->message = $this->translator->translate($row->message);
-				$flashes[] = $row;
+			foreach ($flahes as $row) {
+				$flashes[$key]->message = $this->translator->translate($row->message);
 			}
 		}
 

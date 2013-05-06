@@ -8,14 +8,8 @@ use lessc;
 
 class LessFilter extends Nette\Object
 {
-	/** @var lessc */
-	private $lessc;
-
-
-	function inject(lessc $lessc)
-	{
-		$this->lessc = $lessc;
-	}
+	/** @inject @var lessc */
+	public $lessc;
 
 
 	/**

@@ -4,38 +4,36 @@ namespace Components;
 
 use Nette;
 use Schmutzka;
-use Schmutzka\Mail\Message;
 use Schmutzka\Application\UI\Control;
-use Schmutzka\Forms\Form;
-use Schmutzka\Utils\Password;
+use Schmutzka\Application\UI\Form;
 
 class RegistrationControl extends Control
 {
 	/** @var string */
-	public $authorizeRedirect = "this";
-
-	/** @var subject */
 	public $from;
 
 	/** @var string */
-	public $flashSuccess = "Registrace proběhla úspěšně.";
+	public $loginAfter = TRUE;
 
-	/** @var string */
-	public $loginAfter = TRUE; // use autologin?
+	/** @var int */
+	public $passwordMinLenth = 6;
 
 	/** @var bool */
 	public $detectLang = FALSE;
 
 	/** @var bool */
-	public $requireAuthorization = FALSE;
+	public $logDateCreated = TRUE;
 
 	/** @var bool */
-	public $confirmationEmail = TRUE;
+	public $requireAuthorization = FALSE;
 
-	/** @inject @var Nette\Mail\IMailer */
-	public $mailer;
+	/** @var string */
+	public $flashSuccess = "Byli jste úspěšně registrováni.";
 
-	/** @inject @var Schmutzka\Models\User  */
+	/** @var string */
+	public $onAuthorizeRedirect = "this";
+
+	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
 	/** @inject @var Schmutzka\Security\User */
@@ -44,14 +42,15 @@ class RegistrationControl extends Control
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
+	/** @inject @var Nette\Localization\ITranslator */
+	public $translator;
 
-	/**
-	 * Registration form
-	 */
+	/** @inject @var Nette\Mail\IMailer */
+	public $mailer;
+
+
 	protected function createComponentRegistrationForm()
 	{
-		$userModel = $this->userModel;
-
 		$form = new Form;
 
 		$form->addText("login", "Váš login:")
@@ -69,37 +68,39 @@ class RegistrationControl extends Control
 			}, "Zadaný email již existuje.");
 
 		$form->addPassword("password", "Heslo:")
-			->addRule(Form::FILLED,"Zadejte heslo")
-			->addRule(Form::MIN_LENGTH,"Heslo musí mít aspoň %d znaků.", 6);
+			->addRule(Form::FILLED, "Zadejte heslo")
+			->addRule(Form::MIN_LENGTH, "Heslo musí mít aspoň délku %d znaků.", $this->passwordMinLenth);
 
 		$form->addPassword("password2", "Heslo znovu:")
-			->addRule(Form::FILLED,"Povinné")
-			->addRule(Form::EQUAL,"Hesla se neshodují.", $form["password"]);
+			->addRule(Form::FILLED, "Zadejte heslo znovu pro kontrolu")
+			->addRule(Form::EQUAL, "Hesla se neshodují.", $form["password"]);
 
-		$form->addSubmit("send","Registrovat");
+		$form->addSubmit("send", "Registrovat")
+			->setAttribute("class", "btn btn-primary");
 
 		return $form;
 	}
 
 
 	/**
-	 * Process form
-	 * @param Form
+	 * Process registration form
+	 * @param form
 	 */
 	public function processRegistrationForm(Form $form)
 	{
-		$rawValues = $values = $form->getValues();
-		unset($values["conditions"], $values["password2"]);
+		$rawValues = $values = $form->values;
 
-		$values["password"] = Password::saltHash($values["password"], isset($this->paramService->salt) ? $this->paramService->salt : NULL);
+		unset($values["password2"]);
+		$values["password"] = sha1($values["password"]);
 		$values["created"] = new Nette\DateTime;
 
+		// set autorization hash
 		if ($this->requireAuthorization) {
-			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
+			$values["auth_hash"] = substr(sha1($values["email"]) . sha1(time()), 20, 40);
 		}
 
 		if ($this->detectLang) {
-			$values["lang"] = $this->translator->getLang();
+			$values["lang"] = $this->parent->presenter->lang;
 		}
 
 		$this->userModel->insert($values);
@@ -107,19 +108,14 @@ class RegistrationControl extends Control
 
 		// what to do now?
 		if ($this->requireAuthorization) {
-			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
 			$this->sendAuthorizationEmail($values);
-		}
 
-		if ($this->loginAfter) {
+		} elseif ($this->loginAfter) {
 			$this->user->login($values[$this->loginAfter], $rawValues["password"], $this->loginAfter);
-			$this->getPresenter()->flashMessage("Byli jste úspěšně registrováni a přihlášeni.", "success");
-
-		} else {
-			$this->getPresenter()->flashMessage($this->flashSuccess, "success");
 		}
 
-		$this->redirect("this");
+		$this->presenter->flashMessage($this->flashSuccess, "success");
+		$this->presenter->redirect("this");
 	}
 
 
@@ -177,7 +173,7 @@ class RegistrationControl extends Control
 			$this->getPresenter()->flashMessage("Tento odkaz již není platný.", "error");
 		}
 
-		$this->getPresenter()->redirect($this->authorizeRedirect);
+		$this->getPresenter()->redirect($this->onAuthorizeRedirect);
 	}
 
 
