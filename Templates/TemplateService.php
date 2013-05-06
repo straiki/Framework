@@ -8,25 +8,14 @@ use NetteTranslator;
 
 class TemplateService extends Nette\Object
 {
-	/** @var Schmutzka\Templates\Helpers */
-	private $helpers;
+	/** @inject @var Nette\Localization\ITranslator */
+	public $translator;
 
-	/** @var NetteTranslator\Gettext */
-	private $translator;
+	/** @inject @var Schmutzka\Templates\Helpers */
+	public $helpers;
 
 	/** @var Nette\Latte\Engine */
 	private $latte;
-
-
-	/**
-	 * @param Schmutzka\Templates\Helpers
-	 * @param NetteTranslator\Gettext
-	 */
-	public function __construct(Schmutzka\Templates\Helpers $helpers, NetteTranslator\Gettext $translator = NULL)
-	{
-		$this->helpers = $helpers;
-		$this->translator = $translator;
-	}	
 
 
 	/**

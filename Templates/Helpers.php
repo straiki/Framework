@@ -8,18 +8,11 @@ use Schmutzka\Utils\Time;
 
 class Helpers extends Nette\Object
 {
-	/** @var Schmutzka\Models\Page */
-	private $pageModel;
+	/** @inject @var Schmutzka\Models\Page */
+	public $pageModel;
 
-	/** @var Schmutzka\Models\Article */
-	private $articleModel;
-
-
-	public function __construct(Schmutzka\Models\Page $pageModel, Schmutzka\Models\Article $articleModel)
-	{
-		$this->pageModel = $pageModel;
-		$this->articleModel = $articleModel;
-	}
+	/** @inject @var Schmutzka\Models\Article */
+	public $articleModel;
 
 
 	public function loader($helper)

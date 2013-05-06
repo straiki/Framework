@@ -4,7 +4,6 @@
  * My macros
  *
  * {menuItem ? ?} - <li n:class='$presenter->isCurrentLink("Homepage:*") ? active'><a n:href="Homepage:default">Test lists</a></li>
- * {ga ?} - google analytics code
  * {n:id ?} <div n:id="cond ? one : two">
  * {n:confirm ?} - js confirm dialog
  * {n:tooltip ?} - into js tooltip
@@ -27,7 +26,6 @@ class Macros extends Nette\Latte\Macros\MacroSet
 	{
 		$me = new static($compiler);
 		$me->addMacro("confirm", NULL, NULL, array($me, "macroConfirm"));
-		$me->addMacro("ga", array($me, "macroGa"));
 		$me->addMacro("menuItem", array($me, "macroMenuItem"));
 		$me->addMacro("id", NULL, NULL, array($me, "macroId"));
 		$me->addMacro("tooltip", NULL, NULL, array($me, "macroTooltip"));
@@ -90,35 +88,6 @@ class Macros extends Nette\Latte\Macros\MacroSet
 	{
 		$node = $node->args;
 		return $writer->write('echo " rel=\'tooltip\' title=\'" . %escape($template->translate("' . $node . '")) . " \'"');
-	}
-
-
-	/**
-	 * Macro for google analytics code
-	 * @param string unique code
-	 * @param bool multiple subdomains
-	 */
-	public function macroGa(MacroNode $node, PhpWriter $writer)
-	{
-		dd("ga macro - move to compnent");
-
-		$args = explode(",", $node->args);
-		$code = $args[0];
-		$subdomains = (isset($args[1]) ? $args[1] : NULL);
-		
-		$node = Html::el("script")->setText("
-			var _gaq = _gaq || [];
-			_gaq.push(['_setAccount', '" . $code . "']);\n" .
-			($subdomains ?  "_gaq.push(['_setDomainName', '".$subdomains."']);\n" : NULL) . 
-			"_gaq.push(['_trackPageview']);\n
-
-			(function() {
-				var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-				ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-				var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-			})();");
-
-		return $writer->write('echo "'.$node .'"');
 	}
 
 
