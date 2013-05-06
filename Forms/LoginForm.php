@@ -26,15 +26,11 @@ class LoginForm extends Form
 	/** @inject @var Schmutzka\Security\User */
 	public $user;
 
-	/** @var Nette\Http\SessionSection */
-	private $baseSession;
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
 
-
-	public function inject(Nette\Http\Session $session)
-	{
-		$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
-		$this->baseSession = $session->getSection("baseSession_" . $sectionKey);
-	}
+	/** @inject @var Nette\Http\Session */
+	public $session;
 
 
 	public function build()
@@ -60,10 +56,11 @@ class LoginForm extends Form
 				->setDefaultValue(TRUE);
 		}
 
-		$this->addSubmit("send","Přihlásit se");
+		$this->addSubmit("send", "Přihlásit se")
+			->setAttribute("class", "btn btn-primary");
 
 	}
-	
+
 
 	public function process($form)
 	{
@@ -83,8 +80,13 @@ class LoginForm extends Form
 				$this->onLoginSuccess($this->user);
 			}
 
-			$this->presenter->flashMessage($this->flashContent, "success");
-			$this->presenter->restoreRequest($this->baseSession->backlink);
+			if ($this->flashContent) {
+				$this->presenter->flashMessage($this->flashContent, "success");
+			}
+
+			$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
+			$baseSession = $this->session->getSection("baseSession_" . $sectionKey);
+			$this->presenter->restoreRequest($baseSession->backlink);
 			$this->presenter->redirect("Homepage:default");
 
 		} catch (\Nette\Security\AuthenticationException $e) {
@@ -93,7 +95,7 @@ class LoginForm extends Form
 				$this->onLoginError($values);
 			}
 
-			$this->presenter->flashMessage($e->message, "error"); 
+			$this->presenter->flashMessage($e->getMessage(), "error");
 		}
 	}
 

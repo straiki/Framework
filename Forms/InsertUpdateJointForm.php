@@ -77,7 +77,7 @@ class InsertUpdateJointForm extends  Form
 			$this->model->insert($array);
 		}
 
-		$this->flashMessage($this->flashText, "flash-success");
+		$this->flashMessage($this->flashText, "success");
 		$this->redirect($this->redirect);
 	}
 

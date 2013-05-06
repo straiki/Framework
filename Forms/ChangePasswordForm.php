@@ -47,7 +47,7 @@ class ChangePasswordForm extends Form
 			"password" => Password::saltHash($values["oldPassword"], $this->paramService->salt)
 		);
 
-		if ($record = $this->userModel->item($key);) {
+		if ($record = $this->userModel->item($key)) {
 			$data["password"] = Password::saltHash($values["password"], $this->salt);
 			$this->userModel->update($data, $this->user->id);
 
@@ -59,5 +59,5 @@ class ChangePasswordForm extends Form
 
 		$this->redirect("this");
 	}
-	
+
 }

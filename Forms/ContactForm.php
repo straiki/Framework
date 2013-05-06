@@ -59,9 +59,10 @@ class ContactForm extends Form
 			->addRule(Form::FILLED, "Napište Váš dotaz");
 
 		$this->addAntispam();
-		$this->addSubmit("submit", "Odeslat");
+		$this->addSubmit("send", "Odeslat")
+			->setAttribute("class", "btn btn-primary");
 	}
-	
+
 
 	public function process($form)
 	{
@@ -76,7 +77,7 @@ class ContactForm extends Form
 		if ($this->includeParams) {
 			$message .= "\n\nVeškeré parametry:\n";
 
-			foreach ($form->components as $key => $component) {	
+			foreach ($form->components as $key => $component) {
 				if ($key != "submit") {
 					$message .= $component->caption . " " . $component->value . "\n";
 				}
@@ -132,7 +133,7 @@ class ContactForm extends Form
 
 		$message->setBody($from . $values["message"]);
 		$this->mailer->send($message);
-	
+
 		$this->getPresenter()->flashMessage($this->flashText, "success");
 		$this->getPresenter()->redirect($this->redirectTo);
 	}
