@@ -6,7 +6,7 @@
 	<a n:href="this, ord => 'name'">name</a>
 
 {ifset $editing}
-	%p.flash.flash-info You're in the edit mode. <strong><a n:href="this, id => NULL">Add a new item</a> &raquo;</strong>
+	%p.alert.alert-info You're in the edit mode. <strong><a n:href="this, id => NULL">Add a new item</a> &raquo;</strong>
 {/ifset}
 
 <table class="table" style="width:400px">
@@ -27,18 +27,18 @@
 </table>
 
 <div id="tree">
-{#item} 
+{#item}
 &nbsp;
 	<ul>
 		{foreach $structure as $item}
 			<li>
 				{$item[0]["id"]} - {$item[0]["name"]}  [{$item[0]["rank"]}]
-				<a n:href="edit, id => $item[0]['id']" class="edit" title="Upravit">&nbsp;</a> 
+				<a n:href="edit, id => $item[0]['id']" class="edit" title="Upravit">&nbsp;</a>
 				<a n:href="delete!  id => $item[0]['id']" class="del" onClick="return confirm('Really?')">&nbsp;</a>
 				{if count($item[1])}
 					{include #item, structure => $item[1]}
 				{/if}
-			</li>	
+			</li>
 		{/foreach}
 	</ul>
 {/#}

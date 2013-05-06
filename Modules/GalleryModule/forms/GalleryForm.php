@@ -54,16 +54,16 @@ class GalleryForm extends Form
 				->setAttribute("class","chosen width400");
 		}
 
-		if (!$this->id) {
-			$this->addMultipleFileUpload("files", "Obrázky:")
-				->addRule("\MultipleFileUpload::validateFilled", "Vyberte aspoň jeden soubor")
-				->addRule("\MultipleFileUpload::validateFileSize", "Max. velikost všech odeslaných souborů je 20 MB!", 20 * 1024 * 1024);
-		}
+		$this->addMultipleFileUpload("files", "Obrázky:")
+			->addRule("\MultipleFileUpload::validateFilled", "Vyberte aspoň jeden soubor")
+			->addRule("\MultipleFileUpload::validateFileSize", "Max. velikost všech odeslaných souborů je 20 MB!", 20 * 1024 * 1024);
 
 		$this->addTextarea("description","Popis:", NULL, 3)
 			->setAttribute("class", "span8");
 
-		$this->addSubmit();
+		$this->addSubmit("send", "Uložit")
+			->setAttribute("class", "btn btn-primary");
+
 		if ($this->id) {
 			$this->addSubmit("cancel", "Zrušit")
 				->setValidationScope(FALSE);
@@ -99,6 +99,11 @@ class GalleryForm extends Form
 		}
 
 		if ($this->id) {
+			if (count($values["files"])) {
+				$fileCount = $this->galleryModel->fetchSingle("file_count", $this->id);
+				$gallery["file_count"] = $fileCount + count($values["files"]);
+				$this->loadFilesToGallery($values["files"], $this->id);
+			}
 			$this->galleryModel->update($gallery, $this->id);
 
 		} else {

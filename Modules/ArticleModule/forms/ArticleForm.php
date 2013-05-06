@@ -7,7 +7,7 @@ use Nette\Utils\Strings;
 use Nette\Utils\Html;
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
-use Schmutzka\Forms\Form;
+use Schmutzka\Forms\ModuleForm;
 use Schmutzka\Utils\Filer;
 
 class ArticleForm extends ModuleForm
