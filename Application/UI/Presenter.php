@@ -17,7 +17,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	public $module;
 
-	/** @inject @var NetteTranslator\Gettext|NULL */
+	/** @inject @var Nette\localization\ITranslator */
 	public $translator;
 
 	/** @inject @var Nette\Caching\Cache */
@@ -110,6 +110,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
 		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte";
 		$layoutTemplateFiles[] = LIBS_DIR . "/Schmutzka/Modules/@" . ($this->layout ?: "layout") . ".latte";
+		$layoutTemplateFiles[] = APP_DIR . "/FrontModule/templates/@" . ($this->layout ?: "layout") . ".latte";
 
 		return $layoutTemplateFiles;
 	}
