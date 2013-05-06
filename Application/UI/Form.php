@@ -202,10 +202,12 @@ class Form extends Nette\Application\UI\Form
 
 		if ($this->getHttpData()) {
 			foreach ($this->getHttpData() as $key => $value) {
-				if ($this[$key] instanceof Nette\Forms\Controls\SubmitButton) {
-
-				} elseif (empty($values[$key]) && $value && $key != "_token_") {
-					$values[$key] = $value;
+				if (isset($this[$key])) {
+					if ($this[$key] instanceof Nette\Forms\Controls\SubmitButton) {
+	
+					} elseif (empty($values[$key]) && $value && $key != "_token_") {
+						$values[$key] = $value;
+					}
 				}
 			}
 		}
@@ -338,7 +340,6 @@ class Form extends Nette\Application\UI\Form
 	 */
 	public function addMultipleFileUpload($name, $label = NULL, $maxFiles = 999)
 	{
-		dd("refactor");
 		return $this[$name] = new MultipleFileUpload($label, $maxFiles);
 	}
 
