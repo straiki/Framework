@@ -4,7 +4,6 @@ namespace Schmutzka;
 
 use Nette;
 
-
 class DateTime extends Nette\DateTime
 {
 	/** @var array */
@@ -13,12 +12,19 @@ class DateTime extends Nette\DateTime
 
 	/**
 	 * Object factory
+	 * @param mixed
+	 * @param string
 	 * @return self
 	 */
-	public static function get()
+	public static function get($data = NULL, $format = NULL)
 	{
-		return new static();
-	}	
+		$self = new static($data);
+		if ($format) {
+			return $self->modify($format);
+		}
+
+		return $self;
+	}
 
 
 
@@ -29,7 +35,7 @@ class DateTime extends Nette\DateTime
 	 * @return bool
 	 */
 	public function isBetween($from, $to)
-	{	
+	{
 		$from = self::from($from);
 		$to = self::from($to);
 
@@ -48,7 +54,7 @@ class DateTime extends Nette\DateTime
 	{
 		$month = $this->format("m");
 		$year = $this->format("Y");
-		return cal_days_in_month(CAL_GREGORIAN, $month, $year); 
+		return cal_days_in_month(CAL_GREGORIAN, $month, $year);
 	}
 
 
@@ -120,7 +126,7 @@ class DateTime extends Nette\DateTime
 
 		$this->modify("+$dayShift days");
 		return $this;
-	}	
+	}
 
 
 	/**
@@ -133,12 +139,12 @@ class DateTime extends Nette\DateTime
 		$currentTime = $this->format("H:i");
 		if (strtotime($time) <= strtotime($currentTime)) {
 			$this->modify("+1 day");
-		} 
+		}
 
 		list($hours, $mins) = explode(":", $time);
 		$this->setTime($hours, $mins);
 		return $this;
-	}	
+	}
 
 
 	/**
@@ -152,10 +158,10 @@ class DateTime extends Nette\DateTime
 		}
 
 		return $this;
-	}	
+	}
 
 
-	/** 
+	/**
 	 * Get distance from now (in days by default)
 	 * @param string
 	 */
@@ -163,8 +169,8 @@ class DateTime extends Nette\DateTime
 	{
 		$today = new self;
 		$diff = self::diff($today);
-	
-		if ($type) { // todofix 
+
+		if ($type) {
 			return $diff->{$type};
 		}
 
@@ -177,7 +183,7 @@ class DateTime extends Nette\DateTime
 	 * @return float
 	 */
 	public function getAge()
-	{  
+	{
 		return floor((date("Ymd") - date("Ymd", $this)) / 10000);
 	}
 
@@ -191,38 +197,28 @@ class DateTime extends Nette\DateTime
 	 * @param bool
 	 * @return string
 	 */
-	public function dayLocalized($lang = 'cs', $lcfirst = FALSE)
+	public function dayLocalized($lang = "cs", $type = "short", $ucfirst = TRUE)
 	{
 		$nameList = array(
-			'cs' => array(1 => 'Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne')
+			"cs" => array
+				"short" => array(1 => 'Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'),
+				"long" => array(1 => "pondělí", "úterý", "středa", "čtvtek", "pátek", "sobota", "neděle")
+			)
 		);
-		$month = $this->format('N');
 
-		if (isset($nameList[$lang][$month])) {
-			$return = $nameList[$lang][$month];
-			return ($lcfirst ? lcfirst($return) : $return);
+		$day = $this->format('N');
+
+		if (isset($nameList[$lang][$type][$day])) {
+			$return = $nameList[$lang][$type][$day];
+			return ($ucfirst ? ucfirst($return) : lcfirst($return));
 		}
 
 		return $this->format('D');
-
-
-// @todo merge!
-		$nameList = array(
-			"cs" => array(1 => "pondělí", "úterý", "středa", "čtvtek", "pátek", "sobota", "neděle")
-		);
-		$day = $this->format("N");
-
-		if (isset($nameList[$lang][$day])) {
-			$return = $nameList[$lang][$day];
-			return ($ucfirst ? ucfirst($return) : $return);
-		}
-
-		return $this->format("l");
 	}
 
 
 	/**
-	 * Localized month 
+	 * Localized month
 	 * @param string
 	 * @param bool
 	 */
@@ -243,17 +239,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Localized day 
-	 * @param string
-	 * @param bool
-	 */
-	/*public function dayLocalized($lang = "cs", $ucfirst = FALSE)
-	{
-
-	}*/
-
-
-	/**
 	 * Format
 	 * @param string
 	 */
@@ -268,7 +253,7 @@ class DateTime extends Nette\DateTime
 
 	/**
 	 * Is today
-	 * @return bool	 
+	 * @return bool
 	 */
 	public function isToday()
 	{
@@ -310,7 +295,7 @@ class DateTime extends Nette\DateTime
 
 	/**
 	 * Is holiday
-	 * @return bool	 
+	 * @return bool
 	 */
 	public function isHoliday()
 	{

@@ -74,6 +74,14 @@ parameters:
 					user: Uživatel,
 					admin: Administrátor
 				]
+				add: FALSE
+				passwordMinLength: 6
+
+			file:
+				active: FALSE
+				title: Soubory
+				type: single # multi
+				attachToUser: FALSE
 
 
 services:
@@ -89,25 +97,26 @@ services:
 	galleryModel: Schmutzka\Models\Gallery
 	galleryFileModel: Schmutzka\Models\GalleryFile
 	fileModel: Schmutzka\Models\File
-	customEmail: Schmutzka\Models\CustomEmail
-	emailLog: Schmutzka\Models\EmailLog
+	customEmailModel: Schmutzka\Models\CustomEmail
+	emailLogModel: Schmutzka\Models\EmailLog
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
 
 
 factories:
 	articleForm: ArticleModule\Forms\ArticleForm
 	articleCategoryForm: ArticleModule\Forms\ArticleCategoryForm
+	fileForm: FileModule\Forms\FileForm
 	galleryForm: GalleryModule\Forms\GalleryForm
 	pageForm: PageModule\Forms\PageForm
 	userForm: UserModule\Forms\UserForm
 
 	articleGrid: ArticleModule\Grids\ArticleGrid
 	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
+	fileGrid: FileModule\Grids\FileGrid
 	galleryGrid: GalleryModule\Grids\GalleryGrid
 	pageGrid: PageModule\Grids\PageGrid
 	userGrid: UserModule\Grids\UserGrid
-
-
+	customEmailGrid: EmailModule\Grids\CustomEmailGrid
 
 
 webloader:
@@ -139,8 +148,8 @@ webloader:
 	js:
 		admin:
 			files:
-				- %assetsDir%/js/jquery/jquery-1.7.1.min.js
-				- %assetsDir%/js/jquery/jquery-ui.min.js
+				- %assetsDir%/js/jquery/jquery-1.8.2.min.js
+				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
 				- %assetsDir%/js/bootstrap/bootstrap.min.js
 				- %assetsDir%/js/nette/nette.forms.js
 				- %assetsDir%/js/nette/nette.rules.js
@@ -164,8 +173,6 @@ webloader:
 				- TinyMCE/TinyMCE.js
 
 				- jquery/jquery.livequery.min.js # mfu
-				- scriptsAdmin.js
-
 				- %assetsDir%/js/chosen/chosen.jquery.min.js
 
 		adminLogin:
