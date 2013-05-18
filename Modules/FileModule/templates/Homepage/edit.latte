@@ -1,0 +1,15 @@
+{define #contentHeader}
+	%h1 {_"Přehled souborů"}
+{/define} 
+
+{define #breadcrumb}
+	<a n:href="default, id => NULL">{_"Přehled souborů"}</a>
+	<a n:href="edit" class="current">{_"Úprava soubor"}</a>
+{/define}
+
+
+{define #content}
+
+{control fileForm}
+
+{/define}
