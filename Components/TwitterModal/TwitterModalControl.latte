@@ -1,0 +1,14 @@
+<a href="#myModal-{$id}" role="button" class="btn" data-toggle="modal">{$button}</a>
+
+<div id="myModal-{$id}" class="modal hide fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false" style="display: block; display:none">
+	.modal-header
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		{$header}
+
+	.modal-body
+		{$body}
+
+	.modal-footer
+		<button class="btn" data-dismiss="modal" aria-hidden="true">Zavřít</button>
+
+</div>
