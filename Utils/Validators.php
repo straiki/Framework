@@ -57,24 +57,4 @@ class Validators extends Nette\Utils\Validators
 		return (checkdate((int) $m,(int) $d,(int) $y) && strtotime("$y-$m-$d") && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', "$d-$m-$y"));
 	}
 
-
-	/**
-	 * Is date time
-	 * @param string
-	 */
-	public static function isDateTime($datetime)
-	{
-		$array = explode(" ", $datetime);
-		if (count($array) != 2) {
-			return FALSE;
-		}
-
-		list ($date, $time) = $array;
-		if ($time === NULL) {
-			return FALSE;
-		}
-
-		return (self::isDate($date) && self::isTime($time));
-	}
-
 }
