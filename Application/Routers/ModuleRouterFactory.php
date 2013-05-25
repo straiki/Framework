@@ -18,15 +18,20 @@ class ModuleRouterFactory
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
+	/** @var array */
+	protected $customModules;
+
 
 	public function createRouter()
 	{
 		$router = new RouteList();
 
 		$router[] = new Route("index.php", "Front:Homepage:default", Route::ONE_WAY);
-
 		$router[] = new Route("index.php", "Admin:Homepage:default", Route::ONE_WAY);
 		$router[] = new Route("<module news|email|admin|page|user|file>/<presenter>/<action>[/<id>]", "Homepage:default");
+		if ($this->customModules) {
+			$router[] = new Route("<module " . implode($this->customModules, "|") . ">/<presenter>/<action>[/<id>]", "Homepage:default");
+		}
 
 		$frontRouter = $router[] = new RouteList("Front");
 		$frontRouter[] = new Route("<presenter>/<action>[/<id>]", "Homepage:default");
