@@ -11,13 +11,19 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 	/** @var array */
 	public $moduleParams;
 
+	/** @inject @var Schmutzka\Models\Page */
+	public $pageModel;
 
-	public function startup() 
-	{ 
-		parent::startup(); 
+	/** @inject @var Schmutzka\Models\User */
+	public $userModel;
+
+
+	public function startup()
+	{
+		parent::startup();
 
 		$this->lang = NULL;
-	
+
 		if ($this->paramService->cms == TRUE) {
 			$this->template->adminTitle = $this->paramService->cmsSetup->title;
 			$this->template->activeModules = $activeModules = $this->paramService->getActiveModules();

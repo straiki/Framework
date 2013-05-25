@@ -25,12 +25,19 @@
 				{if $user->loggedIn}
 					%li.btn.btn-inverse
 						<a n:href="logout!">
-							<i class="icon icon-share-alt"></i>
+							%i.icon.icon-share-alt
 							%span.text {_"Odhlásit se"}
 						</a>
+
+					%li.btn.btn-inverse
+						<a n:href=":Admin:Homepage:settings">
+							%i.icon.icon-cog
+							%span.text {_"Nastavení"}
+						</a>
+
 					%li.btn.btn-inverse
 						<a n:href=":Front:Homepage:">
-							<i class="icon icon-home"></i>
+							%i.icon.icon-home
 							%span.text {_"Zpět na web"}
 						</a>
 				{/if}
@@ -42,11 +49,12 @@
 					{include #customModules}
 
 				{else}
-					%li [n:class => "$presenter->module == 'admin' ? 'active'"]
+					<li n:class="$presenter->module == 'admin' ? 'active'">
 						<a n:href=":Admin:Homepage:default">
 							<i class="icon icon-cog"></i>
 							{_"Přihlášení"}
 						</a>
+					</li>
 				{/if}
 
 		#content
@@ -148,6 +156,9 @@
 				%span.label {$layoutSetup["userCount"]}
 			%ul
 				{include #menuItem, path => ":User:Homepage:default", icon => "icon-th-list", name => "Přehled uživatelů"}
+				{if $cmsParams->modules->user->add || $user->id == 1}
+					{include #menuItem, path => ":User:Homepage:add", icon => "icon-plus", name => "Přidat uživatele"}
+				{/if}
 		</li>
 	{/ifset}
 

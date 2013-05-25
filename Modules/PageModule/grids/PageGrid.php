@@ -18,8 +18,7 @@ class PageGrid extends NiftyGrid\Grid
 	protected function configure(Nette\Application\IPresenter $presenter)
 	{
 		$moduleParams = $presenter->moduleParams;
-
-		$source = new NiftyGrid\DataSource($this->pageModel->all());
+		$source = new NiftyGrid\DataSource($this->pageModel->fetchAll());
 		$this->setDataSource($source);
 		$this->setModel($this->pageModel);
 

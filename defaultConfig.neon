@@ -8,6 +8,43 @@ parameters:
 	libsDir: %appDir%/../libs
 	assetsDir: %libsDir%/Schmutzka/assets
 
+	flashes:
+		onLogin: Byli jste úspěšně přihlášeni
+		onLogout: Byli jste úspěšně odhlášeni
+		onDeleteSuccess: "Záznam byl úspěšně smazán."
+		onDeleteError: "Tento záznam neexistuje."
+
+	form:
+		login:
+			label: "Přihlašovací jméno:"
+			ruleFilled: "Zadejte přihlašovací jméno"
+			ruleFormat: "Login nemá správný formát"
+			alreadyExists: "Zadaný login již existuje."
+		email:
+			label: "Přihlašovací email:"
+			ruleFilled: "Zadejte přihlašovací email"
+			ruleFormat: "Email nemá správný formát"
+			alreadyExists: "Zadaný email již existuje."
+		password:
+			label: "Přihlašovací heslo:"
+			ruleFilled: "Zadejte heslo"
+			length: "Heslo musí mít aspoň %d znaků."
+		passwordAgain:
+			label: "Heslo znovu:"
+			ruleFilled: "Zadejte heslo pro kontrolu"
+			ruleEqual: "Hesla se neshodují."
+		permalogin:
+			label: "Zapamatovat"
+		send:
+			login: "Log in"
+			register: "Registrovat"
+
+	registration:
+		onSuccess: "Registrace proběhla úspěšně."
+		onSuccessAndLogin: "Byli jste úspěšně registrováni a přihlášeni."
+		onAuthSuccess: "Váš účet byl aktivován. Nyní se můžete přihlásit."
+		onAuthError: "Tento odkaz již není platný."
+
 
 nette:
 	session:
@@ -23,7 +60,7 @@ nette:
 		strictMode: TRUE
 		showLocation: TRUE
 		bar:
-			# - Schmutzka\Diagnostics\Panels\CallbackPanel
+			- @callbackPanel
 			- @dumpMailPanel
 
 	security:
@@ -37,17 +74,24 @@ nette:
 services:
 	routerFactory: RouterFactory
 	router: @routerFactory::createRouter
-	cache: Nette\Caching\Cache(@cacheStorage, "dataCache")
+	cache: Schmutzka\Caching\Cache(@cacheStorage, "dataCache")
 	paramService: Schmutzka\Config\ParamService(@container::getParameters())
-	sessionStorage: Services\SessionStorage
+	# sessionStorage: Services\SessionStorage
 	template:
 		class: Schmutzka\Templates\TemplateService
 		setup:
 			- setLatte(@nette.latte)
-	helpers: Schmutzka\Templates\Helpers
-	localization: Schmutzka\Localization
+	templateHelpers: Schmutzka\Templates\Helpers
 	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
 	lessc: lessc
+	translator: Schmutzka\Localization\DummyTranslator
+	user: Scmhutzka\Security\User
+	- Schmutzka\Security\UserManager
+
+	haml: Nette\Templating\Filters\Haml
+
+	- Schmutzka\Models\Page
+	- Schmutzka\Models\Article
 
 
 factories:
@@ -55,8 +99,13 @@ factories:
 	flashMessageControl: Components\FlashMessageControl
 	registrationControl: Components\RegistrationControl
 	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
+	callbackPanel: Schmutzka\Diagnostics\Panels\CallbackPanel
+
 	loginForm: Schmutzka\Forms\LoginForm
 	gaControl: Components\GaControl
+	changePasswordForm: Schmutzka\Forms\ChangePasswordForm
+	systemSession: Nette\Http\Session::getSection('system')
+	userControl: UserModule\Controls\UserControl
 
 
 extensions:

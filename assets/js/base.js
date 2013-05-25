@@ -2,27 +2,29 @@ $(document).ready(function() {
 
 	// 1. tooltip
 	$('[rel=tooltip]').tooltip();
-	
+
+	$(function () {
+		$("input.onChangeSubmit").change(function () {
+			$(this).closest("form").submit();
+		});
+	});
+
 
 	// 2. confirm alert
-	$(".confirm").click(function() {
-		return confirm("Opravdu chcete provést tuto akci?");
+	$(".confirm").on("click", function() {
+		if ($(this).data("message")) {
+			return confirm($(this).data("message"));
+
+		} else {
+			return confirm("Opravdu chcete provést tuto akci?");
+		}
 	});
 
 
 	// 3. hide flashes
-	/*window.setTimeout(function() {
-		$(".flash-error").fadeTo(500, 0).slideUp(500, function(){
-			$(this).remove(); 
-		});
-		$(".flash-success").fadeTo(500, 0).slideUp(500, function(){
-			$(this).remove(); 
-		});
-	}, 2000);*/
-
 	window.setTimeout(function() {
-		$(".flash.timeout").fadeTo(500, 0).slideUp(500, function(){
-			$(this).remove(); 
+		$(".alert.timeout").fadeTo(500, 0).slideUp(500, function(){
+			$(this).remove();
 		});
 	}, 2000);
 
@@ -69,3 +71,12 @@ $(document).ready(function() {
 	});
 
 });
+
+
+// ajax
+jQuery(window).load(function () {
+	jQuery.nette.ext('init').linkSelector = 'a.ajax';
+	jQuery.nette.ext('init').formSelector = 'form.ajax';
+	jQuery.nette.init();
+});
+

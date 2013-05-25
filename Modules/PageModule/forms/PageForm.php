@@ -30,25 +30,23 @@ class PageForm extends ModuleForm
 
 	public function build()
     {
-    	$params = $this->paramService->getModuleParams("page");
-
 		parent::build();
 
 		$this->addGroup("");
 		$this->addText("title", "Název stránky:")
 			->addRule(Form::FILLED, "Povinné");
 
-		if ($params["show_in_sliderbox"]) {
+		if ($this->moduleParams->show_in_sliderbox) {
 			$this->addCheckBox("page_show_in_sliderbox", "Zobrazit ve SliderBoxu");
 		}
 
 		$this->addGroup("Publikování");
 
-		if (isset($params["publish_datetime"]) && $params["publish_datetime"]) {
+		if (isset($this->moduleParams->publish_datetime) && $this->moduleParams->publish_datetime) {
 			$this->addDateTimePicker("publish_datetime", "Čas publikování:");
 		}
 
-		if ($params["publish_state"]) {
+		if ($this->moduleParams->publish_state) {
 			$array = array(
 				"concept" => "Koncept",
 				"pending" => "Čekající na schválení",
@@ -57,16 +55,20 @@ class PageForm extends ModuleForm
 			$this->addSelect("publish_state", "Stav publikování:", $array);
 		}
 
-		if ($params["access_to_roles"]) {
+		if ($this->moduleParams->access_to_roles) {
 			$roles = $this->paramService->cmsSetup->modules->user->roles;
 			$this->addMultiSelect("access_to_roles", "Zobrazit pouze pro:", (array) $roles)
 				->setAttribute("data-placeholder","Zde můžete omezit zobrazení pouze pro určité uživatele")
 				->setAttribute("class","chosen width400");
 		}
 
-		if ($params["custom_url"]) {
+		if ($this->moduleParams->custom_url) {
 			$this->addText("url", "Url adresa:")
 				->setOption("description","Bude automaticky vygenerována z názvu.");
+		}
+
+		if ($this->moduleParams->uid) {
+			$this->addText("uid", "UID:");
 		}
 
 		// $this->addUpload("image", "Obrázek:"); - 1 možnost narhát, 2 vybrat z galeire - 2DO při modulu galerie
@@ -74,13 +76,13 @@ class PageForm extends ModuleForm
 		$this->addGroup("Obsah")
 			->setOption("description", Html::el('div')->setHtml("[page:5:Odkaz na stránku s id = 5], [article:5:Odkaz na článek s id = 5]"));
 
-		if ($params["perex_short"]) {
+		if ($this->moduleParams->perex_short) {
 			$this->addTextArea("perex_short", "Perex (kratší):")
 				->setOption("description", "Krátké shrnutí stránky zobrazující se např. pod nadpisem.")
 				->setAttribute("class", "tinymce");
 		}
 
-		if ($params["perex_long"]) {
+		if ($this->moduleParams->perex_long) {
 			$this->addTextArea("perex_long", "Perex (delší):")
 				->setOption("description", "Shrnutí obsahu zobrazující se např. ve výpisu článků.")
 				->setAttribute("class", "tinymce");
@@ -90,39 +92,30 @@ class PageForm extends ModuleForm
 			->setAttribute("class", "tinymce");
 
 
-		if ($params["attachment_gallery"] || $params["attachment_files"]) {
+		if ($this->moduleParams->attachment_gallery || $this->moduleParams->attachment_files) {
 			$this->addGroup("Přílohy");
 
-			if ($params["attachment_gallery"]) {
+			if ($this->moduleParams->attachment_gallery) {
 				$galleryList = $this->galleryModel->fetchPairs("id", "name");
 				$this->addSelect("gallery_id", "Připojená galerie", $galleryList)
 					->setPrompt($galleryList ? "Vyberte" : "Zatím neexistuje žádná fotogalerie");
 			}
 
-			if ($params["attachment_files"]) { // typy?
+			if ($this->moduleParams->attachment_files) { // typy?
 				$this->addUpload("attachment_1", "Příloha 1:");
 				$this->addUpload("attachment_2", "Příloha 2:");
 				$this->addUpload("attachment_3", "Příloha 3:");
 			}
 		}
-
-		$this->addSubmit("send", "Uložit")
-			->setAttribute("class", "btn btn-primary");
-
-		return $this;
 	}
 
 
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-		$params = $this->paramService->getModuleParams("page");
 		if ($this->id = $presenter->id) {
-			$this->addSubmit("cancel", "Zrušit")
-				->setValidationScope(FALSE);
-
 			$defaults = $this->pageModel->item($this->id);
-			if ($params["access_to_roles"]) {
+			if ($this->moduleParams->access_to_roles) {
 				$defaults["access_to_roles"] = unserialize($defaults["access_to_roles"]);
 			}
 
@@ -134,9 +127,8 @@ class PageForm extends ModuleForm
 	/**
 	 * Process form
 	 */
-	public function process(Form $form)
+	public function process($form)
 	{
-		$params = $this->paramService->getModuleParams("page");
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
 			$this->redirect("default", array("id" => NULL));
 		}
@@ -148,14 +140,14 @@ class PageForm extends ModuleForm
 
 		// upload attachments
 		$attachments = array();
-		if ($params["attachment_files"]) {
+		if ($this->moduleParams->attachment_files) {
 			$attachments[] = $values["attachment_1"];
 			$attachments[] = $values["attachment_2"];
 			$attachments[] = $values["attachment_3"];
 			unset($values["attachment_1"], $values["attachment_2"], $values["attachment_3"]);
 		}
 
-		if ($params["access_to_roles"]) {
+		if ($this->moduleParams->access_to_roles) {
 			$values["access_to_roles"] = serialize($values["access_to_roles"]);
 		}
 
@@ -168,7 +160,7 @@ class PageForm extends ModuleForm
 			$this->id = $id;
 		}
 
-		if ($params["content_history"]) {
+		if ($this->moduleParams->content_history) {
 			$array = array(
 				"content" => $values["content"],
 				"page_id" => $this->id,
@@ -178,7 +170,7 @@ class PageForm extends ModuleForm
 			$this->pageContentModel->insert($array);
 		}
 
-		if ($params["attachment_files"]) {
+		if ($this->moduleParams->attachment_files) {
 			foreach ($attachments as $file) {
 				if ($file->isOk()) {
 					$array["name_origin"] = $file->getName();

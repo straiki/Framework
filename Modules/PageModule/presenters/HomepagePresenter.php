@@ -111,8 +111,13 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	 */
 	private function loadTinymceVars()
 	{
+
 		$this->template->pageList = $pageList = $this->pageModel->fetchPairs("id", "title");
-		$this->template->articleList = $articleList = $this->articleModel->fetchPairs("id", "title");
+		try {
+			$this->template->articleList = $articleList = $this->articleModel->fetchPairs("id", "title");
+		} catch (\Exception $e) {
+			
+		}
 	}
 
 }

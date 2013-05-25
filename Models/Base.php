@@ -8,30 +8,8 @@ use NotORM;
 
 abstract class Base extends Nette\Object
 {
-	/** @var string */
-	protected $tableName;
-
-	/** @var string */
-	protected $lang;
-
-	/** @var NotORM */
-	protected $db;
-
-
-	/**
-	 * @param NotORM
-	 * @param Nette\Application\Application
-	 */
-	public function __construct(NotORM $db, Nette\Application\Application $application)
-	{
-		$this->db = $db;
-
-		if ($lang = $this->getLang($application)) {
-			$this->lang = $lang;
-		}
-
-		$this->tableName = Name::tableFromClass(get_class($this));
-	}
+	/** @inject @var NotORM */
+	public $db;
 
 
 	/**
@@ -39,12 +17,14 @@ abstract class Base extends Nette\Object
 	 */
 	final public function table()
 	{
+		$tableName = Name::tableFromClass(get_class($this));
+
 		$args = func_get_args();
 		if (count($args) == 1 && is_numeric($args[0])) {
 			array_unshift($args, "id");
 		}
 
-		return call_user_func_array(array($this->db, $this->tableName), $args);
+		return call_user_func_array(array($this->db, $tableName), $args);
 	}
 
 
@@ -52,9 +32,10 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * @param array
+	 * @param  array
+	 * @return  NotORM_Result
 	 */
-	public function all($key = array())
+	public function fetchAll($key = array())
 	{
 		if ($key) {
 			return $this->table($key);
@@ -62,6 +43,15 @@ abstract class Base extends Nette\Object
 		} else {
 			return $this->table();
 		}
+	}
+
+
+	/**
+	 * @deprecated
+	 */
+	public function all($key = array())
+	{
+		$this->fetchAll($key);
 	}
 
 
@@ -230,27 +220,6 @@ abstract class Base extends Nette\Object
 		}
 
 		return $this->table()->insert_update($unique, $data, $data);
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Get lang from url if set
-	 * @param Nette\Application\Appliaction
-	 * @return string|NULL
-	 */
-	private function getLang(Nette\Application\Application $application)
-	{
-		if ($requests = $application->getRequests()) {
-			$parameters = $requests[0]->getParameters();
-			if (isset($parameters["lang"])) {
-				return $parameters["lang"];
-			}
-		}
-
-		return NULL;
 	}
 
 }

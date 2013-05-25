@@ -4,36 +4,35 @@ namespace Components;
 
 use Nette;
 use Schmutzka;
+use Schmutzka\Mail\Message;
 use Schmutzka\Application\UI\Control;
 use Schmutzka\Application\UI\Form;
+use Nette\Utils\Strings;
 
 class RegistrationControl extends Control
 {
 	/** @var string */
+	public $onAuthorizeRedirect = "this";
+
+	/** @var subject */
 	public $from;
 
 	/** @var string */
-	public $loginAfter = TRUE;
-
-	/** @var int */
-	public $passwordMinLenth = 6;
+	public $loginAfter = "email";
 
 	/** @var bool */
 	public $detectLang = FALSE;
 
 	/** @var bool */
-	public $logDateCreated = TRUE;
-
-	/** @var bool */
 	public $requireAuthorization = FALSE;
 
-	/** @var string */
-	public $flashSuccess = "Byli jste úspěšně registrováni.";
+	/** @var bool */
+	public $confirmationEmail = TRUE;
 
-	/** @var string */
-	public $onAuthorizeRedirect = "this";
+	/** @inject @var Nette\Mail\IMailer */
+	public $mailer;
 
-	/** @inject @var Schmutzka\Models\User */
+	/** @inject @var Schmutzka\Models\User  */
 	public $userModel;
 
 	/** @inject @var Schmutzka\Security\User */
@@ -42,40 +41,40 @@ class RegistrationControl extends Control
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
-	/** @inject @var Nette\Localization\ITranslator */
-	public $translator;
 
-	/** @inject @var Nette\Mail\IMailer */
-	public $mailer;
-
-
+	/**
+	 * Registration form
+	 */
 	protected function createComponentRegistrationForm()
 	{
+		$userModel = $this->userModel;
+
 		$form = new Form;
 
-		$form->addText("login", "Váš login:")
-			->addRule(Form::FILLED,"Zadejte login")
-			->addRule(Form::PATTERN, "Login musí mít délku aspoň 5 znaků a smí obsahovat pouze znaky a-z, A-Z, 0-9, '_' a '-'.","[a-zA-Z0-9_-]{5,}")
+		$form->addText("login", $this->paramService->form->login->label)
+			->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
+			// ->addRule(Form::PATTERN, $this->paramService->form->login->rulePattern, "[a-zA-Z0-9_-]{5,}")
 			->addRule(function ($input) use ($userModel) {
 				return ! $userModel->item(array("login" => $input->value));
-			}, "Zadaný login již existuje.");
+			}, $this->paramService->form->login->alreadyExists);
 
-		$form->addText("email", "Váš email:")
-			->addRule(Form::FILLED, "Vyplňte email")
-			->addRule(Form::EMAIL, "Email nemá správný formát")
+		$form->addText("email", $this->paramService->form->email->label)
+			->addRule(Form::FILLED, $this->paramService->form->email->ruleFilled)
+			->addRule(Form::EMAIL, $this->paramService->form->email->ruleFormat)
 			->addRule(function ($input) use ($userModel) {
 				return ! $userModel->item(array("email" => $input->value));
-			}, "Zadaný email již existuje.");
+			}, $this->paramService->form->email->alreadyExists);
 
-		$form->addPassword("password", "Heslo:")
-			->addRule(Form::FILLED, "Zadejte heslo")
-			->addRule(Form::MIN_LENGTH, "Heslo musí mít aspoň délku %d znaků.", $this->passwordMinLenth);
 
-		$form->addPassword("password2", "Heslo znovu:")
-			->addRule(Form::FILLED, "Zadejte heslo znovu pro kontrolu")
-			->addRule(Form::EQUAL, "Hesla se neshodují.", $form["password"]);
+		$form->addPassword("password", $this->paramService->form->password->label)
+			->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled)
+			->addRule(Form::MIN_LENGTH, $this->paramService->form->password->length, 5);
 
-		$form->addSubmit("send", "Registrovat")
+		$form->addPassword("password2", $this->paramService->form->passwordAgain->label)
+			->addRule(Form::FILLED, $this->paramService->form->passwordAgain->ruleFilled)
+			->addRule(Form::EQUAL, $this->paramService->form->passwordAgain->ruleEqual, $form["password"]);
+
+		$form->addSubmit("send", $this->paramService->form->send->register)
 			->setAttribute("class", "btn btn-primary");
 
 		return $form;
@@ -83,24 +82,24 @@ class RegistrationControl extends Control
 
 
 	/**
-	 * Process registration form
-	 * @param form
+	 * Process form
+	 * @param Form
 	 */
 	public function processRegistrationForm(Form $form)
 	{
-		$rawValues = $values = $form->values;
+		$rawValues = $values = $form->getValues();
+		unset($values["conditions"], $values["password2"]);
 
-		unset($values["password2"]);
-		$values["password"] = sha1($values["password"]);
+		$values["salt"] = Strings::random(22);
+		$values["password"] = Schmutzka\Security\UserManager::calculateHash($values["password"], $values["salt"]);
 		$values["created"] = new Nette\DateTime;
 
-		// set autorization hash
 		if ($this->requireAuthorization) {
-			$values["auth_hash"] = substr(sha1($values["email"]) . sha1(time()), 20, 40);
+			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
 		}
 
 		if ($this->detectLang) {
-			$values["lang"] = $this->parent->presenter->lang;
+			$values["lang"] = $this->translator->getLang();
 		}
 
 		$this->userModel->insert($values);
@@ -108,14 +107,19 @@ class RegistrationControl extends Control
 
 		// what to do now?
 		if ($this->requireAuthorization) {
+			$values["auth_hash"] = substr(sha1(time() . $values["email"]), -10);
 			$this->sendAuthorizationEmail($values);
-
-		} elseif ($this->loginAfter) {
-			$this->user->login($values[$this->loginAfter], $rawValues["password"], $this->loginAfter);
 		}
 
-		$this->presenter->flashMessage($this->flashSuccess, "success");
-		$this->presenter->redirect("this");
+		if ($this->loginAfter) {
+			$this->user->login($values[$this->loginAfter], $rawValues["password"]);
+			$this->getPresenter()->flashMessage($this->paramService->registration->onSuccessAndLogin, "success");
+
+		} else {
+			$this->getPresenter()->flashMessage($this->paramService->registration->onSuccess, "success");
+		}
+
+		$this->redirect("this");
 	}
 
 
@@ -167,10 +171,10 @@ class RegistrationControl extends Control
 				$this->sendSuccessEmail($user);
 			}
 
-			$this->getPresenter()->flashMessage("Váš účet byl aktivován. Nyní se můžete přihlásit.", "success");
+			$this->getPresenter()->flashMessage($this->paramService->registration->onAuthSuccess, "success");
 
 		} else {
-			$this->getPresenter()->flashMessage("Tento odkaz již není platný.", "error");
+			$this->getPresenter()->flashMessage($this->paramService->registration->onAuthError, "error");
 		}
 
 		$this->getPresenter()->redirect($this->onAuthorizeRedirect);
@@ -192,6 +196,13 @@ class RegistrationControl extends Control
 		$message->setHtmlBody($template["body"]);
 
 		$this->mailer->send($message);
+	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+		$this->template->render();
 	}
 
 }

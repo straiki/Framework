@@ -16,7 +16,7 @@ class Article extends Base
 			->select("article.*, gallery_file.name as titlePhoto")
 			->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
 			->order("publish_datetime DESC");
-	}	
+	}
 
 
 	/**

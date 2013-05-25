@@ -1,108 +1,36 @@
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	~ Forms
+	~ icos @see: .ico move to assets? rename: icoEmailMe... to prevent mix names
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-textarea.wider {width:700px;height:60px}
+table tr td.manage {
+	a {text-decoration:none}
 
-#header h1 {line-height:1em; color:#FFF; font-size:32px; font-family: "Calibri"; text-align:center;width:180px;margin-left:1px}
-
-form {
-	.form-actions {
-		input[type=submit] {margin-left: 20px}
-	}
 }
 
-
-/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	~ Admin
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
-
-#article {
-	#pickImage {.clearfix;margin-bottom:20px;
-		img {height:80px;margin:3px;border:4px solid #FFF;
-			&:hover {border:4px solid #DDD}
-		}
+.showCombo {
+	.showBox {text-decoration:underline;cursor: pointer;
+		&:hover {text-decoration:none;}
 	}
-
-	ul#pickGallery {
-		li {width:200px;float:left}
-	}
-
-	.promoPhoto {.clearfix;width:100%;
-		img {height:200px;margin:0 0 10px 0;border:4px solid #DDD;}
+	.btn.cancel {color:#888;background:lighten(#EEE, 5%);
+		&:hover {color:#BBB;;background:lighten(#EEE, 7%)}
 	}
 }
-
-
-#content.admin {
-	.leftMenu {
-		ul {margin-left:0px;
-			li {list-style-type:none;margin:3px 0;
-				a {display:block}
-			}
-		}
-	}
-	.rightContent {margin-top:-16px;}
-
-	#gallery {
-		#galleryFileList {.clearfix;padding-top:10px;
-			.image {float:left;margin-right:10px;padding:3px;
-				img {padding-bottom:5px}
-			}
-		}
-	}
-}
-
-
-legend {
-	font-size:1em;
-	margin-bottom:0px;
-	font-weight:bold;
-	border:none;
-	padding-left:15px;
-	background:#F5F5F5;
-}
-
-legend + .control-group {
-	margin-top: 0px;
-}
-
-
-#settingsForm {
-	fieldset {margin-bottom:10px}
-	.settingsFormActivactor {margin-top:-45px;margin-left:-15px;
-		.control-group {border:none}
-	}
-
-	#page_module, #article_module, #event_module, #gallery_module, #bulletin_module, #email_module, #user_module, #submit_group {
-		legend {display:none;}
-	}
-}
-
-
-#email {
-	#settingsForm {backround:red;
-		label {width:300px}
-		.btn {margin-left:121px}
-	}
-}
-
-
-/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-	~ icos @see: .ico
-	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-
 
 .addIco {.ico(add)}
+.stop {.ico(stop)}
 
 .del {.ico(del, 50%, 50%);}
 a.del {text-decoration:none;}
 
 .edit {.ico(edit, 50%, 50%)}
+.duplicate {.ico(duplicate, 50%, 50%)}
+
+
 
 .emailMe {.ico(emailMe)}
+.run {.ico(run)}
+.runDim {.ico(runDim)}
 
 .copy {.ico(copy, 50%, 50%)}
 
@@ -118,11 +46,34 @@ th.time, .time {.ico(time, 0%, 50%, 30px)}
 
 .email {.ico(email, 10px, 50%, 33px);}
 
-.name {.ico(user, 0, 50%, 33px);}
+// .name {.ico(user, 0, 50%, 33px);}
 .password {.ico(password, 0, 50%, 33px);}
 
 .help {.ico(help, 0, 50%, 33px);}
 .activity {.ico(activity, 0, 50%, 33px);}
+.preview {.ico(preview, 50%, 50%);}
+
+
+.w60, input.w60 {width:60px}
+.w100, input.w100 {width:100px}
+.w120, input.w120 {width:120px}
+
+.noFat {font-weight:normal}
+
+.resultDetailLink {background:url(../../images/ico/preview.png) 100% 100% no-repeat;padding-right:20px;width:120px;text-decoration:none;}
+
+.helpCursor {cursor: help}
+
+
+
+/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~ formulas
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+
+sup, sub {height: 0; line-height: 1; vertical-align: baseline; _vertical-align: bottom; position: relative;}
+sup {bottom: 1ex;}
+sub {top: .5ex;}
 
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -138,12 +89,20 @@ th.time, .time {.ico(time, 0%, 50%, 30px)}
 .btn {cursor: piointer}
 
 .fright {float:right}
+.frightLine {float:right; margin-bottom:-20px;}
 .fleft {float:left}
 
 .right {text-align:right}
-.center {text-align:center;}
-td.center {text-align:center;}
+table td.center, td.center, .center {text-align:center;}
+.tooltip {position:static}
+table.manage {.pm0;margin:auto;
+	td {.pm0;border:none;
+		.pm0;
+		> .btn {background:#FFF;.pm0}
+	}
 
+	.results {.ico('results');}
+}
 
 /* date-picker debug */
 #ui-datepicker-div {float:left;z-index:20;display:none;font-size:1em}
@@ -155,6 +114,7 @@ td.center {text-align:center;}
   border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
   border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
 }
+
 
 .vertical (@startColor: #555, @endColor: #333) {
 	background-color: @endColor;
@@ -194,14 +154,14 @@ td.center {text-align:center;}
 	-moz-border-radius: @radius;
 	-khtml-border-radius: @radius;
 	border-radius: @radius;
-    -webkit-background-clip: padding-box;
+		-webkit-background-clip: padding-box;
 }
 .rc-spec (@a: 5px, @b: 5px, @c: 5px, @d: 5px) {
 	-webkit-border-radius: @a @b @c @d;
 	-moz-border-radius: @a @b @c @d;
 	-khtml-border-radius: @a @b @c @d;
 	border-radius: @a @b @c @d;
-    -webkit-background-clip: padding-box;
+		-webkit-background-clip: padding-box;
 }
 
 .pm0 {padding:0;margin:0}
@@ -212,6 +172,22 @@ html[xmlns] .clearfix {display: block;}
  * html .clearfix {height: 1%;}
 
 
-.width200 {width:200px}
-.width400 {width:400px}
-.width600 {width:600px}
+textarea, select, input {
+	&.w100 {width:100px}
+	&.w150 {width:150px}
+	&.w200 {width:200px}
+	&.w300 {width:300px}
+	&.w400 {width:400px}
+	&.w600 {width:600px}
+	&.w622 {width:622px}
+	&.w100p {width:100%}
+	&.w985 {width:985px}
+
+	&.height30 {height:40px}
+}
+
+
+form {
+	.description {color:#999;padding-left:5px}
+}
+

@@ -11,16 +11,17 @@ parameters:
 				active: FALSE
 				title: Stránky
 				show_in_sliderbox: FALSE
-				publish_state: TRUE # změna stavu publikování
-				custom_url: TRUE # <page>/url? page router?
-				perex_short: TRUE
-				perex_long: TRUE
+				publish_state: FALSE # změna stavu publikování
+				custom_url: FALSE # <page>/url? page router?
+				perex_short: FALSE
+				perex_long: FALSE
 				# promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie - u stránek není nutné
-				attachment_gallery: TRUE # možnost připojit galerii
-				attachment_files: TRUE # možnost připojit soubory
-				admin_note: TRUE # interní poznámka
-				content_history: TRUE # vést changelog a historii zmeň obsahu
+				attachment_gallery: FALSE # možnost připojit galerii
+				attachment_files: FALSE # možnost připojit soubory
+				admin_note: FALSE # interní poznámka
+				content_history: FALSE # vést changelog a historii zmeň obsahu
 				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
+				uid: FALSE # enable uid editation
 
 			article:
 				active: FALSE
@@ -34,10 +35,10 @@ parameters:
 				perex_short: TRUE
 				perex_long: TRUE
 				promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie
-				attachment_gallery: TRUE # možnost připojit galerii
-				attachment_files: TRUE # možnost připojit soubory
+				attachment_gallery: FALSE # možnost připojit galerii
+				attachment_files: FALSE # možnost připojit soubory
 				admin_note: TRUE # interní poznámka
-				content_history: TRUE # vést changelog a historii zmeň obsahu
+				content_history: FALSE # vést changelog a historii zmeň obsahu
 				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
 
 			event:
@@ -83,41 +84,38 @@ parameters:
 				type: single # multi
 				attachToUser: FALSE
 
-
 services:
 	userModel: Schmutzka\Models\User
-	pageModel: Schmutzka\Models\Page
 	pageCategoryModel: Schmutzka\Models\PageCategory
 	pageInCategoryModel: Schmutzka\Models\PageInCategory
 	pageContentModel: Schmutzka\Models\PageContent
-	articleModel: Schmutzka\Models\Article
 	articleInCategoryModel: Schmutzka\Models\ArticleInCategory
 	articleCategoryModel: Schmutzka\Models\ArticleCategory
 	articleContentModel: Schmutzka\Models\ArticleContent
 	galleryModel: Schmutzka\Models\Gallery
 	galleryFileModel: Schmutzka\Models\GalleryFile
 	fileModel: Schmutzka\Models\File
-	customEmailModel: Schmutzka\Models\CustomEmail
-	emailLogModel: Schmutzka\Models\EmailLog
+	customEmail: Schmutzka\Models\CustomEmail
+	emailLog: Schmutzka\Models\EmailLog
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
-
 
 factories:
 	articleForm: ArticleModule\Forms\ArticleForm
 	articleCategoryForm: ArticleModule\Forms\ArticleCategoryForm
-	fileForm: FileModule\Forms\FileForm
+	# fileForm: FileModule\Forms\FileForm
 	galleryForm: GalleryModule\Forms\GalleryForm
 	pageForm: PageModule\Forms\PageForm
-	userForm: UserModule\Forms\UserForm
+	pageControl: PageModule\Controls\PageControl
+
+	# UserModule
+	userGrid: UserModule\Grids\UserGrid
 
 	articleGrid: ArticleModule\Grids\ArticleGrid
 	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
 	fileGrid: FileModule\Grids\FileGrid
 	galleryGrid: GalleryModule\Grids\GalleryGrid
 	pageGrid: PageModule\Grids\PageGrid
-	userGrid: UserModule\Grids\UserGrid
 	customEmailGrid: EmailModule\Grids\CustomEmailGrid
-
 
 webloader:
 	css:
@@ -177,5 +175,5 @@ webloader:
 
 		adminLogin:
 			files:
-				- %assetsDir%/js/jquery/jquery-1.7.1.min.js
+				- %assetsDir%/js/jquery/jquery-1.8.2.min.js
 				- %assetsDir%/js/unicorn/unicorn.login.js

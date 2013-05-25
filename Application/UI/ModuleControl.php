@@ -1,11 +1,12 @@
 <?php
 
-namespace Schmutzka\Forms;
+namespace Schmutzka\Application\UI;
 
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
+use Schmutzka\Application\UI\Control;
 
-class ModuleForm extends Form
+class ModuleControl extends Control
 {
 	/** @persistent */
 	public $id;
@@ -16,66 +17,50 @@ class ModuleForm extends Form
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
-	/** @var string */
-	protected $onEditRedirect = "default";
-
-	/** @var bool */
-	protected $nullId = "id";
-
 
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
 		if ($this->id = $presenter->id) {
-			$this->addSubmit("cancel", "Zrušit")
-				->setValidationScope(FALSE);
+			$this["form"]["send"]->caption = "Uložit";
+			$this["form"]["send"]
+				->setAttribute("class", "btn btn-primary");
 
-			$this->setDefaults($this->model->item($this->id));
+			$this["form"]->addSubmit("cancel", "Zrušit")
+				->setValidationScope(FALSE);
+			$this["form"]->setDefaults($this->model->item($this->id));
 		}
 	}
 
 
-	public function afterBuild()
-	{
-		$this->addSubmit("send", "Uložit")
-			->setAttribute("class", "btn btn-primary");
-	}
-
-
-	/**
-	 * @param array
-	 */
-	protected function preProcess($values)
-	{
-		return $values;
-	}
-
-
-	public function process($form)
+	public function processForm($form)
 	{
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
 			$this->redirect("default", array("id" => NULL));
 		}
 
 		$values = $form->values;
-		$values = $this->preProcess($values);
 
 		if ($this->id) {
 			$this->model->update($values, $this->id);
 
 		} else {
-			$this->model->insert($values);
+			$this->id = $this->model->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.", "success");
-
-		if ($this->nullId) {
-			$this->redirect($this->onEditRedirect, array($this->nullId => NULL));
-
-		} else {
-			$this->redirect($this->onEditRedirect);
-		}
+		$this->presenter->flashMessage("Uloženo.", "success");
+		$this->presenter->redirect("edit", array("id" => $this->id));
 	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+		$this->template->render();
+	}
+
+
+	/********************** helpers **********************/
 
 
 	/**
@@ -94,7 +79,7 @@ class ModuleForm extends Form
 	{
 		$className = $this->getReflection()->getName();
 		$classNameParts = explode("\\", $className);
-		$modelName = lcfirst(substr(array_pop($classNameParts), 0, -4)) . "Model";
+		$modelName = lcfirst(substr(array_pop($classNameParts), 0, -7)) . "Model";
 
 		return $this->{$modelName};
 	}

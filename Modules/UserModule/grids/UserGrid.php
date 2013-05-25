@@ -7,36 +7,30 @@ use NiftyGrid;
 
 class UserGrid extends NiftyGrid\Grid
 {
-	/** @persistent */
-    public $id;
-
 	/** @inject @var Schmutzka\Models\User */
-    public $userModel;
+	public $userModel;
 
 
 	/**
-	 * Configure
 	 * @param presenter
 	 */
-    protected function configure($presenter)
-    {	
-        $source = new NiftyGrid\DataSource($this->userModel->all()->where("role != ?", "admin"));
-        $this->setDataSource($source);
+	protected function configure($presenter)
+	{
+		$params = $presenter->paramService->getModuleParams("user");
+
+		$source = new NiftyGrid\DataSource($this->userModel->fetchAll()); // ->where("role != ?", "admin"));
+		$this->setDataSource($source);
 		$this->setModel($this->userModel);
 
 		// grid structure
 		$this->addColumn("email", "Email", "25%");
-		$this->addColumn("name", "Jméno", "20%")->setRenderer(function ($row) {
-			return $row->name . " " . $row->surname;
-		});
-
+		$this->addColumn("login", "Jméno", "20%");
 		$this->addColumn("created", "Registrován", "15%")->setDateRenderer();
 		$this->addColumn("last_active", "Poslední aktivita", "15%")->setDateRenderer();
-
-		$this->addColumn("role", "Role", "10%")->setListRenderer((array) $this->settings["roles"]);
+		$this->addColumn("role", "Role")->setListRenderer((array) $params->roles);
 
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton(NULL, TRUE);
-    }
+	}
 
 }

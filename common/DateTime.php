@@ -200,7 +200,7 @@ class DateTime extends Nette\DateTime
 	public function dayLocalized($lang = "cs", $type = "short", $ucfirst = TRUE)
 	{
 		$nameList = array(
-			"cs" => array
+			"cs" => array(
 				"short" => array(1 => 'Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'),
 				"long" => array(1 => "pondělí", "úterý", "středa", "čtvtek", "pátek", "sobota", "neděle")
 			)

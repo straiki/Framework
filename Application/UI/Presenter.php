@@ -64,7 +64,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	public function handleLogout()
 	{
 		$this->user->logout();
-		$this->flashMessage("Byli jste odhlášeni.", "success timeout");
+		$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
 		$this->redirectOnLogout();
 	}
 
@@ -174,10 +174,10 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	protected function deleteHelper($model, $id, $redirect = "default")
 	{
 		if ($model->delete($id)) {
-			$this->flashMessage("Záznam byl úspěšně smazán.", "success");
+			$this->flashMessage($this->paramService->flashes->onDeleteSuccess, "success");
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "error");
+			$this->flashMessage($this->paramService->flashes->onDeleteError, "error");
 		}
 
 		if ($redirect) {

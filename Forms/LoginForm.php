@@ -9,9 +9,6 @@ use Schmutzka\Application\UI\Form;
 class LoginForm extends Form
 {
 	/** @var string */
-	public $flashContent = "Byli jste úspěšně přihlášeni.";
-
-	/** @var string */
 	public $loginColumn = "email";
 
 	/** @var array */
@@ -38,27 +35,26 @@ class LoginForm extends Form
 		parent::build();
 
 		if ($this->loginColumn == "login") {
-			$this->addText("login","Přihlašovací jméno:")
-				->addRule(Form::FILLED,"Zadejte přihlašovací jméno")
-				->addRule(~Form::EMAIL, "Login nemá správný formát");
+			$this->addText("login", $this->paramService->form->login->label)
+				->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
+				->addRule(~Form::EMAIL, $this->paramService->form->login->ruleFormat);
 
 		} elseif ($this->loginColumn == "email") {
-			$this->addText("login","Přihlašovací email:")
-				->addRule(Form::FILLED,"Zadejte přihlašovací email")
-				->addRule(Form::EMAIL, "Email nemá správný formát");
+			$this->addText("login", $this->paramService->form->email->label)
+				->addRule(Form::FILLED, $this->paramService->form->email->ruleFilled)
+				->addRule(Form::EMAIL, $this->paramService->form->email->ruleFormat);
 		}
 
-		$this->addPassword("password","Přihlašovací heslo:")
-			->addRule(Form::FILLED,"Zadejte heslo");
+		$this->addPassword("password", $this->paramService->form->password->label)
+			->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled);
 
 		if ($this->permalogin) {
-			$this->addCheckbox("permalogin", "Zapamatovat")
+			$this->addCheckbox("permalogin", $this->paramService->form->permalogin->label)
 				->setDefaultValue(TRUE);
 		}
 
-		$this->addSubmit("send", "Přihlásit se")
+		$this->addSubmit("send", $this->paramService->form->send->login)
 			->setAttribute("class", "btn btn-primary");
-
 	}
 
 
@@ -80,17 +76,16 @@ class LoginForm extends Form
 				$this->onLoginSuccess($this->user);
 			}
 
-			if ($this->flashContent) {
-				$this->presenter->flashMessage($this->flashContent, "success");
+			if ($this->paramService->flashes->onLogin) {
+				$this->presenter->flashMessage($this->paramService->flashes->onLogin, "success");
 			}
 
 			$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
 			$baseSession = $this->session->getSection("baseSession_" . $sectionKey);
-			$this->presenter->restoreRequest($baseSession->backlink);
+			$this->presenter->restoreRequest($baseSession->backlink); // @todo refactor to absolute param - standart!
 			$this->presenter->redirect("Homepage:default");
 
 		} catch (\Nette\Security\AuthenticationException $e) {
-
 			if ($this->onLoginError) {
 				$this->onLoginError($values);
 			}

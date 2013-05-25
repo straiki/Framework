@@ -160,7 +160,7 @@ class ArticleForm extends ModuleForm
 	/**
 	 * Process form
 	 */
-	public function process(Form $form)
+	public function process($form)
 	{
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
 			$this->redirect("default", array("id" => NULL));

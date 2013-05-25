@@ -32,7 +32,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			throw new AE("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
 		}
 
-		if ($row["password"] !== $this->calculateHash($password, $row["password"])) {
+		if ($row["password"] !== $this->calculateHash($password, $row["salt"])) {
 			throw new AE("Chybné heslo.", self::INVALID_CREDENTIAL);
 		}
 
@@ -52,6 +52,45 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			$password = Strings::lower($password);
 		}
 		return crypt($password, $salt ?: "$2a$07$" . Strings::random(22));
+	}
+
+
+	/**
+	 * Register user
+	 * @param array $values user data
+	 * @return  array
+	 * @throws \Exception
+	 */
+	public function register($values)
+	{
+		if ($this->userModel->item(array("login" => $values["login"]))) {
+			throw new \Exception("Toto jméno je již registrováno, zadejte jiné.");
+		}
+
+		if ($this->userModel->item(array("email" => $values["email"]))) {
+			throw new \Exception("Tento email je již registrován, zadejte jiný.");
+		}
+
+		$values["salt"] = Strings::random(22);
+		$values["password"] = self::calculateHash($values["password"], $values["salt"]);
+		$values["created"] = new Nette\DateTime;
+		unset($values["password2"]);
+
+		$userId = $this->userModel->insert($values);
+
+		return $this->userModel->item($userId);
+	}
+
+
+	/**
+	 * Update user data
+	 * @param  array $values user data
+	 * @param int $id user id
+	 * @throws  \Exception
+	 */
+	public function update($values, $id)
+	{
+		dd($values, $id);
 	}
 
 }

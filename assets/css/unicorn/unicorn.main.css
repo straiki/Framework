@@ -1311,7 +1311,7 @@ form {
 	padding: 10px 0;
 }
 .form-horizontal input[type=text], .form-horizontal input[type=password], .form-horizontal textarea {
-	width: 80%;
+	// width: 80%;
 }
 .form-horizontal .form-actions {
 	margin-top: 0;
