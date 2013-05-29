@@ -134,7 +134,7 @@ class GalleryForm extends Form
 		}
 
 		foreach ($files as $file) {
-			$name = Strings::webalize($file->getName(), ".");
+			$name = md5($file->getName()).(Strings::webalize($file->getName(), "."));
 			if ($file->isImage()) {
 				$image = $file->toImage();
 
@@ -151,7 +151,7 @@ class GalleryForm extends Form
 				// 3. custom resize
 				if ($this->moduleParams["resize_to"]) {
 					foreach ($this->moduleParams["resize_to"] as $type) {
-						Filer::resizeToSubfolder($file, $galleryDir . "/", $type["width"], $type["height"]);
+						Filer::resizeToSubfolder($file, $galleryDir . "/", $type["width"], $type["height"],$name);
 					}
 				}
 			}

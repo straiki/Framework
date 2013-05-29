@@ -6,16 +6,26 @@ use Nette;
 
 class Article extends Base
 {
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
+
 
 	/**
 	 * Fetch front
 	 */
 	public function fetchFront()
 	{
-		return $this->table("publish_state", "public")
-			->select("article.*, gallery_file.name as titlePhoto")
-			->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
-			->order("publish_datetime DESC");
+		$result = $this->table("publish_state", "public")
+			->select("article.*, gallery_file.name as titlePhoto, CONCAT(user.name, ' ', user.surname) AS authorName");
+
+		if ($this->paramService->getModuleParams("article")->publish_datetime) {
+			return $result->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
+				->order("publish_datetime DESC");
+
+		} else {
+			return $result->order("id DESC");
+		}
+
 	}
 
 
@@ -27,13 +37,13 @@ class Article extends Base
 	public function getItemFront($id)
 	{
 		$result = $this->table("article.id", $id)
-			->select("article.*, gallery_file.name as titlePhoto")
-			->where("publish_state", "public")
-			->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime);
+			->select("article.*, gallery_file.name as titlePhoto");
 
-		if (count($result)) {
-			return $result->fetchRow();
+		if ($this->paramService->getModuleParams("article")->publish_state) {
+			$result->where("publish_state", "public");
 		}
+
+
 
 		return FALSE;
 	}

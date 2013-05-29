@@ -168,6 +168,18 @@ abstract class Base extends Nette\Object
 
 
 	/**
+	 * Get list by user id
+	 * @param  int $userId
+	 * @return  array { [ id => name ] }
+	 */
+	public function fetchListByUser($userId)
+	{
+		return $this->table(array("user_id" => $userId))
+			->fetchPairs("id", "name");
+	}
+
+
+	/**
 	 * Fetch random table row
 	 * @return array
 	 */

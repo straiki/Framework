@@ -15,9 +15,6 @@ class ArticleForm extends ModuleForm
 	/** @persistent */
 	public $id;
 
-	/** @var string @persistent */
-	public $type;
-
 	/** @inject @var Schmutzka\Models\Article */
 	public $articleModel;
 
@@ -36,13 +33,25 @@ class ArticleForm extends ModuleForm
 	/** @inject @var Schmutzka\Models\File */
 	public $fileModel;
 
+	/** @inject @var Schmutzka\Models\Qr */
+	public $qrModel;
+
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
+
+	/** @inject @var Schmutzka\Security\User */
+	public $user;
+
+	/** @var string */
+	protected $mainModelName = "articleModel";
+
 
 	public function build()
-	{
+    {
 		parent::build();
 
 		$this->addGroup("");
-		$this->addText("title", "Název stránky:")
+		$this->addText("title", "Nadpis článku:")
 			->addRule(Form::FILLED, "Povinné");
 
 		if ($this->moduleParams["categories"]) {
@@ -56,7 +65,7 @@ class ArticleForm extends ModuleForm
 					->setPrompt("Vyberte kategorii");
 			}
 
-			$categoryList = $this->ArticleCategoryModel->fetchPairs("id", "name");
+			$categoryList = $this->articleCategoryModel->fetchPairs("id", "name");
 			$this["article_category_id"]->setItems($categoryList);
 		}
 
@@ -66,8 +75,14 @@ class ArticleForm extends ModuleForm
 
 		$this->addGroup("Publikování");
 
+		if ($this->moduleParams->custom_author_name) {
+			$this->addText("custom_author_name", "Jméno autora (přepíše editora článku):");
+		}
+
 		if (isset($this->moduleParams["publish_datetime"]) && $this->moduleParams["publish_datetime"]) {
-			$this->addDateTimePicker("publish_datetime", "Čas publikování:");
+			$this->addDateTimePicker("publish_datetime", "Čas publikování:")
+				->setDefaultValue(new Nette\DateTime)
+				->addRule(Form::FILLED, "Zadejte čas publikování");
 		}
 
 		if ($this->moduleParams["publish_state"]) {
@@ -128,8 +143,14 @@ class ArticleForm extends ModuleForm
 			}
 		}
 
-		$this->addSubmit("send", "Uložit")
-			->setAttribute("class", "btn btn-primary");
+		if ($this->moduleParams["qr"]) {
+			$cond = array("article_id IS NULL OR article_id = ?" => $this->id);
+			$qrList = $this->qrModel->fetchPairs("id", "alias", $cond);
+			if ($qrList) {
+				$this->addSelect("qr", "QR kód:", $qrList)
+					->setPrompt("Vyberte");
+			}
+		}
 
 		return $this;
 	}
@@ -139,13 +160,16 @@ class ArticleForm extends ModuleForm
 	{
 		parent::attached($presenter);
 		if ($this->id = $presenter->id) {
-			$this->addSubmit("cancel", "Zrušit")
-				->setValidationScope(FALSE);
-
 			$defaults = $this->articleModel->item($this->id);
 			if ($this->moduleParams["categories"] && $this->moduleParams["categories_multi"]) {
 				$categoryKey = "article_category_id";
-				$defaults[$categoryKey] = $this->ArticleInCategoryModel->fetchPairs($categoryKey, $categoryKey, array("article_id" => $this->id));
+				$defaults[$categoryKey] = $this->articleInCategoryModel->fetchPairs($categoryKey, $categoryKey, array(
+					"article_id" => $this->id
+				));
+
+				if ($this->moduleParams["qr"]) {
+					$defaults["qr"] = $this->qrModel->fetchSingle("id", array("article_id" => $this->id));
+				}
 			}
 
 			if ($this->moduleParams["access_to_roles"]) {
@@ -171,6 +195,10 @@ class ArticleForm extends ModuleForm
 		$values["edited"] = new Nette\DateTime;
 		$values["user_id"] = $this->user->id;
 
+		if (!isset($values["publish_datetime"])) {
+			$values["publish_datetime"] = new Nette\DateTime;
+		}
+
 		// upload attachments
 		$attachments = array();
 		if ($this->moduleParams["attachment_files"]) {
@@ -188,6 +216,13 @@ class ArticleForm extends ModuleForm
 
 		if ($this->moduleParams["access_to_roles"]) {
 			$values["access_to_roles"] = serialize($values["access_to_roles"]);
+		}
+
+		if ($this->moduleParams["qr"]) {
+			if ($values["qr"]) {
+				$this->qrModel->update(array("article_id" => $this->id), $values["qr"]);
+			}
+			unset($values["qr"]);
 		}
 
 		if ($this->id) {
@@ -211,7 +246,7 @@ class ArticleForm extends ModuleForm
 				"user_id" => $this->user->id,
 				"edited" => new Nette\DateTime
 			);
-			$this->ArticleContentModel->insert($array);
+			$this->articleContentModel->insert($array);
 		}
 
 		if ($this->moduleParams["attachment_files"]) {

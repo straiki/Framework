@@ -14,12 +14,49 @@ class Helpers extends Nette\Object
 	/** @inject @var Schmutzka\Models\Article */
 	public $articleModel;
 
+	/** @inject @var Schmutzka\Models\GalleryFile */
+	public $galleryFileModel;
+
+	/** @inject @var Nette\Http\IRequest */
+	public $httpRequest;
+
+	/** @inject @var QrModule\Services\QrGenerator */
+	public $qrGenerator;
+
 
 	public function loader($helper)
 	{
 		if (method_exists($this, $helper)) {
 			return callback($this, $helper);
 		}
+	}
+
+
+	/**
+	 * Generate QR code for particular url
+	 * @param  string  $string
+	 * @param  integer $size
+	 * @return string
+	 */
+	public function generateQR($url, $size = 150)
+	{
+		return "<img src='" . $this->qrGenerator->generateImageForUrl($url, $size) . "'' alt='qr-code'>";
+	}
+
+
+	/**
+	 * Show image
+	 * @param int
+	 * @return string
+	 */
+	public function galleryFile($id)
+	{
+		$galleryFile = $this->galleryFileModel->item($id);
+		$basePath = $this->httpRequest->url->scriptPath;
+
+		$filePath = $basePath . "upload/gallery/" . $galleryFile["gallery_id"] . "/thumb/" . $galleryFile["name"];
+
+		return "<img src='" . $filePath . "' alt='Thumb file' class='thumb'>";
 	}
 
 
@@ -38,34 +75,12 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Localized month
-	 * @param mixed
-	 * @param string
-	 * @return string
-	 */
-	public static function monthLoc($date, $lang)
-	{
-		$month = (is_int($date) ? $date : date("n", strtotime($date)));
-	
-		if ($lang == "en") {
-			return date("F", strtotime($month));
-		}
-
-		static $monthNames = array(
-			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec") 
-		);
-
-		return $monthNames[$lang][$month];
-	}
-
-
-	/**
 	 * Linkify text
 	 * @param string
 	 * @param bool
 	 */
 	public static function linkifyText($string, $linkName = NULL)
-	{		
+	{
 		return Url::linkifyText($string, $linkName);
 	}
 
@@ -138,7 +153,7 @@ class Helpers extends Nette\Object
 	 * highlight_string without '<?php' at the beggining
 	 */
 	public static function highlight($code)
-	{	
+	{
 		$code = "<?php ".$code;
 		$split = array('&lt;?php&nbsp;' => '');
 		return strtr(highlight_string($code,TRUE),$split);
@@ -165,7 +180,7 @@ class Helpers extends Nette\Object
 			}
 		}
 
-		return trim($temp, $sep); 
+		return trim($temp, $sep);
 	}
 
 
@@ -219,7 +234,7 @@ class Helpers extends Nette\Object
 	}
 
 
-	/** 
+	/**
 	 * Round function
 	 * @param float
 	 * @param int
@@ -264,7 +279,7 @@ class Helpers extends Nette\Object
 			if ($delta < 730) return "za rok";
 			return "za " . round($delta / 365) . " " . self::plural(round($delta / 365), "rok", "roky", "let");
 		}
-		
+
 		if ($delta == 0) return "dnes";
 		if ($delta == 1) return "včera";
 		if ($delta < 30) return "před " . $delta . " dny";
@@ -273,8 +288,8 @@ class Helpers extends Nette\Object
 		if ($delta < 730) return "před rokem";
 		return "před " . round($delta / 365) . " lety";
 	}
-	
-	
+
+
 	/**
 	 * Converts time to words in Czech
 	 * @see http://addons.nette.org/cs/helper-time-ago-in-words.
@@ -361,7 +376,7 @@ class Helpers extends Nette\Object
 	 * @return string
 	 */
 	public function secureMail($email, $node = NULL, $clickable = TRUE, $class = NULL)
-	{	
+	{
 		$return = NULL;
 		for($i=0,$j=strlen($email);$i<$j; $i++) {
 			$return .= "&#0".ord($email[$i]).";";
@@ -375,7 +390,7 @@ class Helpers extends Nette\Object
 			return $return;
 		}
 	}
- 
+
 
 	/********************** date structures & localization **********************/
 
@@ -447,7 +462,7 @@ class Helpers extends Nette\Object
 	}
 
 
-	/** 
+	/**
 	 * Joins two datetimes as term (from - to)
 	 * @param string/DateTime
 	 * @param string/DateTime
@@ -460,7 +475,7 @@ class Helpers extends Nette\Object
 		if ($from->format('Y-m-d H:i') == $to->format('Y-m-d H:i')) {
 			return $from;
 		}
-		
+
 		$dayFrom = $from->format('j. n. Y');
 		$dayTo = $to->format('j. n. Y');
 		$timeFrom = $from->format('H:i');
@@ -470,11 +485,11 @@ class Helpers extends Nette\Object
 
 			if ($dayFrom == $dayTo) { // same day
 				$term = $dayFrom . ' ' . $timeFrom . ' - ' . $timeTo;
-				
+
 			} else { // different day
 				$term = $from->format('j. n.') . '-' . $to->format('j. n. Y') . ' ' . $timeFrom . '-' . $timeTo;
 			}
-				
+
 		} else { // different year
 			$term = $dayFrom . '  ' . $timeFrom . '-' . $dayTo . ' ' . $timeTo;
 		}
@@ -484,7 +499,7 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Translate 
+	 * Translate
 	 * @hotfix
 	 */
 	public function translate($s)
@@ -493,7 +508,7 @@ class Helpers extends Nette\Object
 	}
 
 
-	/*** cms ***/ 
+	/*** cms ***/
 
 
 	/**
@@ -516,7 +531,7 @@ class Helpers extends Nette\Object
 				$item = $row[0];
 				$item = trim($item, "[]");
 
-				$itemParts = explode(":", $item); 
+				$itemParts = explode(":", $item);
 				if (count($itemParts) != 3) {
 					continue;
 				}
@@ -534,7 +549,7 @@ class Helpers extends Nette\Object
 
 			}
 		}
-		
+
 		$string = str_replace($from, $to, $string);
 
 		return $string;

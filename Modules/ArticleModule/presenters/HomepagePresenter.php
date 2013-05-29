@@ -35,12 +35,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	/********************** handlers **********************/
 
 
-	/** 
+	/**
 	 * Delete attachment
-	 * @param int 
-	 */ 
-	public function handleDeleteAttachment($attachmentId) 
-	{ 
+	 * @param int
+	 */
+	public function handleDeleteAttachment($attachmentId)
+	{
 		$filePath = WWW_DIR . $this->fileModel->fetchSingle("name", $attachmentId);
 		if (file_exists($filePath)) {
 			unlink($filePath);
@@ -50,12 +50,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	}
 
 
-	/** 
+	/**
 	 * Open attachment
-	 * @param int 
-	 */ 
-	public function handleOpenAttachment($attachmentId) 
-	{ 
+	 * @param int
+	 */
+	public function handleOpenAttachment($attachmentId)
+	{
 		$file = $this->fileModel->item($attachmentId);
 		$filePath = WWW_DIR . $file["name"];
 		Filer::downloadAs($filePath, $file["name_origin"]);
@@ -71,7 +71,7 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		$this["articleForm"]["content"]->setValue($this->articleContentModel->fetchSingle("content", $versionId));
 	}
 
-	
+
 	/********************** pick from gallery **********************/
 
 
@@ -106,12 +106,12 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 
 	/********************** base **********************/
 
-	
+
 	/**
 	 * @param int
 	 */
-	public function renderEdit($id) 
-	{ 
+	public function renderEdit($id)
+	{
 		$item = $this->loadItemHelper($this->articleModel, $id);
 
 		if ($this->moduleParams["attachment_files"]) {
@@ -125,7 +125,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		if ($this->moduleParams["promo_photo"] && $item["gallery_file_id"]) {
 			$this->template->promoPhoto = $this->galleryFileModel->item($item["gallery_file_id"]);
 		}
-	} 
-
+	}
 
 }

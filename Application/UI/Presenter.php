@@ -173,6 +173,10 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 */
 	protected function deleteHelper($model, $id, $redirect = "default")
 	{
+		if (!$id) {
+			return FALSE;
+		}
+
 		if ($model->delete($id)) {
 			$this->flashMessage($this->paramService->flashes->onDeleteSuccess, "success");
 

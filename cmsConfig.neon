@@ -84,38 +84,54 @@ parameters:
 				type: single # multi
 				attachToUser: FALSE
 
+			qr:
+				active: FALSE
+				title: QR generátor
+
 services:
-	userModel: Schmutzka\Models\User
-	pageCategoryModel: Schmutzka\Models\PageCategory
-	pageInCategoryModel: Schmutzka\Models\PageInCategory
-	pageContentModel: Schmutzka\Models\PageContent
-	articleInCategoryModel: Schmutzka\Models\ArticleInCategory
-	articleCategoryModel: Schmutzka\Models\ArticleCategory
-	articleContentModel: Schmutzka\Models\ArticleContent
-	galleryModel: Schmutzka\Models\Gallery
-	galleryFileModel: Schmutzka\Models\GalleryFile
-	fileModel: Schmutzka\Models\File
-	customEmail: Schmutzka\Models\CustomEmail
-	emailLog: Schmutzka\Models\EmailLog
+	- Schmutzka\Models\ArticleInCategory
+	- Schmutzka\Models\ArticleCategory
+	- Schmutzka\Models\ArticleContent
+	- Schmutzka\Models\CustomEmail
+	- Schmutzka\Models\EmailLog
+	- Schmutzka\Models\File
+	- Schmutzka\Models\Gallery
+	- Schmutzka\Models\GalleryFile
+	- Schmutzka\Models\PageContent
+	- Schmutzka\Models\User
+	qrGenerator: QrModule\Services\QrGenerator
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
 
+
 factories:
+	# ArticleModule
 	articleForm: ArticleModule\Forms\ArticleForm
 	articleCategoryForm: ArticleModule\Forms\ArticleCategoryForm
-	# fileForm: FileModule\Forms\FileForm
+	articleGrid: ArticleModule\Grids\ArticleGrid
+	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
+
+	# EmailModule
+	customEmailGrid: EmailModule\Grids\CustomEmailGrid
+
+	# FileModule
+	fileControl: FileModule\Controls\FileControl
+	fileGrid: FileModule\Grids\FileGrid
+
+	# GalleryModule
 	galleryForm: GalleryModule\Forms\GalleryForm
+	galleryGrid: GalleryModule\Grids\GalleryGrid
+
+	# PageModule
 	pageForm: PageModule\Forms\PageForm
 	pageControl: PageModule\Controls\PageControl
+	pageGrid: PageModule\Grids\PageGrid
+
+	# QrModule
+	qrForm: QrModule\Forms\QrForm
 
 	# UserModule
 	userGrid: UserModule\Grids\UserGrid
 
-	articleGrid: ArticleModule\Grids\ArticleGrid
-	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
-	fileGrid: FileModule\Grids\FileGrid
-	galleryGrid: GalleryModule\Grids\GalleryGrid
-	pageGrid: PageModule\Grids\PageGrid
-	customEmailGrid: EmailModule\Grids\CustomEmailGrid
 
 webloader:
 	css:

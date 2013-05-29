@@ -1,5 +1,5 @@
 {define #contentHeader}
-	{if !$user->loggedIn}	
+	{if !$user->loggedIn}
 		%h1 {_"Přihlášení"}
 
 	{else}
@@ -22,8 +22,8 @@
 
 {if !$user->loggedIn}
 	{control loginForm}
-{else}
 
+{else}
 	%p Začněte výběrem položky v menu
 {/if}
 

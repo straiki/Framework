@@ -162,6 +162,17 @@
 		</li>
 	{/ifset}
 
+	{ifset $activeModules["qr"]}
+		<li n:class="submenu, $presenter->module == 'qr' ? 'active open'">
+			%a [href => ""]
+				%i.icon.icon-qrcode
+				%span {$activeModules["qr"]}
+			%ul
+				{include #menuItem, path => ":QR:Homepage:default", icon => "icon-th-list", name => "Přehled kódů"}
+				{include #menuItem, path => ":QR:Homepage:add", icon => "icon-plus", name => "Vygenerovat nový"}
+		</li>
+	{/ifset}
+
 {/define}
 
 
