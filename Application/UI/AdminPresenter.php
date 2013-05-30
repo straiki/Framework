@@ -3,8 +3,9 @@
 namespace Schmutzka\Application\UI;
 
 use WebLoader;
+use FrontModule;
 
-class AdminPresenter extends \FrontModule\BasePresenter
+class AdminPresenter extends FrontModule\BasePresenter
 {
 	/** @var string */
 	protected $unloggedRedirect = "Homepage:default";

@@ -8,7 +8,7 @@ use Schmutzka\Application\UI\Control;
 
 class ModuleControl extends Control
 {
-	/** @persistent */
+	/** @persistent @var int */
 	public $id;
 
 	/** @inject @var Schmutzka\Security\User */
@@ -21,7 +21,7 @@ class ModuleControl extends Control
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-		if ($this->id = $presenter->id) {
+		if (($this->id = $presenter->id) && isset($this["form"])) {
 			$this["form"]["send"]->caption = "Uložit";
 			$this["form"]["send"]
 				->setAttribute("class", "btn btn-primary");
@@ -36,10 +36,11 @@ class ModuleControl extends Control
 	public function processForm($form)
 	{
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
-			$this->redirect("default", array("id" => NULL));
+			$this->presenter->redirect("default", array("id" => NULL));
 		}
 
 		$values = $form->values;
+		$values = $this->preProcessValues($values);
 
 		if ($this->id) {
 			$this->model->update($values, $this->id);
@@ -57,6 +58,16 @@ class ModuleControl extends Control
 	{
 		parent::useTemplate();
 		$this->template->render();
+	}
+
+
+	/**
+	 * @param   array
+	 * @return  array
+	 */
+	public function preProcessValues($values)
+	{
+		return $values;
 	}
 
 

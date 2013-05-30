@@ -122,6 +122,7 @@
 			%a [href => ""]
 				%i.icon.icon-picture
 				%span {$activeModules["gallery"]}
+				%span.label {$layoutSetup["galleryCount"]}
 			%ul
 				{include #menuItem, path => ":Gallery:Homepage:default", icon => "icon-th-list", name => "Přehled fotogalerií"}
 				{include #menuItem, path => ":Gallery:Homepage:add", icon => "icon-plus", name => "Přidat fotogalerii"}

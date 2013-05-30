@@ -21,9 +21,11 @@ class GalleryGrid extends NiftyGrid\Grid
 		$this->setModel($this->galleryModel);
 
 		$this->addColumn("name", "Název");
-		$this->addColumn("description", "Popisek");
+
+		if ($presenter->moduleParams->description) {
+			$this->addColumn("description", "Popisek");
+		}
 		$this->addColumn("created", "Vytvořeno")->setDateRenderer();
-		$this->addColumn("file_count", "Počet fotek");
 
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton();

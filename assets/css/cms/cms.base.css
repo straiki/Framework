@@ -45,16 +45,15 @@ form {
 		}
 	}
 	.rightContent {margin-top:-16px;}
+}
 
-	#gallery {
-		#galleryFileList {.clearfix;padding-top:10px;
-			.image {float:left;margin-right:10px;padding:3px;
-				img {padding-bottom:5px}
-			}
+#galleryFileList {.clearfix;
+	ul {list-style-type: none;
+		li {float:left;text-align:center;border:1px solid #DDD;padding: 3px; margin: 3px; background: #FFF;
+			img {margin-left:4px; margin-top: 4px;} /* bug fix */
 		}
 	}
 }
-
 
 legend {
 	font-size:1em;

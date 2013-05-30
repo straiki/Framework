@@ -3,7 +3,6 @@
 namespace AdminModule;
 
 use Schmutzka;
-use Schmutzka\Utils\Name;
 use WebLoader;
 
 abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
@@ -36,15 +35,19 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 			// layout setup
 			$layoutSetup = array();
 			if (isset($activeModules["page"])) {
-				 $layoutSetup["pageCount"] = $this->pageModel->count();
+				$layoutSetup["pageCount"] = $this->pageModel->count();
 			}
 
 			if (isset($activeModules["article"])) {
-				 $layoutSetup["articleCount"] = $this->articleModel->count();
+				$layoutSetup["articleCount"] = $this->articleModel->count();
+			}
+
+			if (isset($activeModules["gallery"])) {
+				$layoutSetup["galleryCount"] = $this->galleryModel->count();
 			}
 
 			if (isset($activeModules["user"])) {
-				 $layoutSetup["userCount"] = $this->userModel->count();
+				$layoutSetup["userCount"] = $this->userModel->count();
 			}
 
 			$this->template->layoutSetup = $layoutSetup;

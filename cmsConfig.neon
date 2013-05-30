@@ -53,12 +53,15 @@ parameters:
 			gallery:
 				active: FALSE
 				title: Fotogalerie
-				upload_max_file_size: "2M"
-				upload_max_file_count: "200"
-				image_width: 800
-				image_height: 600
-				image_thumb_height: 127
 				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
+				size_versions:
+					natural: # internal names
+						height: 1024
+						width: 768
+					thumbnail:
+						height: 80
+						width: 80
+				description: FALSE
 
 			email:
 				active: FALSE
@@ -118,6 +121,7 @@ factories:
 	# GalleryModule
 	galleryControl: GalleryModule\Controls\GalleryControl
 	galleryGrid: GalleryModule\Grids\GalleryGrid
+	uploadControl: GalleryModule\Controls\UploadControl
 
 	# PageModule
 	pageForm: PageModule\Forms\PageForm
