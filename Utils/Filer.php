@@ -22,7 +22,7 @@ class Filer extends Nette\Object
 	 * Get file extension
 	 * @param string
 	 */
-	public static function extension($name) 
+	public static function extension($name)
 	{
 		$extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
 		if (isset(self::$convertExtension[$extension])) {
@@ -37,7 +37,7 @@ class Filer extends Nette\Object
 	 * Empty all folders and all files from particular folder
 	 * @param string
 	 */
-	public static function emptyFolder($folder) 
+	public static function emptyFolder($folder)
 	{
 		if (is_dir($folder)) {
 			chmod($folder, 0777);
@@ -46,7 +46,7 @@ class Filer extends Nette\Object
 				if (file_exists($item)) {
 					unlink($item);
 				}
-			}		
+			}
 			foreach (Finder::findDirectories("*")->in($folder) as $item => $info) {
 				rmdir($item);
 			}
@@ -138,7 +138,7 @@ class Filer extends Nette\Object
 
 		// alter image
 		if ($alterImage && $file->isImage()) {
-			$image = $file->toImage();	
+			$image = $file->toImage();
 			$image->resize($alterWidth, $alterHeight);
 		}
 
@@ -157,7 +157,7 @@ class Filer extends Nette\Object
 			}
 		}
 
-		if ($alterImage && $image->save($hostDir . $name)) {		
+		if ($alterImage && $image->save($hostDir . $name)) {
 			return $dir . $name;
 
 		} else {
@@ -172,23 +172,55 @@ class Filer extends Nette\Object
 
 	/**
 	 * Resize to subfolder
-	 * @param Nette\Http\FileUpload
+	 * @param Nette\Http\FileUpload|Nette\Image
 	 * @param string
 	 * @param int|NULL
 	 * @param int|NULL
+	 * @param string
 	 */
-	public static function resizeToSubfolder(Nette\Http\FileUpload $file, $folder, $width = NULL, $height = NULL)
+	public static function resizeToSubfolder($file, $dir, $width = NULL, $height = NULL, $filename)
 	{
-		if (self::checkImage($file)) {
+		if ($file instanceof Nette\Http\FileUpload) {
 			$image = $file->toImage();
+
+		} else {
+			$image = $file;
+		}
+
+		if ($width && $height) {
 			$image->resize($width, $height, Image::SHRINK_ONLY | Image::EXACT);
 
-			$folder .= self::createFolderName($width, $height) . "/";
-			if (! file_exists($folder)) {
-				mkdir($folder);
-			}
-			$image->save($folder . $file->getName());
+		} else {
+			$image->resize($width, $height, Image::SHRINK_ONLY); // ignore Image::EXACT on one param NULL
 		}
+
+		$dir .= self::createFolderName($width, $height) . "/";
+		if (! file_exists($dir)) {
+			mkdir($dir);
+		}
+
+		$image->save($dir . $filename);
+	}
+
+
+	/**
+	 * Get unique name
+	 * @param string $dir
+	 * @param string $file
+	 * @return string filename encoded in sha1
+	 */
+	public static function getUniqueName($dir, $file)
+	{
+		$ext = self::extension($file);
+		$name = sha1($file) . "." . $ext;
+
+		if (is_dir($dir)) {
+			while (file_exists($dir . "/" . $name)) {
+				$name = sha1($file . Strings::random()) . "." . $ext;
+			}
+		}
+
+		return $name;
 	}
 
 
@@ -202,7 +234,7 @@ class Filer extends Nette\Object
 	 * @return string
 	 */
 	private static function createFolderName($width = NULL, $height = NULL)
-	{	
+	{
 		if ($width == NULL && $height == NULL) {
 			throw new Exception("At least one size has to be specified.");
 		}

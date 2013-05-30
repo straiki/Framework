@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
 	// 1. tooltip
-	$('[rel=tooltip]').tooltip();
+	$("[rel=tooltip]").tooltip();
 
 
 	// 2. confirm alert
@@ -22,5 +22,23 @@ $(document).ready(function() {
 
 	// 4. chosen
 	$(".chosen").chosen();
+
+	// 5. sortable rows
+	$("#sortable").sortable({
+		delay: 200,
+		distance: 15,
+
+		update: function (event, ui) {
+			var rankList = $('#sortable').sortable('toArray').toString();
+			var sortLink = $('#sortable').data("sort-link");
+
+			/*
+			var paramName = $('#sortable').data("param-name");
+			alert(paramName);
+			*/
+
+			$.post(sortLink, { data: rankList });
+		}
+	});
 
 });

@@ -4,26 +4,14 @@ namespace EmailModule\Grids;
 
 use NiftyGrid;
 use Schmutzka\Forms\Form;
-use Models;
 
 class CustomEmailGrid extends NiftyGrid\Grid
 {
-	/** @persistent */
+	/** @persistent @var int */
     public $id;
 
-	/** @var Models/CustomEmail */
-    protected $model;
-
-
-	/**
-	 * @param Models\CustomEmail
-	 */
-    public function __construct(Models\CustomEmail $model)
-    {
-        parent::__construct();
-        $this->model = $model;
-		$this->useFlashMessage = FALSE;
-    }
+	/** @inject @var Schmutzka\Models\CustomEmail */
+    public $customEmailModel;
 
 
 	/**
@@ -32,8 +20,9 @@ class CustomEmailGrid extends NiftyGrid\Grid
 	 */
     protected function configure($presenter)
     {
-        $source = new NiftyGrid\DataSource($this->model->all());
+        $source = new NiftyGrid\DataSource($this->customEmailModel->all());
         $this->setDataSource($source);
+        $this->setModel($this->customEmailModel);
 
 		// grid structure
 		$this->addColumn("name", "Název", "20%");
@@ -41,7 +30,7 @@ class CustomEmailGrid extends NiftyGrid\Grid
 		$this->addColumn("subject", "Předmět", "55%", 300);
 
 		$this->addEditButton(NULL, TRUE);
-		$this->addDeleteButton(); 
+		$this->addDeleteButton();
     }
 
 }

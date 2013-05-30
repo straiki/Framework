@@ -36,7 +36,7 @@ parameters:
 		permalogin:
 			label: "Zapamatovat"
 		send:
-			login: "Log in"
+			login: "Přihlásit se"
 			register: "Registrovat"
 
 	registration:
@@ -84,15 +84,12 @@ services:
 	templateHelpers: Schmutzka\Templates\Helpers
 	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
 	lessc: lessc
-	translator: Schmutzka\Localization\DummyTranslator
-	user: Scmhutzka\Security\User
-	- Schmutzka\Security\UserManager
 
 	haml: Nette\Templating\Filters\Haml
 
+	- Schmutzka\Security\UserManager
 	- Schmutzka\Models\Page
 	- Schmutzka\Models\Article
-
 
 factories:
 	titleControl: Components\TitleControl

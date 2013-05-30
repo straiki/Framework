@@ -8,10 +8,6 @@
 		{control adminCss}
 		{control adminJs}
 
-		{if $presenter->module == "gallery"}
-			{!=MultipleFileUpload::getHead()}
-		{/if}
-
 		#kcfinder_div
 
 		%title {$adminTitle|isEmpty: "CMS Intuitivo"}

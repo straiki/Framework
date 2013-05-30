@@ -93,4 +93,27 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 		dd($values, $id);
 	}
 
+
+	/**
+	 * Create hashed password and salt and update for specific user
+	 * (this is update helper)
+	 *
+	 * @param string $email
+	 * @param string $password
+	 */
+	public function updatePasswordForEmail($email, $password)
+	{
+		$salt = Strings::random(22);
+		$password = self::calculateHash($password, $salt);
+
+		$this->userModel->update(array(
+			"salt" => $salt,
+			"password" => $password
+		), array(
+			"email" => $email
+		));
+
+		return TRUE;
+	}
+
 }

@@ -2,54 +2,15 @@
 
 namespace GalleryModule;
 
-class HomepagePresenter extends \AdminModule\BasePresenter
+use AdminModule;
+
+class HomepagePresenter extends AdminModule\BasePresenter
 {
-	/** @persistent */
+	/** @persistent @var int */
 	public $id;
 
 	/** @inject @var Schmutzka\Models\Gallery */
 	public $galleryModel;
-
-	/** @inject @var Schmutzka\Models\GalleryFile */
-	public $galleryFileModel;
-
-
-	/**
-	 * Delete gallery file
-	 * @param int
-	 */
-	public function handleDeleteFile($fileId)
-	{
-		if ($galleryFile = $this->galleryFileModel->item($fileId)) {
-			$file = $this->dirs["system"] . $galleryFile["name"];
-			if (file_exists($file)) {
-				unlink($file);
-			}
-			$file = $this->dirs["systemThumb"] . $galleryFile["name"];
-			if (file_exists($file)) {
-				unlink($file);
-			}
-
-			$this->galleryFileModel->delete($fileId);
-			$galleryItem = $this->galleryModel->item($this->id);
-
-			$newFileCount = $galleryItem["file_count"]-1;
-			if (!$newFileCount) {
-				$this->galleryModel->delete($this->id);
-				$this->flashMessage("Galerie byla úspěšně smazána.", "success");
-				$this->redirect("default", array("id" => NULL));
-
-			} else {
-				$this->galleryModel->update(array("file_count" => $newFileCount), $this->id);
-				$this->flashMessage("Záznam byl úspěšně smazán.","success");
-			}
-
-		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "error");
-		}
-
-		$this->redirect("this", array("fileId" => NULL));
-	}
 
 
 	/**
@@ -58,30 +19,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	public function renderEdit($id)
 	{
 		$this->loadItemHelper($this->galleryModel, $id);
-
-		$this->template->dirThumb = $this->dirs["viewThumb"];
-		$this->template->galleryFileList = $this->galleryFileModel->all(array("gallery_id" => $id));
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Get dir paths
-	 */
-	public function getDirs()
-	{
-		if ($this->id) {
-			return array(
-				"system" => WWW_DIR . "/upload/gallery/" . $this->id . "/",
-				"systemThumb" => WWW_DIR . "/upload/gallery/" . $this->id . "/thumb/",
-				"view" => $this->template->basePath . "/upload/gallery/" . $this->id . "/",
-				"viewThumb" => $this->template->basePath . "/upload/gallery/" . $this->id . "/thumb/"
-			);
-		}
-
-		return NULL;
 	}
 
 }

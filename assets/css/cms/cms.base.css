@@ -150,10 +150,10 @@ td.center {text-align:center;}
 #ui-helper-clearfix {margin-left:18em}
 
 .gradientBar(@primaryColor, @secondaryColor) {
-   .vertical(@primaryColor, @secondaryColor);
-//  text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-  border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
-  border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+	 .vertical(@primaryColor, @secondaryColor);
+	//	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+	border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
 }
 
 .vertical (@startColor: #555, @endColor: #333) {
@@ -194,14 +194,14 @@ td.center {text-align:center;}
 	-moz-border-radius: @radius;
 	-khtml-border-radius: @radius;
 	border-radius: @radius;
-    -webkit-background-clip: padding-box;
+	-webkit-background-clip: padding-box;
 }
 .rc-spec (@a: 5px, @b: 5px, @c: 5px, @d: 5px) {
 	-webkit-border-radius: @a @b @c @d;
 	-moz-border-radius: @a @b @c @d;
 	-khtml-border-radius: @a @b @c @d;
 	border-radius: @a @b @c @d;
-    -webkit-background-clip: padding-box;
+	-webkit-background-clip: padding-box;
 }
 
 .pm0 {padding:0;margin:0}

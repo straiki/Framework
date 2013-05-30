@@ -5,7 +5,6 @@ namespace Schmutzka\Application\UI;
 use Nette;
 use Nette\Utils\Html;
 use Schmutzka\Forms\Controls;
-use MultipleFileUpload;
 use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
 
 class Form extends Nette\Application\UI\Form
@@ -204,7 +203,7 @@ class Form extends Nette\Application\UI\Form
 			foreach ($this->getHttpData() as $key => $value) {
 				if (isset($this[$key])) {
 					if ($this[$key] instanceof Nette\Forms\Controls\SubmitButton) {
-	
+
 					} elseif (empty($values[$key]) && $value && $key != "_token_") {
 						$values[$key] = $value;
 					}
@@ -329,18 +328,6 @@ class Form extends Nette\Application\UI\Form
 	public function addDateTimePicker($name, $label = NULL)
 	{
 		return $this[$name] = new Controls\DateTimePicker($label);
-	}
-
-
-	/**
-	 * Adds multipel file upload
-	 * @param string
-	 * @param string
-	 * @param int
-	 */
-	public function addMultipleFileUpload($name, $label = NULL, $maxFiles = 999)
-	{
-		return $this[$name] = new MultipleFileUpload($label, $maxFiles);
 	}
 
 

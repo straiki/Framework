@@ -1,12 +1,9 @@
-# todo move info to documentation
-
 parameters:
 	cms: FALSE
 
 	cmsSetup:
 		title: "CMS"
 		modules:
-
 			page:
 				active: FALSE
 				title: Stránky
@@ -88,6 +85,7 @@ parameters:
 				active: FALSE
 				title: QR generátor
 
+
 services:
 	- Schmutzka\Models\ArticleInCategory
 	- Schmutzka\Models\ArticleCategory
@@ -98,8 +96,8 @@ services:
 	- Schmutzka\Models\Gallery
 	- Schmutzka\Models\GalleryFile
 	- Schmutzka\Models\PageContent
-	- Schmutzka\Models\User
-	qrGenerator: QrModule\Services\QrGenerator
+	- Schmutzka\Models\Qr
+	- QrModule\Services\QrGenerator
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
 
 
@@ -118,7 +116,7 @@ factories:
 	fileGrid: FileModule\Grids\FileGrid
 
 	# GalleryModule
-	galleryForm: GalleryModule\Forms\GalleryForm
+	galleryControl: GalleryModule\Controls\GalleryControl
 	galleryGrid: GalleryModule\Grids\GalleryGrid
 
 	# PageModule
@@ -186,7 +184,6 @@ webloader:
 				- TinyMCE/tiny_mce/jquery.tinymce.js
 				- TinyMCE/TinyMCE.js
 
-				- jquery/jquery.livequery.min.js # mfu
 				- %assetsDir%/js/chosen/chosen.jquery.min.js
 
 		adminLogin:

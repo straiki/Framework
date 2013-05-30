@@ -51,7 +51,7 @@ abstract class Base extends Nette\Object
 	 */
 	public function all($key = array())
 	{
-		$this->fetchAll($key);
+		return $this->fetchAll($key);
 	}
 
 

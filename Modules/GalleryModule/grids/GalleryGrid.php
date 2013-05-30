@@ -7,32 +7,18 @@ use NiftyGrid;
 
 class GalleryGrid extends NiftyGrid\Grid
 {
-	/** @persistent */
-    public $id;
-
-	/** @var Schmutzka\Models\Gallery */
-    protected $model;
+	/** @inject @var Schmutzka\Models\Gallery */
+	public $galleryModel;
 
 
 	/**
-	 * @param Schmutzka\Models\Gallery
-	 */
-    public function __construct(Schmutzka\Models\Gallery $model)
-    {
-        parent::__construct();
-        $this->model = $model;
-		$this->useFlashMessage = FALSE;
-    }
-
-
-	/**
-	 * Configure
 	 * @param presenter
 	 */
-    protected function configure($presenter)
-    {
-        $source = new NiftyGrid\DataSource($this->model->all());
-        $this->setDataSource($source);
+	protected function configure($presenter)
+	{
+		$source = new NiftyGrid\DataSource($this->galleryModel->fetchAll());
+		$this->setDataSource($source);
+		$this->setModel($this->galleryModel);
 
 		$this->addColumn("name", "Název");
 		$this->addColumn("description", "Popisek");
@@ -40,7 +26,7 @@ class GalleryGrid extends NiftyGrid\Grid
 		$this->addColumn("file_count", "Počet fotek");
 
 		$this->addEditButton(NULL, TRUE);
-		$this->addDeleteButton(); 
-    }
+		$this->addDeleteButton();
+	}
 
 }

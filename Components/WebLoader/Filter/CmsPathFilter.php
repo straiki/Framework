@@ -15,10 +15,6 @@ class CmsPathFilter extends Nette\Object
 	 */
 	public function __invoke($code, WebLoader\Compiler $loader)
 	{
-		// echo $code;
-		// dd();
-		// dd("Z");
-
 		$code = strtr($code, array(
 			"url('../img" => "url('../../images/cms",
 			'url("../img' => 'url("../../images/cms',

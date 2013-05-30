@@ -1,16 +1,17 @@
 <?php
 
-namespace GalleryModule\Forms;
+namespace GalleryModule\Controls;
 
 use Nette;
 use Nette\Utils\Strings;
 use Schmutzka;
+use Schmutzka\Application\UI\Control;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Utils\Filer;
 
-class GalleryForm extends Form
+class GalleryControl extends Control
 {
-	/** @persistent */
+	/** @persistent @var int */
 	public $id;
 
 	/** @inject @var Schmutzka\Models\Gallery */
@@ -40,32 +41,33 @@ class GalleryForm extends Form
 	}
 
 
-	public function build()
+	public function createComponentForm()
     {
-		parent::build();
-
-		$this->addText("name","Název fotogalerie:")
+		$form = new Form;
+		$form->addText("name","Název fotogalerie:")
 			->addRule(Form::FILLED, "Povinné");
 
 		if ($this->moduleParams["access_to_roles"]) {
 			$roles = $this->paramService->cmsSetup->modules->user->roles;
-			$this->addMultiSelect("access_to_roles", "Zobrazit pouze pro:", (array) $roles)
+			$form->addMultiSelect("access_to_roles", "Zobrazit pouze pro:", (array) $roles)
 				->setAttribute("data-placeholder","Zde můžete omezit zobrazení pouze pro určité uživatele")
 				->setAttribute("class","chosen width400");
 		}
 
+		/*
 		$this->addMultipleFileUpload("files", "Obrázky:")
 			->addRule("\MultipleFileUpload::validateFilled", "Vyberte aspoň jeden soubor")
 			->addRule("\MultipleFileUpload::validateFileSize", "Max. velikost všech odeslaných souborů je 20 MB!", 20 * 1024 * 1024);
+		*/
 
-		$this->addTextarea("description","Popis:", NULL, 3)
+		$form->addTextarea("description","Popis:", NULL, 3)
 			->setAttribute("class", "span8");
 
-		$this->addSubmit("send", "Uložit")
+		$form->addSubmit("send", "Uložit")
 			->setAttribute("class", "btn btn-primary");
 
 		if ($this->id) {
-			$this->addSubmit("cancel", "Zrušit")
+			$form->addSubmit("cancel", "Zrušit")
 				->setValidationScope(FALSE);
 
 			$defaults = $this->galleryModel->item($this->id);
@@ -73,15 +75,14 @@ class GalleryForm extends Form
 				$defaults["access_to_roles"] = unserialize($defaults["access_to_roles"]);
 			}
 
-			$this->setDefaults($defaults);
+			$form->setDefaults($defaults);
 		}
+
+		return $form;
 	}
 
 
-	/**
-	 * Process form
-	 */
-	public function process(Form $form)
+	public function processForm($form)
 	{
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
 			$this->redirect("default", array("id" => NULL));
@@ -130,7 +131,7 @@ class GalleryForm extends Form
 		$galleryDir = WWW_DIR . "/upload/gallery/" . $id;
 		if (!is_dir($galleryDir)) {
 			mkdir($galleryDir, 0777);
-			mkdir($galleryDir . "/thumb/", 0777);
+			mkdir($galleryDir . "/h127/", 0777);
 		}
 
 		foreach ($files as $file) {
@@ -146,7 +147,7 @@ class GalleryForm extends Form
 
 				// 2. thumbnail image
 				$image->resize(NULL, $this->moduleParams["image_thumb_height"]);
-				$image->save($galleryDir . "/thumb/" . $name);
+				$image->save($galleryDir . "/h127/" . $name);
 
 				// 3. custom resize
 				if ($this->moduleParams["resize_to"]) {
@@ -165,6 +166,14 @@ class GalleryForm extends Form
 
 			$this->galleryFileModel->insert($galleryFile);
 		}
+	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+		$this["uploadControl"] = $this->presenter->createComponent("uploadControl");
+		$this->template->render();
 	}
 
 }

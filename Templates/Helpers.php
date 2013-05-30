@@ -54,7 +54,7 @@ class Helpers extends Nette\Object
 		$galleryFile = $this->galleryFileModel->item($id);
 		$basePath = $this->httpRequest->url->scriptPath;
 
-		$filePath = $basePath . "upload/gallery/" . $galleryFile["gallery_id"] . "/thumb/" . $galleryFile["name"];
+		$filePath = $basePath . "upload/gallery/" . $galleryFile["gallery_id"] . "/h127/" . $galleryFile["name"];
 
 		return "<img src='" . $filePath . "' alt='Thumb file' class='thumb'>";
 	}
