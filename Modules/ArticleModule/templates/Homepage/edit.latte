@@ -2,6 +2,7 @@
 	%h1 {$item["title"]}
 {/}
 
+
 {#breadcrumb}
 	<a n:href="default, id => NULL" class="tip-bottom">{_"Správa článků"}</a>
 	<a n:href="edit" class="current">{_"Úprava článku"}</a>
@@ -9,63 +10,60 @@
 
 
 {#content}
+	#article
 
-<script type="text/javascript" src="{$basePath}/js/ckeditor/ckeditor.js"></script>
+		{if $moduleParams["promo_photo"]}
+			%legend Úvodní fotka
+			%br
 
-#article
+			{ifset $promoPhoto}
+				.promoPhoto <img src="{$basePath}/upload/gallery/{$promoPhoto['gallery_id']}/{$promoPhoto['name']}">
+			{/ifset}
 
-	{if $moduleParams["promo_photo"]}
-		%legend Úvodní fotka
-		%br
+			{if !isset($pickGallery) && !isset($pickImage)}
+				%p <a n:href="pickGallery!">Vybrat/změnit hlavní fotku</a>
+			{/if}
 
-		{ifset $promoPhoto}
-			.promoPhoto <img src="{$basePath}/upload/gallery/{$promoPhoto['gallery_id']}/{$promoPhoto['name']}">
-		{/ifset}
+			#pickImage
+				{ifset $pickGallery}
+					%h4 Vyberte album
+					%ul#pickGallery
+						{foreach $galleryList as $key => $name}
+							%li <a n:href="pickImage!, galleryId => $key">{$name}</a>
+						{/foreach}
+				{/ifset}
 
-		{if !isset($pickGallery) && !isset($pickImage)}
-			%p <a n:href="pickGallery!">Vybrat/změnit hlavní fotku</a>
+				{ifset $pickImage}
+
+					{foreach $gallery["files"] as $key => $row}
+						<a n:href="setImage!, fileId => $key">
+							<img src="{$basePath}/upload/gallery/{$gallery['id']}/{$row['name']}">
+						</a>
+					{/foreach}
+
+				{/ifset}
 		{/if}
 
-		#pickImage
-			{ifset $pickGallery}
-				%h4 Vyberte album
-				%ul#pickGallery
-					{foreach $galleryList as $key => $name}
-						%li <a n:href="pickImage!, galleryId => $key">{$name}</a>
-					{/foreach}
-			{/ifset}
+		%legend Základní údaje
+		{control articleControl}
 
-			{ifset $pickImage}
+		{if isset($attachmentFiels) && count($attachmentFiels)}
+			%br
 
-				{foreach $gallery["files"] as $key => $row}
-					<a n:href="setImage!, fileId => $key">
-						<img src="{$basePath}/upload/gallery/{$gallery['id']}/{$row['name']}">
-					</a>
+			%h4 Nahrané přílohy
+			%ul
+				{foreach $attachmentFiels as $row}
+					%li <a n:href="openAttachment!, attachmentId => $row['id']" n:tooltip="Stáhnout přílohu">{$row['name_origin']}</a> - <a n:href="deleteAttachment!, attachmentId => $row['id']" class="confirm">smazat</a>
 				{/foreach}
-
-			{/ifset}
-	{/if}
-
-	%legend Základní údaje
-	{control articleControl}
-
-	{if isset($attachmentFiels) && count($attachmentFiels)}
-		%br
-
-		%h4 Nahrané přílohy
-		%ul
-			{foreach $attachmentFiels as $row}
-				%li <a n:href="openAttachment!, attachmentId => $row['id']" n:tooltip="Stáhnout přílohu">{$row['name_origin']}</a> - <a n:href="deleteAttachment!, attachmentId => $row['id']" class="confirm">smazat</a>
-			{/foreach}
-	{/if}
+		{/if}
 
 
-	{if isset($contentHistory)}
-		%br
+		{if isset($contentHistory)}
+			%br
 
-		%h4 Starší verze obsahu
-		%ul
-			{foreach $contentHistory as $row}
-				%li uložit {$row["login"]} - {$row["edited"]|date:"j. n. Y H:i:s"} - <a n:href="loadContentVersion!, versionId => $row['id']">obnovit</a> {first}(současná){/first}
-			{/foreach}
-	{/if}
+			%h4 Starší verze obsahu
+			%ul
+				{foreach $contentHistory as $row}
+					%li uložit {$row["login"]} - {$row["edited"]|date:"j. n. Y H:i:s"} - <a n:href="loadContentVersion!, versionId => $row['id']">obnovit</a> {first}(současná){/first}
+				{/foreach}
+		{/if}

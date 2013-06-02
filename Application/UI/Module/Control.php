@@ -3,7 +3,6 @@
 namespace Schmutzka\Application\UI\Module;
 
 use Schmutzka;
-use Schmutzka\Application\UI\Form;
 
 class Control extends Schmutzka\Application\UI\Control
 {

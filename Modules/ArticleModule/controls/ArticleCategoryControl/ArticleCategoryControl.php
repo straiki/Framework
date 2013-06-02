@@ -12,7 +12,7 @@ class ArticleCategoryControl extends Control
 
 
 	public function createComponentForm()
-    {
+	{
 		$form = new Form;
 		$form->addText("name", "Název kategorie:")
 			->addRule(Form::FILLED, "Zadejte název kategorie");

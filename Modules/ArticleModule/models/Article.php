@@ -19,15 +19,20 @@ class Article extends Base
 	/**
 	 * Fetch front
 	 * @param  array
+	 * @param int|NULL
 	 * @return  NotORM_Result
 	 */
-	public function fetchFront($cond = array())
+	public function fetchFront($cond = array(), $limit = NULL)
 	{
 		$result = $this->table()
 			->select($this->select);
 
 		if ($cond) {
 			$result->where($cond);
+		}
+
+		if ($limit) {
+			$result->limit($limit);
 		}
 
 		if ($this->moduleParams->publish_state) {
@@ -46,6 +51,27 @@ class Article extends Base
 			foreach ($result as $key => $row) {
 				$result[$key]["categoryList"] = $this->articleInCategoryModel->getCategoryListByArticle($key);
 			}
+		}
+
+		return $result;
+	}
+
+
+	/**
+	 * Fetch front by category id
+	 * @param  int
+	 * @return  NotORM_Result
+	 */
+	public function fetchFrontByCategory($categoryId)
+	{
+		if ($this->moduleParams->categories_multi) {
+		$result = $this->articleInCategoryModel->fetchAll()->where("article_in_category.article_category_id", $categoryId)
+			->join("gallery_file", "LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id")
+			->join("user", "LEFT JOIN user ON article.user_id = user.id")
+			->select($this->select);
+
+		} else {
+			$result = $this->articleInCategoryModel->fetchAll(array("article_category_id" => $categoryId));
 		}
 
 		return $result;

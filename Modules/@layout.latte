@@ -7,6 +7,7 @@
 
 		{control adminCss}
 		{control adminJs}
+		<script type="text/javascript" src="{$basePath}/js/ckeditor/ckeditor.js"></script>
 
 		%title {$adminTitle|isEmpty: "CMS Intuitivo"}
 
@@ -180,9 +181,9 @@
 
 
 {define #menuItem}
-<li n:class="$presenter->isLinkCurrent($path) ? active">
-	<a n:href="{$path}, id => NULL">
-		<i class="icon {$icon}"></i> &nbsp; {_}{$name}{/_}
-	</a>
-</li>
+	<li n:class="$presenter->isLinkCurrent($path) ? active">
+		<a n:href="{$path}, id => NULL">
+			<i class="icon {$icon}"></i> &nbsp; {_}{$name}{/_}
+		</a>
+	</li>
 {/define}

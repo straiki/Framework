@@ -1,15 +1,13 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {$item["name"]}
-{/define} 
+{/}
 
-{define #breadcrumb}
+
+{#breadcrumb}
 	<a n:href="default, id => NULL" class="tip-bottom">{_"Kategorie článků"}</a>
 	<a n:href="edit" class="current">{_"Úprava"}</a>
-{/define}
+{/}
 
 
-{define #content}
-
-{control articleCategoryForm}
-
-{/define}
+{#content}
+	{control articleCategoryControl}

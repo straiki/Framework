@@ -5,16 +5,17 @@ namespace PageModule\Grids;
 use Nette;
 use Schmutzka;
 use NiftyGrid;
+use Schmutzka\Application\UI\Module\Grid;
 
-class PageGrid extends NiftyGrid\Grid
+class PageGrid extends Grid
 {
 	/** @inject @var Schmutzka\Models\Page */
 	public $pageModel;
 
-	/** @inject @var Schmutzka\Models\User */
-	public $userModel;
 
-
+	/**
+	 * @param  Nette\Application\IPresenter $presenter
+	 */
 	protected function configure(Nette\Application\IPresenter $presenter)
 	{
 		$moduleParams = $presenter->moduleParams;
@@ -22,10 +23,9 @@ class PageGrid extends NiftyGrid\Grid
 		$this->setDataSource($source);
 		$this->setModel($this->pageModel);
 
-		$this->addColumn("title", "Název", "35%");
+		$this->addColumn("title", "Název");
 		$this->addColumn("edited", "Upraveno", "15%")->setDateRenderer();
 		$this->addColumn("user_id", "Upravil", "15%")->setListRenderer($this->userModel->fetchPairs("id", "login"));
-
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton();
 	}

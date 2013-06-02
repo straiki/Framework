@@ -43,7 +43,7 @@ class PageControl extends Control
 
 
 	public function createComponentForm()
-    {
+	{
 		$form = new Form;
 		$form->addGroup("");
 		$form->addText("title", "Název stránky:")
@@ -54,30 +54,26 @@ class PageControl extends Control
 		}
 
 		$form->addGroup("Publikování");
-
 		if (isset($this->moduleParams->publish_datetime) && $this->moduleParams->publish_datetime) {
 			$form->addDateTimePicker("publish_datetime", "Čas publikování:");
 		}
 
 		if ($this->moduleParams->publish_state) {
-			$array = array(
-				"concept" => "Koncept",
-				"pending" => "Čekající na schválení",
-				"public" => "Publikován"
-			);
-			$form->addSelect("publish_state", "Stav publikování:", $array);
+			$publishTypes = (array) $this->moduleParams->publish_types;
+			$form->addSelect("publish_state", "Stav publikování:", $publishTypes);
 		}
 
 		if ($this->moduleParams->access_to_roles) {
 			$roles = $this->paramService->cmsSetup->modules->user->roles;
 			$form->addMultiSelect("access_to_roles", "Zobrazit pouze pro:", (array) $roles)
-				->setAttribute("data-placeholder","Zde můžete omezit zobrazení pouze pro určité uživatele")
-				->setAttribute("class","chosen width400");
+				->setAttribute("data-placeholder", "Zde můžete omezit zobrazení pouze pro určité uživatele")
+				->setAttribute("class", "chosen width400");
 		}
 
 		if ($this->moduleParams->custom_url) {
 			$form->addText("url", "Url adresa:")
-				->setOption("description","Bude automaticky vygenerována z názvu.");
+				->setOption("description", "Bude automaticky vygenerována z názvu.")
+				->setAttribute("class", "span6");
 		}
 
 		if ($this->moduleParams->uid) {
@@ -93,17 +89,17 @@ class PageControl extends Control
 		if ($this->moduleParams->perex_short) {
 			$form->addTextArea("perex_short", "Perex (kratší):")
 				->setOption("description", "Krátké shrnutí stránky zobrazující se např. pod nadpisem.")
-				->addAttribute("class", "ckeditor");
+				->setAttribute("class", "ckeditor");
 		}
 
 		if ($this->moduleParams->perex_long) {
 			$form->addTextArea("perex_long", "Perex (delší):")
 				->setOption("description", "Shrnutí obsahu zobrazující se např. ve výpisu článků.")
-				->addAttribute("class", "ckeditor");
+				->setAttribute("class", "ckeditor");
 		}
 
-		$form->addTextarea("content","Obsah:", NULL, 30)
-			->addAttribute("class", "ckeditor");
+		$form->addTextarea("content", "Obsah:", NULL, 30)
+			->setAttribute("class", "ckeditor");
 
 		if ($this->moduleParams->attachment_gallery || $this->moduleParams->attachment_files) {
 			$form->addGroup("Přílohy");
@@ -200,8 +196,67 @@ class PageControl extends Control
 			}
 		}
 
-		$this->presenter->flashMessage("Uloženo.","success");
+		$this->presenter->flashMessage("Uloženo.", "success");
 		$this->presenter->redirect("edit", array("id" => $this->id));
+	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+
+		if ($this->id) {
+			if ($this->moduleParams->content_history) {
+				$this->template->contentHistory = $this->pageContentModel->fetchAll(array("page_id" => $this->id))
+					->select("user.login login, page_content.*")->order("edited DESC");
+			}
+
+			if ($this->moduleParams->attachment_files) {
+				$this->template->attachmentFiles = $this->fileModel->fetchByType("page_attachment", $this->id);
+			}
+		}
+
+		$this->template->render();
+	}
+
+
+	/********************** attachments **********************/
+
+
+	/**
+	 * Delete attachment
+	 * @param int
+	 */
+	public function handleDeleteAttachment($attachmentId)
+	{
+		$filePath = WWW_DIR . $this->fileModel->fetchSingle("name", $attachmentId);
+		if (file_exists($filePath)) {
+			unlink($filePath);
+		}
+		$this->deleteHelper($this->fileModel, $attachmentId, FALSE);
+		$this->redirect("this");
+	}
+
+
+	/**
+	 * Open attachment
+	 * @param int
+	 */
+	public function handleOpenAttachment($attachmentId)
+	{
+		$file = $this->fileModel->item($attachmentId);
+		$filePath = WWW_DIR . $file["name"];
+		Filer::downloadAs($filePath, $file["name_origin"]);
+	}
+
+
+	/**
+	 * Load content version
+	 * @param int
+	 */
+	public function handleLoadContentVersion($versionId)
+	{
+		$this["form"]["content"]->setValue($this->pageContentModel->fetchSingle("content", $versionId));
 	}
 
 

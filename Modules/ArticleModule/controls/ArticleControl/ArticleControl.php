@@ -73,12 +73,8 @@ class ArticleControl extends Control
 		}
 
 		if ($this->moduleParams->publish_state) {
-			$array = array(
-				"concept" => "Koncept",
-				"pending" => "Čekající na schválení",
-				"public" => "Publikován"
-			);
-			$form->addSelect("publish_state", "Stav publikování:", $array);
+			$publishTypes = (array) $this->moduleParams->publish_types;
+			$form->addSelect("publish_state", "Stav publikování:", $publishTypes);
 		}
 
 		if ($this->moduleParams->access_to_roles) {
@@ -90,7 +86,8 @@ class ArticleControl extends Control
 
 		if ($this->moduleParams->custom_url) {
 			$form->addText("url", "Url adresa:")
-				->setOption("description", "Bude automaticky vygenerována z názvu.");
+				->setOption("description", "Bude automaticky vygenerována z názvu.")
+				->setAttribute("class", "span6");
 		}
 
  		$form->addGroup("Obsah")

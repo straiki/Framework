@@ -9,6 +9,9 @@ parameters:
 				title: Stránky
 				show_in_sliderbox: FALSE
 				publish_state: FALSE # změna stavu publikování
+				publish_types:
+					concept: "Koncept"
+					public: "Publikován"
 				custom_url: FALSE # <page>/url? page router?
 				perex_short: FALSE
 				perex_long: FALSE
@@ -28,6 +31,8 @@ parameters:
 				show_in_sliderbox: TRUE
 				publish_datetime: TRUE # nastavení data a času publikování
 				publish_state: TRUE # změna stavu publikování
+				publish_types:
+					%cmsSetup.modules.page.publish_types%
 				custom_url: TRUE # <page>/url? page router?
 				perex_short: TRUE
 				perex_long: TRUE
