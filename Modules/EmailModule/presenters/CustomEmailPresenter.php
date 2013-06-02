@@ -2,35 +2,23 @@
 
 namespace EmailModule;
 
-class CustomEmailPresenter extends \AdminModule\BasePresenter
+use AdminModule;
+
+class CustomEmailPresenter extends AdminModule\BasePresenter
 {
-	/** @persistent */
+	/** @persistent @var int */
 	public $id;
 
+	/** @inject @var Schmutzka\Models\CustomEmail */
+	public $customEmailModel;
 
+
+	/**
+	 * @param  int
+	 */
 	public function renderEdit($id)
 	{ 
-		$this->loadItem($this->models->customEmail, $id);
+		$this->loadItemHelper($this->customEmailModel, $id);
 	} 
-
-
-	/**
-	 * Email form
-	 * @return EmailModule\Forms\CustomEmailForm
-	 */
-	public function createComponentCustomEmailForm()
-	{
-		return new Forms\CustomEmailForm($this->models->customEmail, $this->user, $this->id);
-	}
-
-
-	/**
-	 * Email grid
-	 * @return EmailModule\Grids\CustomEmailGrid
-	 */
-	protected function createComponentCustomEmailGrid()
-	{
-		return new Grids\CustomEmailGrid($this->models->customEmail);
-	}
 
 }

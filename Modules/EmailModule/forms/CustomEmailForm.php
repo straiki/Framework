@@ -2,46 +2,21 @@
 
 namespace EmailModule\Forms;
 
-use Schmutzka\Forms\Form;
-use Models;
 use Nette;
-use Nette\Utils\Strings;
-use Schmutzka\Utils\Filer;
+use Schmutzka\Application\UI\Form;
+use Schmutzka\Forms\ModuleForm;
 
-class CustomEmailForm extends Form
+class CustomEmailForm extends ModuleForm
 {
-	/** @persistent */
-	public $id;
-
-	/** @var Models\CustomEmail */
-	private $customEmailModel;
-
-	/** @var Schmutzka\Security\User */
-	private $user;
+	/** @inject @var Schmutzka\Models\CustomEmail */
+	public $customEmailModel;
 
 
-	/**
-	 * @param Models\CustomEmail
-	 * @param Nette\Security\User
-	 * @param int
-	 */
-	public function __construct(Models\CustomEmail $customEmailModel, Nette\Security\User $user, $id)
-	{
-		parent::__construct();
-		$this->customEmailModel = $customEmailModel;
-		$this->user = $user;
-		$this->id = $id;
-	}
-
-
-	/**
-	 * Build form
-	 */
 	public function build()
     {
 		parent::build();
 
-		$this->addText("name","Název šablony:")
+		$this->addText("name", "Název šablony:")
 			->addRule(Form::FILLED, "Povinné");
 
 		$this->addText("uid", "Systémové UID:")
@@ -55,28 +30,14 @@ class CustomEmailForm extends Form
 			$this["available_values"]->setDisabled();
 
 		} else {
-			$this["available_values"]->setOption("description","Ve formátu %VALUE%, oddělujte čárkou");
+			$this["available_values"]->setOption("description", "Ve formátu %VALUE%, oddělujte čárkou");
 		}
 
-
-		$this->addTextarea("body","Obsah:")
-			->setAttribute("class","tinymce");
-
-		$this->addSubmit();
-
-		if ($this->id) {
-			$this->addSubmit("cancel", "Zrušit")
-				->setValidationScope(FALSE);
-
-			$defaults = $this->customEmailModel->item($this->id);
-			$this->setDefaults($defaults);
-		}
+		$this->addTextarea("body", "Obsah:")
+			->setAttribute("class", "ckeditor");
 	}
 
 
-	/**
-	 * Process form
-	 */
 	public function process(Form $form)
 	{
 		if ($this->id && $form["cancel"]->isSubmittedBy()) {
@@ -95,8 +56,8 @@ class CustomEmailForm extends Form
 			$this->customEmailModel->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.", "success");
-		$this->redirect("default", array("id" => NULL));
+		$this->presenter->flashMessage("Uloženo.", "success");
+		$this->presenter->redirect("default", array("id" => NULL));
 	}
 
 }

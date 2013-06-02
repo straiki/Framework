@@ -8,19 +8,19 @@ parameters:
 				active: FALSE
 				title: Stránky
 				show_in_sliderbox: FALSE
-				publish_state: FALSE # změna stavu publikování
+				publish_state: FALSE
 				publish_types:
 					concept: "Koncept"
 					public: "Publikován"
-				custom_url: FALSE # <page>/url? page router?
+				custom_url: FALSE
 				perex_short: FALSE
 				perex_long: FALSE
-				# promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie - u stránek není nutné
-				attachment_gallery: FALSE # možnost připojit galerii
-				attachment_files: FALSE # možnost připojit soubory
-				admin_note: FALSE # interní poznámka
-				content_history: FALSE # vést changelog a historii zmeň obsahu
-				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
+				# promo_photo: TRUE
+				attachment_gallery: FALSE
+				attachment_files: FALSE
+				admin_note: FALSE
+				content_history: FALSE
+				access_to_roles: FALSE
 				uid: FALSE # enable uid editation
 
 			article:
@@ -29,19 +29,19 @@ parameters:
 				categories: TRUE
 				categories_multi: FALSE
 				show_in_sliderbox: TRUE
-				publish_datetime: TRUE # nastavení data a času publikování
-				publish_state: TRUE # změna stavu publikování
+				publish_datetime: FALSE
+				publish_state: FALSE
 				publish_types:
 					%cmsSetup.modules.page.publish_types%
-				custom_url: TRUE # <page>/url? page router?
-				perex_short: TRUE
-				perex_long: TRUE
-				promo_photo: TRUE # možnost vybrat 1 promo fotku z galerie
-				attachment_gallery: FALSE # možnost připojit galerii
-				attachment_files: FALSE # možnost připojit soubory
-				admin_note: TRUE # interní poznámka
-				content_history: FALSE # vést changelog a historii zmeň obsahu
-				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
+				custom_url: FALSE
+				perex_short: FALSE
+				perex_long: FALSE
+				promo_photo: FALSE
+				attachment_gallery: FALSE
+				attachment_files: FALSE
+				admin_note: FALSE
+				content_history: FALSE
+				access_to_roles: FALSE
 
 			event:
 				active: FALSE
@@ -72,6 +72,7 @@ parameters:
 				active: FALSE
 				title: Email
 				useLogger: FALSE
+				newsletter: FALSE
 
 			user:
 				active: FALSE
@@ -102,6 +103,7 @@ services:
 	- Schmutzka\Models\ArticleContent
 	- Schmutzka\Models\CustomEmail
 	- Schmutzka\Models\EmailLog
+	- Schmutzka\Models\EmailSettings
 	- Schmutzka\Models\File
 	- Schmutzka\Models\Gallery
 	- Schmutzka\Models\GalleryFile
@@ -120,6 +122,7 @@ factories:
 
 	# EmailModule
 	customEmailGrid: EmailModule\Grids\CustomEmailGrid
+	emailSettingsForm: EmailModule\Forms\SettingsForm
 
 	# FileModule
 	fileControl: FileModule\Controls\FileControl
@@ -181,11 +184,8 @@ webloader:
 				- %assetsDir%/js/nette/nette.rules.js
 				- %assetsDir%/js/nette/nette.ajax.js
 				- %assetsDir%/js/datepicker.js
-
-				# use propper js from bought template!
 				- %assetsDir%/js/cms/base.js
 				- %assetsDir%/js/unicorn/unicorn.js
-
 				- %assetsDir%/js/DateTimePicker/jquery-ui-sliderAccess.js
 				- %assetsDir%/js/DateTimePicker/jquery-ui-timepicker-addon.js
 				- %assetsDir%/js/DateTimePicker/DateTimePicker.js

@@ -8,6 +8,12 @@ use Schmutzka\Models;
 
 class SmtpMailer extends Nette\Mail\SmtpMailer
 {
+	/** @inject @var Schmutzka\Models\CustomEmail */
+	public $customEmailModel;
+
+	/** @inject @var Schmutzka\Models\EmailLog */
+	public $emailLogModel;
+
 	/** @var int */
 	private $customEmailId;
 
@@ -23,23 +29,14 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 	/** @var Nette\Session\SessionSection */
 	private $dumpMailSession;
 
-	/** @var Schmutzka\Models\CustomEmail */
-	private $customEmailModel;
 
-	/** @var Schmutzka\Models\EmailLog */
-	private $emailLogModel;
-
-
-	public function __construct(Schmutzka\Config\ParamService $paramService, Nette\Http\Session $session, Schmutzka\Models\CustomEmail $customEmailModel, Schmutzka\Models\EmailLog $emailLogModel)
+	public function __construct(Schmutzka\Config\ParamService $paramService, Nette\Http\Session $session)
 	{ 
-		parent::__construct($paramService->mailer); 			
+		parent::__construct((array) $paramService->mailer); 			
 
 		if ($this->debugMode = $paramService->debugMode) {
 			$this->dumpMailSession = $session->getSection("dumpMail");
 		}
-
-		$this->customEmailModel = $customEmailModel;
-		$this->emailLogModel = $emailLogModel;
 
 		$this->useLogger = isset($paramService->params["mailer"]["useLogger"]) ? TRUE : FALSE; 
 	}	
@@ -131,6 +128,7 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 	 * Get mail data
 	 * @param Nette\Mail\Message
 	 * @param bool
+	 * @return array
 	 */
 	private function getData(Nette\Mail\Message $message, $db = FALSE)
 	{
@@ -153,6 +151,7 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 		}
 
 		$array = array_merge($array, $this->loggerData);
+
 		return $array;
 	}
 

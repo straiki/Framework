@@ -1,15 +1,15 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {$item["title"]}
-{/define} 
+{/#} 
 
-{define #breadcrumb}
+{#breadcrumb}
 	<a n:href=":Event:Homepage:default, id => NULL" class="tip-bottom">{_"Akce"}</a>
 	<a n:href=":Event:Homepage:add" class="current">{_"Úprava"}</a>
-{/define}
+{/#}
 
 
-{define #content}
+{#content}
 
 {control eventForm}
 
-{/define}
+{/#}

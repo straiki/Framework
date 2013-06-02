@@ -69,7 +69,7 @@ class NewsletterForm extends Form
 		$this->addText("subject", "Předmět emailu:")
 			->addRule(Form::FILLED, "Povinné");
 		$this->addTextarea("content", "Obsah emailu:")
-			->setAttribute("class","tinymce");
+			->setAttribute("class", "ckeditor");
 
 		$this->addGroup();
 		$this->addSubmit("send", "Odeslat")

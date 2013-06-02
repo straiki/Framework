@@ -1,16 +1,15 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {_"Nastavení"}
-{/define} 
+{/} 
 
-{define #breadcrumb}
+
+{#breadcrumb}
 	<a n:href="default" class="current">{_"Nastavení"}</a>
-{/define}
+{/}
 
 
-{define #content}
+{#content}
 #email
-
 	#settingsForm
-		{control settingsForm}
+		{control emailSettingsForm}
 
-{/define}

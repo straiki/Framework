@@ -4,6 +4,9 @@ namespace Schmutzka\Models;
 
 class Page extends Base
 {
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
+
 
 	/**
 	 * Fetch front
@@ -29,6 +32,22 @@ class Page extends Base
 		}
 
 		return FALSE;
+	}
+
+
+	/**
+	 * Get item
+	 * @param  int
+	 * @return  array
+	 */
+	public function item($id)
+	{
+		$item = parent::item($id);
+		if ($this->paramService->cmsSetup->modules->page->access_to_roles) {
+			$item["access_to_roles"] = unserialize($item["access_to_roles"]);
+		}
+
+		return $item;
 	}
 
 }

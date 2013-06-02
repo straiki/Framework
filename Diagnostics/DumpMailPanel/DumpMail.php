@@ -2,9 +2,9 @@
 
 namespace Schmutzka\Diagnostics\Panels;
 
-use Nette,
-	Nette\Diagnostics\Debugger,
-	Schmutzka;
+use Nette;
+use Nette\Diagnostics\Debugger;
+use Schmutzka;
 
 class DumpMail extends Schmutzka\Application\UI\Control implements Nette\Diagnostics\IBarPanel
 {

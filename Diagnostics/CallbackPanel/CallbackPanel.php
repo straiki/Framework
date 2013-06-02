@@ -51,8 +51,15 @@ class CallbackPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 
 		// Clean temp
 		$this->callbacks["temp"] = array(
-			'name' => "Clear temp",
+			'name' => "Clear temp (latte, cache)",
 			'callback' => callback($this, "clearTemp"),
+			'args' => array()
+		);
+
+		// Clean webtemp
+		$this->callbacks["webtemp"] = array(
+			'name' => "Clear web temp (css, js)",
+			'callback' => callback($this, "clearWebTemp"),
 			'args' => array()
 		);
 
@@ -123,22 +130,10 @@ class CallbackPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 
 	/**
 	 * Clear logs folder
-	 * @param array $args
-	 * @return void
 	 */
-	public function clearLogs($args = array())
+	public function clearLogs()
 	{
-		$folder = LIBS_DIR . "/../log/";
-		if (!is_dir($folder)) {
-			throw new \InvalidArgumentException("'" . $folder . "' is not folder or can't read/write");
-		}
-		foreach (Nette\Utils\Finder::findFiles('*')->exclude(".*")->from($folder)->exclude('.svn', '.git')->childFirst() as $entry) {
-			if (is_dir($entry)) {
-				@rmdir($entry); // safety
-			} else if (is_file($entry)) {
-				@unlink($entry); // safety
-			}
-		}
+		Filer::emptyFolder(LIBS_DIR . "/../log/");
 	}
 
 
@@ -147,15 +142,16 @@ class CallbackPanel extends Nette\Object implements Nette\Diagnostics\IBarPanel
 	 */
 	public function clearTemp()
 	{
-		// $this->container->robotLoader->rebuild();
-		$folder = LIBS_DIR . "/../temp/cache/";
-		foreach (Nette\Utils\Finder::findFiles('*')->from($folder)/*->childFirst()*/ as $entry) {
-			if (is_dir($entry)) {
-				@rmdir($entry); // safety
-			} else if (is_file($entry)) {
-				@unlink($entry); // safety
-			}
-		}
+		Filer::emptyFolder(LIBS_DIR . "/../temp/cache/");
+	}
+
+
+	/**
+	 * Clear webtemp storage
+	 */
+	public function clearWebTemp()
+	{
+		Filer::emptyFolder(WWW_DIR . "/webtemp/");
 	}
 
 

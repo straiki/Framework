@@ -64,7 +64,11 @@ class ParamService extends Nette\Object
 		}
 
 		$modules = $this->params->cmsSetup->modules;
-		return $modules[$key];
+		if (isset($modules[$key])) {
+			return $modules[$key];
+		}
+
+		return array();
 	}
 	
 }

@@ -128,16 +128,8 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	{
 		$component = parent::createComponent($name);
 
-		if ($component === NULL) {
-			if (method_exists($this->context, ($create = "create" .  ucfirst($name)))) {
-				$component = call_user_func(array($this->context, $create));
-
-			} elseif (method_exists($this->context, ($createControl = $create . "Control"))) {
-				$component = call_user_func(array($this->context, $createControl));
-
-			} elseif (method_exists($this->context, ($createForm = $create . "Form"))) {
-				$component = call_user_func(array($this->context, $createForm));
-			}
+		if ($component === NULL && method_exists($this->context, ($create = "create" .  ucfirst($name)))) {
+			$component = call_user_func(array($this->context, $create));
 		}
 
 		return $component;
@@ -198,6 +190,10 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 */
 	protected function loadItemHelper($model, $id, $redirect = "default")
 	{
+		if ($id == NULL) {
+			return NULL;
+		}
+
 		if ($item = $model->item($id)) {
 			$this->template->item = $item;
 			return $item;

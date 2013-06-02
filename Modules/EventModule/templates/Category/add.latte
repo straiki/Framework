@@ -1,16 +1,13 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {_"Nová kategorie"}
-{/define} 
+{/} 
 
 
-{define #breadcrumb}
+{#breadcrumb}
 	<a n:href="default" class="tip-bottom">{_"Kategorie akcí"}</a>
 	<a n:href="add" class="current">{_"Nová"}</a>
-{/define}
+{/}
 
 
-{define #content}
-
-{control eventCategoryForm}
-
-{/define}
+{#content}
+	{control eventCategoryForm}

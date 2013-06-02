@@ -76,7 +76,7 @@ services:
 	router: @routerFactory::createRouter
 	cache: Schmutzka\Caching\Cache(@cacheStorage, "dataCache")
 	paramService: Schmutzka\Config\ParamService(@container::getParameters())
-	# sessionStorage: Services\SessionStorage
+	sessionStorage: Services\SessionStorage
 	template:
 		class: Schmutzka\Templates\TemplateService
 		setup:

@@ -15,16 +15,13 @@
 			%th [width => 30%] Subject
 			%td {$mail["subject"]}
 
-
 		%tr [n:if => $mail["from"]]
 			%th From
 			%td {include #emails, emailList => $mail['from']}
 
-
 		%tr
 			%th To
 			%td {include #emails, emailList => $mail['to']}
-
 
 		{*
 			%tr [n:ifset => $mail["bcc"]]
@@ -56,9 +53,9 @@
 
 
 {define #emails}
-{foreach $emailList as $key => $value}
-	<a href="mailto:{$key}">
-		{if isset($value)}{$value}{else}{$key}{/if}
-	</a>{sep}, {/sep}
-{/foreach}
+	{foreach $emailList as $key => $value}
+		<a href="mailto:{$key}">
+			{if isset($value)}{$value}{else}{$key}{/if}
+		</a>{sep}, {/sep}
+	{/foreach}
 {/define}

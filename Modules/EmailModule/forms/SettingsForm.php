@@ -2,9 +2,9 @@
 
 namespace EmailModule\Forms;
 
-use Schmutzka\Forms\Form;
-use Schmutzka;
 use Nette;
+use Schmutzka;
+use Schmutzka\Application\UI\Form;
 
 class SettingsForm extends Form
 {
@@ -12,9 +12,6 @@ class SettingsForm extends Form
 	public $emailSettingsModel;
 
 
-	/**
-	 * Build form
-	 */
 	public function build()
     {
 		parent::build();
@@ -22,21 +19,20 @@ class SettingsForm extends Form
 		$this->addText("info_email_name","Info email - zobrazované jméno:");
 		$this->addText("noreply_email_name","No-reply email - zobrazované jméno:");
 
-		$this->addSubmit();
+		$this->addSubmit("send", "Uložit")
+			->setAttribute("class", "btn btn-primary");
+
 		$this->setDefaults($this->emailSettingsModel->item(1));
 	}
 
 
-	/**
-	 * Process form
-	 */
 	public function process(Form $form)
 	{
 		$values = $form->values;
 
 		$this->emailSettingsModel->update($values, 1);
-		$this->flashMessage("Uloženo.","success");
-		$this->redirect("this");
+		$this->presenter->flashMessage("Uloženo.","success");
+		$this->presenter->redirect("this");
 	}
 
 }
