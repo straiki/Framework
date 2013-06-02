@@ -4,20 +4,15 @@ namespace PageModule;
 
 use Schmutzka\Utils\Filer;
 use Grids;
+use AdminModule;
 
-class HomepagePresenter extends \AdminModule\BasePresenter
+class HomepagePresenter extends AdminModule\BasePresenter
 {
 	/** @persistent @forView(edit) */
 	public $id;
 
 	/** @inject @var Schmutzka\Models\Page */
 	public $pageModel;
-
-	/** @inject @var Schmutzka\Models\PageCategory */
-	public $pageCategoryModel;
-
-	/** @inject @var Schmutzka\Models\PageInCategory */
-	public $pageInCategoryModel;
 
 	/** @inject @var Schmutzka\Models\PageContent */
 	public $pageContentModel;
@@ -74,14 +69,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 
 	/********************** base **********************/
 
-	/**
-	 * Render add
-	 */
-	public function renderAdd()
-	{
-		$this->loadTinymceVars();
-	}
-
 
 	/**
 	 * @param int
@@ -96,27 +83,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 
 		if ($this->moduleParams["content_history"]) {
 			$this->template->contentHistory = $this->pageContentModel->all(array("page_id" => $id))->select("user.login login, page_content.*")->order("edited DESC");
-		}
-
-		$this->loadTinymceVars();
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Load page list and article list
-	 * @param
-	 */
-	private function loadTinymceVars()
-	{
-
-		$this->template->pageList = $pageList = $this->pageModel->fetchPairs("id", "title");
-		try {
-			$this->template->articleList = $articleList = $this->articleModel->fetchPairs("id", "title");
-		} catch (\Exception $e) {
-			
 		}
 	}
 

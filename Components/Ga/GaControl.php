@@ -9,18 +9,11 @@ use Schmutzka\Application\UI\Control;
 
 class GaControl extends Control
 {
-	/** @var Schmutzka\Config\ParamService */
-	private $paramService;
+	/** @inject @var Schmutzka\Config\ParamService */
+	public $paramService;
 
-	/** @var Nette\Http\Request */
-	private $httpRequest;
-
-
-	public function inject(Schmutzka\Config\ParamService $paramService, Nette\Http\Request $httpRequest)
-	{
-		$this->paramService = $paramService;
-		$this->httpRequest = $httpRequest;
-	}
+	/** @inject @var Nette\Http\Request */
+	public $httpRequest;
 
 
 	/**
@@ -30,7 +23,6 @@ class GaControl extends Control
 	public function render($code, $domain = NULL)
 	{
 		parent::useTemplate();
-
 		if (! $this->paramService->productionMode) {
 			return;
 		}

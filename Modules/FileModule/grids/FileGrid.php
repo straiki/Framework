@@ -2,40 +2,30 @@
 
 namespace FileModule\Grids;
 
-use Nette;
-use Schmutzka;
 use NiftyGrid;
+use Schmutzka;
+use Schmutzka\Application\UI\Module\Grid;
 
-class FileGrid extends NiftyGrid\Grid
+class FileGrid extends Grid
 {
-	/** @var Schmutzka\Models\File */
-    private $fileModel;
-
-	/** @var Schmutzka\Models\User */
-    private $userModel;
-
-	/** @var array */
-	private $moduleParams;
+	/** @inject @var Schmutzka\Models\File */
+    public $fileModel;
 
 
-    public function inject(Schmutzka\Models\File $fileModel, Schmutzka\Models\User $userModel, Schmutzka\Config\ParamService $paramService)
+	/**
+     * @param Nette\Application\IPresenter  
+     */
+    protected function configure($presenter)
     {
-		$this->fileModel = $fileModel;
-		$this->userModel = $userModel;
-		$this->moduleParams = $paramService->getModuleParams($this->getReflection()->getName());
-    }
-
-
-    protected function configure(Nette\Application\IPresenter $presenter)
-    {
-        $source = new NiftyGrid\DataSource($this->fileModel->all());
+        $source = new NiftyGrid\DataSource($this->fileModel->fetchAll());
         $this->setDataSource($source);
 		$this->setModel($this->fileModel);
 
-		$this->addColumn("name", "Název");
-		$this->addColumn("created", "Upraveno", "15%")->setDateRenderer();
-		$this->addColumn("user_id", "Přiřazeno k", "15%")->setListRenderer($this->userModel->fetchPairs("id", "login"));
-
+		$this->addColumn("name", "Název", "40%");
+		$this->addColumn("created", "Upraveno", "15%")
+			->setDateRenderer();
+		$this->addColumn("user_id", "Přiřazeno k")
+			->setListRenderer($this->userModel->fetchPairs("id", "login"));
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton(); 
     }

@@ -88,6 +88,8 @@ parameters:
 				active: FALSE
 				title: QR generátor
 
+	jQuery: "jquery-1.10.1.min.js"
+
 
 services:
 	- Schmutzka\Models\ArticleInCategory
@@ -106,8 +108,8 @@ services:
 
 factories:
 	# ArticleModule
-	articleForm: ArticleModule\Forms\ArticleForm
-	articleCategoryForm: ArticleModule\Forms\ArticleCategoryForm
+	articleControl: ArticleModule\Controls\ArticleControl
+	articleCategoryControl: ArticleModule\Controls\ArticleCategoryControl
 	articleGrid: ArticleModule\Grids\ArticleGrid
 	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
 
@@ -124,7 +126,6 @@ factories:
 	uploadControl: GalleryModule\Controls\UploadControl
 
 	# PageModule
-	pageForm: PageModule\Forms\PageForm
 	pageControl: PageModule\Controls\PageControl
 	pageGrid: PageModule\Grids\PageGrid
 
@@ -142,9 +143,9 @@ webloader:
 				- %assetsDir%/css/bootstrap/bootstrap.min.css
 				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
 				- %assetsDir%/css/jquery/jquery-ui.css
+				- %assetsDir%/css/jquery/chosen/chosen.css
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
-				- %assetsDir%/css/chosen/chosen.css
 				- %assetsDir%/css/cms/cms.base.css
 
 			filters:
@@ -157,6 +158,10 @@ webloader:
 				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
 				- %assetsDir%/css/unicorn/unicorn.login.css
 				- %assetsDir%/css/cms/cms.login.css
+
+			remoteFiles:
+				- "http://fonts.googleapis.com/css?family=Roboto:400,100&subset=latin,latin-ext"
+
 			filters:
 				- @lessFilter
 				- @cmsPathFilter
@@ -164,7 +169,7 @@ webloader:
 	js:
 		admin:
 			files:
-				- %assetsDir%/js/jquery/jquery-1.8.2.min.js
+				- %assetsDir%/js/jquery/%jQuery%
 				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
 				- %assetsDir%/js/bootstrap/bootstrap.min.js
 				- %assetsDir%/js/nette/nette.forms.js
@@ -174,23 +179,16 @@ webloader:
 
 				# use propper js from bought template!
 				- %assetsDir%/js/cms/base.js
-				- %assetsDir%/js/cms/excanvas.js
-				- %assetsDir%/js/cms/jquery02.js
-				- %assetsDir%/js/cms/jquery03.js
-				- %assetsDir%/js/cms/jquery04.js
-				- %assetsDir%/js/cms/unicorn0.js
+				- %assetsDir%/js/unicorn/unicorn.js
 
 				- %assetsDir%/js/DateTimePicker/jquery-ui-sliderAccess.js
 				- %assetsDir%/js/DateTimePicker/jquery-ui-timepicker-addon.js
 				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
 				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
 
-				- TinyMCE/tiny_mce/jquery.tinymce.js
-				- TinyMCE/TinyMCE.js
-
 				- %assetsDir%/js/chosen/chosen.jquery.min.js
 
 		adminLogin:
 			files:
-				- %assetsDir%/js/jquery/jquery-1.8.2.min.js
+				- %assetsDir%/js/jquery/%jQuery%
 				- %assetsDir%/js/unicorn/unicorn.login.js

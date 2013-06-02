@@ -3,10 +3,11 @@
 namespace QrModule;
 
 use Schmutzka\Utils\Filer;
+use AdminModule;
 
-class HomepagePresenter extends \AdminModule\BasePresenter
+class HomepagePresenter extends AdminModule\BasePresenter
 {
-	/** @persistent @forView(edit) */
+	/** @persistent @var int */
 	public $id;
 
 	/** @inject @var Schmutzka\Models\Qr */
@@ -14,21 +15,17 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 
 
 	/**
-	 * Delete item
 	 * @param  int
 	 */
 	public function handleDelete($id)
 	{
-		if ($id) {
-			$this->deleteHelper($this->qrModel, $id);
-		}
+		$this->deleteHelper($this->qrModel, $id);
 	}
 
 
 	public function renderDefault()
 	{
-		$this->template->qrList = $this->qrModel->all();
+		$this->template->qrList = $this->qrModel->fetchAll();
 	}
-
 
 }

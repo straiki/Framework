@@ -50,14 +50,13 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	 * @return this
 	 */
 	public function addTitle($title)
-	{	
+	{
 		$this->titles[] = $title;
 		return $this;
 	}
 
 
 	/**
-	 * Set main title
 	 * @param string
 	 * @return this
 	 */
@@ -72,7 +71,6 @@ class TitleControl extends Schmutzka\Application\UI\Control
 
 
 	/**
-	 * Is homepage
 	 * @return bool
 	 */
 	private function isHomepage()

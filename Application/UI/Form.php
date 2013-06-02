@@ -275,17 +275,6 @@ class Form extends Nette\Application\UI\Form
 	}
 
 
-	/**
-	 * Add submit
-	 * @param string
-	 * @param string
-	 */
-	public function addSubmit($name = "send", $label = "Uložit")
-	{
-		return parent::addSubmit($name, $label);
-	}
-
-
 	/* ****************************** seperated controls ****************************** */
 
 

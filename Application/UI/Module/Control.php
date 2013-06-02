@@ -1,12 +1,11 @@
 <?php
 
-namespace Schmutzka\Application\UI;
+namespace Schmutzka\Application\UI\Module;
 
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
-use Schmutzka\Application\UI\Control;
 
-class ModuleControl extends Control
+class Control extends Schmutzka\Application\UI\Control
 {
 	/** @persistent @var int */
 	public $id;
@@ -41,6 +40,16 @@ class ModuleControl extends Control
 
 		$values = $form->values;
 		$values = $this->preProcessValues($values);
+
+		// process all dynamics
+		foreach ($values as $key => $value) {
+			if ($form[$key] instanceof Kdyby\Replicator\Container) {
+				foreach ($value as $key2 => $value2) {
+					$this->model->update($value2, $key2);
+				}
+				unset($values[$key]);
+			}
+		}
 
 		if ($this->id) {
 			$this->model->update($values, $this->id);

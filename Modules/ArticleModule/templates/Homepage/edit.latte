@@ -1,14 +1,16 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {$item["title"]}
-{/define} 
+{/}
 
-{define #breadcrumb}
+{#breadcrumb}
 	<a n:href="default, id => NULL" class="tip-bottom">{_"Správa článků"}</a>
 	<a n:href="edit" class="current">{_"Úprava článku"}</a>
-{/define}
+{/}
 
 
-{define #content}
+{#content}
+
+<script type="text/javascript" src="{$basePath}/js/ckeditor/ckeditor.js"></script>
 
 #article
 
@@ -34,7 +36,7 @@
 			{/ifset}
 
 			{ifset $pickImage}
-				
+
 				{foreach $gallery["files"] as $key => $row}
 					<a n:href="setImage!, fileId => $key">
 						<img src="{$basePath}/upload/gallery/{$gallery['id']}/{$row['name']}">
@@ -45,7 +47,7 @@
 	{/if}
 
 	%legend Základní údaje
-	{control articleForm}
+	{control articleControl}
 
 	{if isset($attachmentFiels) && count($attachmentFiels)}
 		%br
@@ -67,5 +69,3 @@
 				%li uložit {$row["login"]} - {$row["edited"]|date:"j. n. Y H:i:s"} - <a n:href="loadContentVersion!, versionId => $row['id']">obnovit</a> {first}(současná){/first}
 			{/foreach}
 	{/if}
-
-{/define}

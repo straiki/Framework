@@ -4,10 +4,10 @@ namespace GalleryModule\Controls;
 
 use Nette;
 use Schmutzka;
-use Schmutzka\Application\UI\ModuleControl;
+use Schmutzka\Application\UI\Module\Control;
 use Schmutzka\Application\UI\Form;
 
-class GalleryControl extends ModuleControl
+class GalleryControl extends Control
 {
 	/** @inject @var Schmutzka\Models\Gallery */
 	public $galleryModel;

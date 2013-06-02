@@ -24,6 +24,13 @@ abstract class Base extends Nette\Object
 			array_unshift($args, "id");
 		}
 
+		foreach ($args as $key => $value) {
+			if ($key === "id") {
+				$args[$tableName . ".id"] = $value;
+				unset($args[$key]);
+			}
+		}
+
 		return call_user_func_array(array($this->db, $tableName), $args);
 	}
 
@@ -67,16 +74,16 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * @param mixed
+	 * @param array|int
 	 * @return array|NULL
 	 */
 	public function item($key)
 	{
-		if (is_array($key)) {
-			return $this->table($key)->fetchRow(); // todo: protect fetchRow() from error if empty result
+		try {
+			return $this->table($key)->fetchRow();
 
-		} else {
-			return $this->table("id", $key)->fetchRow(); // todo: protect fetchRow() from error if empty result
+		} catch (\Exception $e) {
+			return FALSE;
 		}
 	}
 

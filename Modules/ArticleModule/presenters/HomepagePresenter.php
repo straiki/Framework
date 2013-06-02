@@ -2,10 +2,10 @@
 
 namespace ArticleModule;
 
+use AdminModule;
 use Schmutzka\Utils\Filer;
-use Grids;
 
-class HomepagePresenter extends \AdminModule\BasePresenter
+class HomepagePresenter extends AdminModule\BasePresenter
 {
 	/** @persistent @forView(edit) */
 	public $id;

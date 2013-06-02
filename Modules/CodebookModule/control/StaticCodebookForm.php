@@ -4,45 +4,31 @@ namespace Schmutzka\Forms;
 
 class StaticCodebookForm extends Form
 {
-
-	/** @var string */
-	public $flashText = "Údaje uloženy.";
-
-
-	/** @var \Models\Codebook */
-	private $model;
-
-
-	public function __construct($model)
-	{
-		parent::__construct();
-		$this->model = $model;
-	}
+	/** @inject @var Schmutzka\Models\Codebook */
+	public $codebookModel;
 
 
 	public function build()
 	{
 		parent::build();
-
 		$this->addSubmit("submit", "Uložit");
-
-		$defaults = $this->model->all()->fetchPairs("name", "value");
+		$defaults = $this->codebookModel->fetchAll()->fetchPairs("name", "value");
 		$this->setDefaults($defaults);
 	}
 
 
-	public function process(StaticCodebookForm $form)
+	public function process($form)
 	{
 		$values = $form->values;
 		foreach ($values as $key => $name) {
-			$this->model->upsert(
+			$this->codebookModel->upsert(
 				array("name" => $key, "value" => $name),
 				array("name" => $key)
 			);
 		}
 
-		$this->flashMessage($this->flashText, "success");
-		$this->redirect("this");
+		$this->presenter->flashMessage("Uloženo.", "success");
+		$this->presenter->redirect("this");
 	}
 
 }

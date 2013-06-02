@@ -192,13 +192,13 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 	/**
 	 * Load item helper
-	 * @param Schmutzka\Models\*
+	 * @param instaceof Schmutzka\Models\Base
 	 * @param int
 	 * @param string
 	 */
 	protected function loadItemHelper($model, $id, $redirect = "default")
 	{
-		if ($item = $model->item($this->id)) {
+		if ($item = $model->item($id)) {
 			$this->template->item = $item;
 			return $item;
 

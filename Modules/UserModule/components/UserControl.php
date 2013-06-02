@@ -5,9 +5,9 @@ namespace UserModule\Controls;
 use Nette;
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
-use Schmutzka\Application\UI\ModuleControl;
+use Schmutzka\Application\UI\Module\Control;
 
-class UserControl extends ModuleControl
+class UserControl extends Control
 {
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;

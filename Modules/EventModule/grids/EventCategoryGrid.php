@@ -2,42 +2,27 @@
 
 namespace EventModule\Grids;
 
-use Schmutzka;
-use Models;
 use NiftyGrid;
+use Schmutzka;
+use Schmutzka\Application\UI\Module\Grid;
 
-class EventCategoryGrid extends NiftyGrid\Grid
+class EventCategoryGrid extends Grid
 {
-	/** @var Models/EventCategory */
-    protected $model;
-
-	/** @param Schmutzka\Services\ParamService */
-    private $paramService;
+	/** @inject @var Schmutzka\Models\EventCategory */
+    public $eventCategoryModel;
 
 
 	/**
-	 * @param Models\EventCategory
-	 * @param Schmutzka\Services\ParamService
-	 */
-    public function __construct(Models\EventCategory $model, Schmutzka\Services\ParamService $paramService)
-    {
-        parent::__construct();
-        $this->model = $model;
-		$this->paramService = $paramService;
-    }
-
-
-	/**
-	 * Configure
 	 * @param presenter
 	 */
     protected function configure($presenter)
     {
-        $source = new NiftyGrid\DataSource($this->model->all());
+        $source = new NiftyGrid\DataSource($this->eventCategoryModel->fetchAll());
         $this->setDataSource($source);
+        $this->setModel($this->eventCategoryModel);
 
-		$this->addColumn("name", "Název", "50%");
-		if ($this->paramService->params["cmsParams"]["event_module_enable_expiration"]) {
+		$this->addColumn("name", "Název");
+		if ($this->moduleParams->enable_expiration) {
 			$this->addColumn("use_expiration", "Expirovat", "20%")->setBoolRenderer();
 		}
 		$this->addEditButton(NULL, TRUE);

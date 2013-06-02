@@ -6,10 +6,10 @@ use Nette;
 use Nette\Image;
 use Nette\Utils\Finder;
 use Schmutzka\Utils\Filer;
-use Schmutzka\Application\UI\ModuleControl;
+use Schmutzka\Application\UI\Module\Control;
 use UploadHandler;
 
-class UploadControl extends ModuleControl
+class UploadControl extends Control
 {
 	/** @inject @var Schmutzka\Models\Gallery */
 	public $galleryModel;

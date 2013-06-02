@@ -50,7 +50,6 @@ class RegistrationControl extends Control
 		$userModel = $this->userModel;
 
 		$form = new Form;
-
 		$form->addText("login", $this->paramService->form->login->label)
 			->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
 			// ->addRule(Form::PATTERN, $this->paramService->form->login->rulePattern, "[a-zA-Z0-9_-]{5,}")
