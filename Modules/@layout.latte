@@ -88,6 +88,7 @@
 	{/ifset}
 
 	{ifset $activeModules["article"]}
+		{var $moduleParams = $cmsParams->modules->article}
 		<li n:class="submenu, $presenter->module == 'article' ? 'active open'">
 			%a [href => ""]
 				%i.icon.icon-file
@@ -96,7 +97,7 @@
 			%ul
 				{include #menuItem, path => ":Article:Homepage:default", icon => "icon-th-list", name => "Přehled článků"}
 				{include #menuItem, path => ":Article:Homepage:add", icon => "icon-plus", name => "Přidat článek"}
-				{if $cmsParams->modules->article->categories}
+				{if $moduleParams->categories}
 					{include #menuItem, path => ":Article:Category:default", icon => "icon-th-list", name => "Přehled kategorií"}
 					{include #menuItem, path => ":Article:Category:add", icon => "icon-plus", name => "Přidat kategorii"}
 				{/if}
@@ -129,6 +130,7 @@
 	{/ifset}
 
 	{ifset $activeModules["email"]}
+		{var $moduleParams = $cmsParams->modules->email}
 		<li n:class="submenu, $presenter->module == 'email' ? 'active open'">
 			%a [href => ""]
 				%i.icon.icon-envelope
@@ -137,7 +139,8 @@
 				{include #menuItem, path => ":Email:CustomEmail:default", icon => "icon-th-list", name => "Přehled šablon emailů"}
 				{include #menuItem, path => ":Email:CustomEmail:add", icon => "icon-plus", name => "Přidat šablonu"}
 				{include #menuItem, path => ":Email:Settings:default", icon => "icon-wrench", name => "Nastavení"}
-				{if $cmsParams["email_module_newsletter_active"]}
+
+				{if $moduleParams->newsletter}
 					{include #menuItem, path => ":Email:Newsletter:default", icon => "icon-bullhorn", name => "Newsletter"}
 					{include #menuItem, path => ":Email:Newsletter:log", icon => "icon-th", name => "Evidence newsletterů"}
 				{/if}
@@ -145,6 +148,7 @@
 	{/ifset}
 
 	{ifset $activeModules["user"]}
+		{var $moduleParams = $cmsParams->modules->user}
 		<li n:class="submenu, $presenter->module == 'user' ? 'active open'">
 			%a [href => ""]
 				%i.icon.icon-user
@@ -152,7 +156,7 @@
 				%span.label {$layoutSetup["userCount"]}
 			%ul
 				{include #menuItem, path => ":User:Homepage:default", icon => "icon-th-list", name => "Přehled uživatelů"}
-				{if $cmsParams->modules->user->add || $user->id == 1}
+				{if $moduleParams->add || $user->id == 1}
 					{include #menuItem, path => ":User:Homepage:add", icon => "icon-plus", name => "Přidat uživatele"}
 				{/if}
 		</li>
@@ -168,8 +172,7 @@
 				{include #menuItem, path => ":QR:Homepage:add", icon => "icon-plus", name => "Vygenerovat nový"}
 		</li>
 	{/ifset}
-
-{/define}
+{/}
 
 
 {define #customModules}
@@ -177,7 +180,7 @@
 	{if file_exists($customModules)}
 		{include $customModules}
 	{/if}
-{/define}
+{/}
 
 
 {define #menuItem}
@@ -186,4 +189,4 @@
 			<i class="icon {$icon}"></i> &nbsp; {_}{$name}{/_}
 		</a>
 	</li>
-{/define}
+{/}

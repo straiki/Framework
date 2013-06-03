@@ -1,15 +1,13 @@
 <?php
 
-namespace EmailModule\Forms;
+namespace EmailModule\Components;
 
-use Schmutzka\Forms\Form;
-use Models;
-use Nette;
 use Nette\Utils\Html;
 use Schmutzka\Utils\Pregi;
-use Schmutzka;
+use Schmutzka\Application\UI\Form;
+use Schmutzka\Application\UI\Module\Control;
 
-class NewsletterForm extends Form
+class NewsletterControl extends Control
 {
 	/** @var string */
 	public $from;
@@ -23,25 +21,18 @@ class NewsletterForm extends Form
 	/** @inject @var Nette\Mail\IMailer */
 	public $mailer;
 
-	/** @inject @var Schmutzka\Security\User */
-	public $user;
+	/** @var array */
+	private $typeArray = array(
+		"spec_mail" => "Konkrétní adresy",
+		"user_group" => "Skupině uživatelů"
+	);
 
 
-
-	/**
-	 * Build form
-	 */
-	public function build()
-    {
-		parent::build();
-
-		$this->addGroup("");
-
-		$typeArray = array( // duplicate shit?
-			"spec_mail" => "Konkrétní adresy",
-			"user_group" => "Skupině uživatelů"
-		);
-		$this->addSelect("type", "Kam poslat:", $typeArray)
+	protected function createComponentForm()
+	{
+		$form = new Form;
+		$form->addGroup("");
+		$form->addSelect("type", "Kam poslat:", $this->typeArray)
 			->setPrompt("Vyberte")
 			->addCondition(Form::EQUAL, "spec_mail")
 				->toggle("spec_mail")
@@ -49,38 +40,36 @@ class NewsletterForm extends Form
 				->toggle("user_group");
 
 		// A. email list
-		$this->addGroup("")->setOption('container', Html::el('fieldset')->id("spec_mail")->style("display:none"));
-		$this->addTextarea("email_list", "Adresáti:")
-			->setAttribute("class","email_list")
+		$form->addGroup("")->setOption('container', Html::el('fieldset')->id("spec_mail")->style("display:none"));
+		$form->addTextarea("email_list", "Adresáti:")
+			->setAttribute("class", "email_list")
 			->addConditionOn($this["type"], Form::EQUAL, "spec_mail")
 				->addRule(Form::FILLED, "Povinné");
 
 		// B. user group
-		$this->addGroup("")->setOption('container', Html::el('fieldset')->id("user_group")->style("display:none"));
+		$form->addGroup("")->setOption('container', Html::el('fieldset')->id("user_group")->style("display:none"));
 		$userGroups = $this->userModel->fetchPairs("role", "role");
-		unset($userGroups["superadmin"]);
-		$this->addSelect("user_group","Skupina uživatelů:", $userGroups)
+		$form->addSelect("user_group", "Skupina uživatelů:", $userGroups)
 			->setPrompt("Vyberte")
 			->addConditionOn($this["type"], Form::EQUAL, "user_group")
 				->addRule(Form::FILLED, "Povinné");
 
-		$this->addGroup("");
-		$this->addText("name", "Interní označení:");
-		$this->addText("subject", "Předmět emailu:")
+		$form->addGroup("");
+		$form->addText("name", "Interní označení:");
+		$form->addText("subject", "Předmět emailu:")
 			->addRule(Form::FILLED, "Povinné");
-		$this->addTextarea("content", "Obsah emailu:")
+		$form->addTextarea("content", "Obsah emailu:")
 			->setAttribute("class", "ckeditor");
 
-		$this->addGroup();
-		$this->addSubmit("send", "Odeslat")
-			->setAttribute("class","btn btn-primary btn-large confirm");
+		$form->addGroup();
+		$form->addSubmit("send", "Odeslat")
+			->setAttribute("class", "btn btn-primary confirm");
+
+		return $form;
 	}
 
 
-	/**
-	 * Process form
-	 */
-	public function process(Form $form)
+	public function processForm($form)
 	{
 		$values = $form->values;
 		if ($values["type"] == "spec_mail") {
@@ -91,10 +80,9 @@ class NewsletterForm extends Form
 		}
 
 		if (!$emailList) {
-			$this->flashMessage("Nebyly nalezeny žádné emaily.","error");
+			$this->flashMessage("Nebyly nalezeny žádné emaily.", "error");
 			$this->redirect("this");
 		}
-
 
 		foreach ($emailList as $email) {
 			$message = new Nette\Mail\Message;
@@ -112,8 +100,8 @@ class NewsletterForm extends Form
 		$values["user_id"] = $this->user->id;
 		$this->newsletterLogModel->insert($values);
 
-		$this->flashMessage("Odesláno.", "success");
-		$this->redirect("default", array("id" => NULL));
+		$this->presenter->flashMessage("Odesláno.", "success");
+		$this->presenter->redirect("default", array("id" => NULL));
 	}
 
 }

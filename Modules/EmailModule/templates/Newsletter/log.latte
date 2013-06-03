@@ -1,16 +1,14 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {_"Newsletter"}
-{/define} 
+{/}
 
-{define #breadcrumb}
+
+{#breadcrumb}
 	<a n:href="default">{_"Newsletter"}</a>
 	<a n:href="log" class="current">{_"Log"}</a>
-{/define}
+{/}
 
 
-{define #content}
-
-#newsletterLog
-	{control newsletterLogGrid}
-
-{/define}
+{#content}
+	#newsletterLog
+		{control newsletterLogGrid}

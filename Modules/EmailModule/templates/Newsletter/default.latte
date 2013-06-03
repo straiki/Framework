@@ -1,18 +1,15 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {_"Newsletter"}
-{/define} 
+{/}
 
-{define #breadcrumb}
+
+{#breadcrumb}
 	<a n:href="default" class="current">{_"Newsletter"}</a>
-{/define}
+{/}
 
 
-{define #content}
+{#content}
+	%p Můžete si vybrat, zda chcete poslat zprávu na <strong>konkrétní adresy</strong>, poté vyplňte jeden či více emailů, nebo nějaké <strong>konkrétní skupině uživatelů</strong>.
 
-%p Můžete si vybrat, zda chcete poslat zprávu na <strong>konkrétní adresy</strong>, poté vyplňte jeden či více emailů, nebo nějaké <strong>konkrétní skupině uživatelů</strong>.
-
-
-#newsletterForm
-	{control newsletterForm}
-
-{/define}
+	#newsletterForm
+		{control newsletterControl}

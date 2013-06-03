@@ -41,6 +41,7 @@ class User extends Nette\Security\User
 
 	/**
 	 * Get user role
+	 * @return  string
 	 */
 	public function getRole()
 	{

@@ -17,7 +17,7 @@ class ArticleCategoryGrid extends NiftyGrid\Grid
 	 */
 	protected function configure($presenter)
 	{
-		$source = new NiftyGrid\DataSource($this->articleCategoryModel->all());
+		$source = new NiftyGrid\DataSource($this->articleCategoryModel->fetchAll());
 		$this->setDataSource($source);
 		$this->setModel($this->articleCategoryModel);
 

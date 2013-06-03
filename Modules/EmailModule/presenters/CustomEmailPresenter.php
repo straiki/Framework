@@ -2,23 +2,11 @@
 
 namespace EmailModule;
 
-use AdminModule;
+use Schmutzka;
 
-class CustomEmailPresenter extends AdminModule\BasePresenter
+class CustomEmailPresenter extends Schmutzka\Application\UI\Module\Presenter
 {
-	/** @persistent @var int */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\CustomEmail */
 	public $customEmailModel;
-
-
-	/**
-	 * @param  int
-	 */
-	public function renderEdit($id)
-	{ 
-		$this->loadItemHelper($this->customEmailModel, $id);
-	} 
 
 }

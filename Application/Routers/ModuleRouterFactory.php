@@ -33,10 +33,16 @@ class ModuleRouterFactory
 			$router[] = new Route("<module " . implode($this->customModules, "|") . ">/<presenter>/<action>[/<id>]", "Homepage:default");
 		}
 
+		return $router;
+	}
+
+
+	public function createFrontRouter($router)
+	{
 		$frontRouter = $router[] = new RouteList("Front");
 		$frontRouter[] = new Route("<presenter>/<action>[/<id>]", "Homepage:default");
 
-		return $router;
+		return $frontRouter;
 	}
 
 }

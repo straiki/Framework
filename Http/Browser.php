@@ -1,23 +1,23 @@
 <?php
 
 namespace Schmutzka\Http;
- 
+
 use Nette;
 
 class Browser extends Nette\Object
 {
 	/** @var array */
-	private $browsers = array("firefox", "msie", "opera", "chrome", "safari", "mozilla", "seamonkey", "konqueror", "netscape", "gecko", "navigator", "mosaic", "lynx", "amaya", "omniweb", "avant", "camino", "flock", "aol");
+	private static $browsers = array("firefox", "msie", "opera", "chrome", "safari", "mozilla", "seamonkey", "konqueror", "netscape", "gecko", "navigator", "mosaic", "lynx", "amaya", "omniweb", "avant", "camino", "flock", "aol");
 
 
 	/**
 	 * Detect browser
-	 * @return array|NULL
+	 * @return ArrayHash|NULL
 	 */
 	public static function detect()
 	{
 		$userAgent = strtolower($_SERVER["HTTP_USER_AGENT"]);
-		foreach ($this->browsers as $_browser) {
+		foreach (self::$browsers as $_browser) {
 			if (preg_match("/($_browser)[\/ ]?([0-9.]*)/", $userAgent, $match)) {
 				$browser["name"] = $match[1];
 				$browser["version"] = $match[2];
@@ -32,7 +32,7 @@ class Browser extends Nette\Object
 
 
 	/**
-	 * Detect mobile device 
+	 * Detect mobile device
 	 * @return bool
 	 */
 	public static function isMobile()

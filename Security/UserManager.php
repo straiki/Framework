@@ -28,7 +28,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			throw new AE("Uživatel '$login' neexistuje.", self::IDENTITY_NOT_FOUND);
 		}
 
-		if (isset($row["auth"]) AND $row["auth"] != 1) {
+		if (isset($row["auth"]) && $row["auth"] != 1) {
 			throw new AE("Tento účet ještě nebyl autorizován. Zkontrolujte Vaši emailovou schránku.");
 		}
 
@@ -90,6 +90,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 */
 	public function update($values, $id)
 	{
+		// todo
 		dd($values, $id);
 	}
 
@@ -106,14 +107,13 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 		$salt = Strings::random(22);
 		$password = self::calculateHash($password, $salt);
 
-		$this->userModel->update(array(
+		$user = array(
 			"salt" => $salt,
 			"password" => $password
-		), array(
-			"email" => $email
-		));
+		);
+		$cond["email"] = $email;
 
-		return TRUE;
+		$this->userModel->update($user, $cond);
 	}
 
 }

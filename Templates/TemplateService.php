@@ -20,17 +20,17 @@ class TemplateService extends Nette\Object
 
 	/**
 	 * Configure template
-	 * @param Nette\Templating\FileTemplate 
+	 * @param Nette\Templating\FileTemplate
 	 * @param string
 	 */
 	public function configure(Nette\Templating\FileTemplate $template, $lang = NULL)
 	{
 		if ($this->translator && $lang) {
-			$this->translator->setLang($lang); 
+			$this->translator->setLang($lang);
 			$template->setTranslator($this->translator);
 
 		} else {
-			$template->registerHelper("translate", function ($s) { 
+			$template->registerHelper("translate", function ($s) {
 				return $s;
 			});
 		}

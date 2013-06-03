@@ -3,7 +3,7 @@
 namespace Schmutzka\Components;
 
 use Schmutzka\Application\UI\Control,
-	Schmutzka\Forms\Form,
+	Schmutzka\Application\UI\Form,
 	Schmutzka\Templates\MyHelpers,
 	Nette\Utils\Html;
 
@@ -65,7 +65,7 @@ class CodebookControl extends Control
 	public function handleDelete($id)
 	{
 		$this->model->delete($id);
-		$this->flashMessage("Deleted.","success");
+		$this->flashMessage("Deleted.","flash-success");
 
 		if ($this->isAjax()) {
 			$this->invalidateControl("codebook");
@@ -133,7 +133,7 @@ class CodebookControl extends Control
 		$values["type"] = $this->codeType;
 
 		$this->model->upsert($values, $this->id);
-		$this->flashMessage("Saved.","success");
+		$this->flashMessage("Saved.","flash-success");
 
 
 		if($this->isAjax()) {
@@ -206,7 +206,7 @@ class CodebookControl extends Control
 		unset($options[$id]);
 
 		if(!count($options)) { // kontrola počtu položek
-			$this->flashMessage("Neexistuje žádná alternativní položka. Musíte ji nejdříve vytvořit.","error");
+			$this->flashMessage("Neexistuje žádná alternativní položka. Musíte ji nejdříve vytvořit.","flash-error");
 		}
 		else {
 			$this->template->showConverForm = TRUE;

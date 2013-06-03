@@ -27,8 +27,8 @@ class Form extends Nette\Application\UI\Form
 	/** @var callable */
 	protected $processor;
 
-	/** @var GettextTranslator\Translator */
-	protected $translator;
+	/** @inject @var Nette\Localization\ITranslator */
+	public $translator;
 
 	/** @var bool */
 	private $isBuilt = FALSE;
@@ -38,12 +38,6 @@ class Form extends Nette\Application\UI\Form
 
 	/** @var string */
 	private $target;
-
-
-	public function injectTranslator(GettextTranslator\Translator $translator = NULL)
-	{
-		$this->translator = $translator;
-	}
 
 
 	/**

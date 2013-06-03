@@ -16,16 +16,10 @@ class UserControl extends Control
 	public $userManager;
 
 
-	public function attached($presenter)
-	{
-		parent::attached($presenter);
-		$this->id = $presenter->id;
-	}
-
-
 	protected function createComponentForm()
 	{
 		$form = new Form;
+		$form->addGroup("");
 		$form->addText("login", "Celé jméno:")
 			->addRule(Form::FILLED, "Zadejte Vaše jméno")
 			->setAttribute("autocomplete", "off");
@@ -53,6 +47,7 @@ class UserControl extends Control
 				->addRule(Form::MIN_LENGTH, $this->paramService->form->password->length, 5);
 		}
 
+		$form->addGroup("");
 		$form->addSubmit("send", "Přidat")
 			->setAttribute("class", "btn btn-success");
 

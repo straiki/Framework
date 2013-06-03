@@ -1,14 +1,12 @@
 <?php
 
-namespace QrModule\Forms;
+namespace QrModule\Components;
 
-use Schmutzka;
-use Schmutzka\Application\UI\Form;
-use Nette;
 use Nette\Utils\Strings;
-use Nette\Utils\Validators;
+use Schmutzka\Application\UI\Form;
+use Schmutzka\Application\UI\Module\Control;
 
-class QrForm extends Form
+class QrControl extends Control
 {
 	/** @inject @var Schmutzka\Models\Qr */
 	public $qrModel;
@@ -17,19 +15,20 @@ class QrForm extends Form
 	public $qrGenerator;
 
 
-	public function build()
-    {
-		parent::build();
-
-		$this->addText("alias", "Alias:")
+	protected function createComponentForm()
+	{
+		$form = new Form;
+		$form->addText("alias", "Alias:")
 			->addRule(Form::FILLED, "Zadejte alias")
 			->setOption("description", "Bude dostupné na http://www.web.cz/qr/<alias>");
-		$this->addSubmit("send", "Uložit")
+		$form->addSubmit("send", "Uložit")
 			->setAttribute("class", "btn btn-primary");
+
+		return $form;
 	}
 
 
-	public function process(Schmutzka\Application\UI\Form $form)
+	public function processForm($form)
 	{
 		$values = $form->values;
 		$values["alias"] = Strings::webalize($values["alias"]);

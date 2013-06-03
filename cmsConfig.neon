@@ -1,66 +1,66 @@
 parameters:
 	cms: FALSE
-
 	cmsSetup:
-		title: "CMS"
+		title: CMS
 		modules:
 			page:
 				active: FALSE
 				title: Stránky
-				show_in_sliderbox: FALSE
-				publish_state: FALSE
-				publish_types:
-					concept: "Koncept"
-					public: "Publikován"
-				custom_url: FALSE
-				perex_short: FALSE
-				perex_long: FALSE
-				# promo_photo: TRUE
-				attachment_gallery: FALSE
-				attachment_files: FALSE
-				admin_note: FALSE
-				content_history: FALSE
-				access_to_roles: FALSE
-				uid: FALSE # enable uid editation
+				showInSliderbox: FALSE
+				publishState: FALSE
+				publishTypes:
+					concept: Koncept
+					public: Publikován
+				customUrl: FALSE
+				perexShort: FALSE
+				perexLong: FALSE
+				# promoPhoto: TRUE
+				attachmentGallery: FALSE
+				attachmentFiles: FALSE
+				adminNote: FALSE
+				contentHistory: FALSE
+				accessToRoles: FALSE
+				uid: FALSE
+				linkToPageArticle: FALSE
 
 			article:
 				active: FALSE
 				title: Články
 				categories: TRUE
-				categories_multi: FALSE
-				show_in_sliderbox: TRUE
-				publish_datetime: FALSE
-				publish_state: FALSE
-				publish_types:
-					%cmsSetup.modules.page.publish_types%
-				custom_url: FALSE
-				perex_short: FALSE
-				perex_long: FALSE
-				promo_photo: FALSE
-				attachment_gallery: FALSE
-				attachment_files: FALSE
-				admin_note: FALSE
-				content_history: FALSE
-				access_to_roles: FALSE
+				categoriesMulti: FALSE
+				showInSliderbox: FALSE
+				publishDatetime: FALSE
+				publishState: FALSE
+				publishTypes:
+					%cmsSetup.modules.page.publishTypes%
+				customUrl: FALSE
+				perexShort: FALSE
+				perexLong: FALSE
+				promoPhoto: FALSE
+				attachmentGallery: FALSE
+				attachmentFiles: FALSE
+				adminNote: FALSE
+				contentHistory: FALSE
+				accessToRoles: FALSE
 
 			event:
 				active: FALSE
 				title: Akce
-				categories: NULL
-				show_in_sliderbox: NULL
-				perex: NULL
-				calendar: NULL
-				expiration: NULL
-				gallery_link: NULL
-				news: NULL
-				link: NULL
+				categories: FALSE
+				showInSliderbox: FALSE
+				perex: FALSE
+				calendar: FALSE
+				expiration: FALSE
+				galleryLink: FALSE
+				news: FALSE
+				link: FALSE
 
 			gallery:
 				active: FALSE
 				title: Fotogalerie
-				access_to_roles: FALSE # zborazení na frontendu pouze určitým rolím
-				size_versions:
-					natural: # internal names
+				accessToRoles: FALSE
+				sizeVersions:
+					natural:
 						height: 1024
 						width: 768
 					thumbnail:
@@ -74,13 +74,13 @@ parameters:
 				useLogger: FALSE
 				newsletter: FALSE
 
+
 			user:
 				active: FALSE
 				title: Uživatelé
-				roles: [
-					user: Uživatel,
+				roles:
+					user: Uživatel
 					admin: Administrátor
-				]
 				add: FALSE
 				passwordMinLength: 6
 
@@ -122,7 +122,8 @@ factories:
 
 	# EmailModule
 	customEmailGrid: EmailModule\Grids\CustomEmailGrid
-	emailSettingsForm: EmailModule\Forms\SettingsForm
+	customEmailControl: EmailModule\Components\CustomEmailControl
+	emailSettingsControl: EmailModule\Components\EmailSettingsControl
 
 	# FileModule
 	fileControl: FileModule\Controls\FileControl
@@ -138,7 +139,7 @@ factories:
 	pageGrid: PageModule\Grids\PageGrid
 
 	# QrModule
-	qrForm: QrModule\Forms\QrForm
+	qrControl: QrModule\Components\QrControl
 
 	# UserModule
 	userGrid: UserModule\Grids\UserGrid
@@ -190,8 +191,7 @@ webloader:
 				- %assetsDir%/js/DateTimePicker/jquery-ui-timepicker-addon.js
 				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
 				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
-
-				- %assetsDir%/js/chosen/chosen.jquery.min.js
+				- %assetsDir%/js/jquery/chosen/chosen.jquery.min.js
 
 		adminLogin:
 			files:

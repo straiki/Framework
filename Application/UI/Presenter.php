@@ -35,6 +35,9 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	protected $onLogoutLink;
 
+	/** @var callable */
+	protected $helpersCallback;
+
 
 	public function startup()
 	{
@@ -98,6 +101,11 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	{
 		$template = parent::createTemplate($class);
 		$this->templateService->configure($template, $this->lang);
+
+		if ($this->helpersCallback) {
+			$template->registerHelperLoader($this->helpersCallback);
+		}
+
 		return $template;
 	}
 
@@ -120,15 +128,13 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * Handles requests to create component
 	 * @param string
 	 * @return Nette\ComponentModel\IComponent
 	 */
 	protected function createComponent($name)
 	{
 		$component = parent::createComponent($name);
-
-		if ($component === NULL && method_exists($this->context, ($create = "create" .  ucfirst($name)))) {
+		if (($component === NULL) && method_exists($this->context, ($create = "createService" .  ucfirst($name)))) {
 			$component = call_user_func(array($this->context, $create));
 		}
 
@@ -139,7 +145,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/**
 	 * @return WebLoader\Nette\CssLoader
 	 */
-	protected function createComponentCss()
+	protected function createComponentCssControl()
 	{
 		return new WebLoader\Nette\CssLoader($this->context->{"webloader.cssDefaultCompiler"}, $this->template->basePath . "/webtemp/");
 	}
@@ -148,7 +154,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/**
 	 * @return WebLoader\Nette\JavaScriptLoader
 	 */
-	protected function createComponentJs()
+	protected function createComponentJsControl()
 	{
 		return new WebLoader\Nette\JavaScriptLoader($this->context->{"webloader.jsDefaultCompiler"}, $this->template->basePath . "/webtemp/");
 	}

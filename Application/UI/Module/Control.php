@@ -19,14 +19,17 @@ class Control extends Schmutzka\Application\UI\Control
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-		if (($this->id = $presenter->id) && isset($this["form"])) {
+		if (($this->id || ($this->id = $presenter->id)) && isset($this["form"])) {
 			$this["form"]["send"]->caption = "Uložit";
 			$this["form"]["send"]
 				->setAttribute("class", "btn btn-primary");
 
 			$this["form"]->addSubmit("cancel", "Zrušit")
 				->setValidationScope(FALSE);
-			$this["form"]->setDefaults($this->model->item($this->id));
+
+			$defaults = $this->model->item($this->id);
+			$defaults = $this->preProcessDefaults($defaults);
+			$this["form"]->setDefaults($defaults);
 		}
 	}
 
@@ -42,7 +45,7 @@ class Control extends Schmutzka\Application\UI\Control
 
 		// process all dynamics
 		foreach ($values as $key => $value) {
-			if ($form[$key] instanceof Kdyby\Replicator\Container) {
+			if (isset($form[$key]) && $form[$key] instanceof Kdyby\Replicator\Container) {
 				foreach ($value as $key2 => $value2) {
 					$this->model->update($value2, $key2);
 				}
@@ -57,6 +60,8 @@ class Control extends Schmutzka\Application\UI\Control
 			$this->id = $this->model->insert($values);
 		}
 
+		$this->postProcessValues($values, $this->id);
+
 		$this->presenter->flashMessage("Uloženo.", "success");
 		$this->presenter->redirect("edit", array("id" => $this->id));
 	}
@@ -66,16 +71,6 @@ class Control extends Schmutzka\Application\UI\Control
 	{
 		parent::useTemplate();
 		$this->template->render();
-	}
-
-
-	/**
-	 * @param   array
-	 * @return  array
-	 */
-	public function preProcessValues($values)
-	{
-		return $values;
 	}
 
 
@@ -101,6 +96,38 @@ class Control extends Schmutzka\Application\UI\Control
 		$modelName = lcfirst(substr(array_pop($classNameParts), 0, -7)) . "Model";
 
 		return $this->{$modelName};
+	}
+
+
+	/********************** process helpers **********************/
+
+
+	/**
+	 * @param   array
+	 * @return  array
+	 */
+	public function preProcessDefaults($defaults)
+	{
+		return $defaults;
+	}
+
+
+	/**
+	 * @param   array
+	 * @return  array
+	 */
+	public function preProcessValues($values)
+	{
+		return $values;
+	}
+
+
+	/**
+	 * @param   array
+	 * @param   int
+	 */
+	public function postProcessValues($values, $id)
+	{
 	}
 
 }

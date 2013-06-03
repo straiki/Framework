@@ -2,25 +2,12 @@
 
 namespace QrModule;
 
-use Schmutzka\Utils\Filer;
-use AdminModule;
+use Schmutzka;
 
-class HomepagePresenter extends AdminModule\BasePresenter
+class HomepagePresenter extends Schmutzka\Application\UI\Module\Presenter
 {
-	/** @persistent @var int */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\Qr */
 	public $qrModel;
-
-
-	/**
-	 * @param  int
-	 */
-	public function handleDelete($id)
-	{
-		$this->deleteHelper($this->qrModel, $id);
-	}
 
 
 	public function renderDefault()

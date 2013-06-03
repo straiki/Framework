@@ -1,14 +1,12 @@
-{define #contentHeader}
+{#contentHeader}
 	%h1 {_"Přehled šablon emaiů"}
-{/define} 
+{/}
 
-{define #breadcrumb}
+
+{#breadcrumb}
 	<a n:href="default" class="current">{_"Správa šablon emailů"}</a>
-{/define}
+{/}
 
 
-{define #content}
-
-{control customEmailGrid}
-
-{/define}
+{#content}
+	{control customEmailGrid}

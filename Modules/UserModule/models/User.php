@@ -7,7 +7,7 @@ class User extends Base
 
 	public function mergeNameAndSurname()
 	{
-		foreach ($this->all() as $id => $user) {
+		foreach ($this->fetchAll() as $id => $user) {
 			$data["name"] = $user["name"] . " " . $user["surname"];
 			$this->update($data, $id);
 		}

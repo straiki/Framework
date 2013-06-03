@@ -5,7 +5,7 @@ namespace Schmutzka\Security;
 use Nette;
 use Nette\PhpGenerator\ClassType;
 
-class HttpAuthExtension extends Nette\Config\CompilerExtension
+class HttpAuthExtension extends Nette\DI\CompilerExtension
 {
 
 	function afterCompile(ClassType $class)
@@ -22,7 +22,6 @@ class HttpAuthExtension extends Nette\Config\CompilerExtension
 	}
 
 
-
 	static function register(Nette\Config\Configurator $configurator, $prefix = 'httpAuth')
 	{
 		$class = __CLASS__;
@@ -30,4 +29,5 @@ class HttpAuthExtension extends Nette\Config\CompilerExtension
 			$compiler->addExtension($prefix, new $class);
 		};
 	}
+
 }
