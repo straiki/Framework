@@ -1,14 +1,6 @@
-{#contentHeader}
-	%h1 {$item["title"]}
-{/}
-
-{#breadcrumb}
-	<a n:href="default, id => NULL" class="tip-bottom">Správa stránek</a>
-	<a n:href="edit" class="current">Úprava stránky</a>
-{/}
+{#contentHeader}{$item["title"]}{/}
 
 
 {#content}
-
-#page
-	{control pageControl}
+	#page
+		{control pageControl}

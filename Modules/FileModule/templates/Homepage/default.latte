@@ -1,14 +1,5 @@
-{define #contentHeader}
-	%h1 {_"Přehled souborů"}
-{/define} 
-
-{define #breadcrumb}
-	<a n:href="default" class="current">{_"Správa stránek"}</a>
-{/define}
+{#contentHeader}{_"Přehled souborů"}{/}
 
 
-{define #content}
-
-{control fileGrid}
-
-{/define}
+{#content}
+	{control fileGrid}

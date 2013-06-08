@@ -1,38 +1,31 @@
-{#contentHeader}
-	%h1 {_"Přehled QR kódů"}
-{/#}
-
-{#breadcrumb}
-	<a n:href="default" class="current">{_"Správa QR kódů"}</a>
-{/#}
+{#contentHeader}{_"Přehled QR kódů"}{/}
 
 
 {#content}
-
-{if count($qrList)}
-	%table.table.table-bordered.table-condensed.table-striped
-		%tr
-			%th [width => "20%"] {_"Vytvořeno"}
-			%th [width => "20%"] {_"Připojená stránka"}
-			%th [width => "30%"] {_"Alias"}
-			%th {_"QR kód"}
-			%th [width => "30px"] {_"Správa"}
-
-		{foreach $qrList as $key => $row}
+	{if count($qrList)}
+		%table.table.table-bordered.table-condensed.table-striped
 			%tr
-				%td {$row["created"]|date:"j. n. Y H:i"}
-				%td
-					{if $row["article_id"]}
-						{$row["article_id"]}
-					{else}
-						-
-					{/if}
-				%td {$row["alias"]}
-				%td <img src="{$basePath}{$row['filename']}">
-				%td.center
-					<a n:href="delete!, id => $key" class="del confirm"></a>
-		{/foreach}
+				%th [width => "20%"] {_"Vytvořeno"}
+				%th [width => "20%"] {_"Připojená stránka"}
+				%th [width => "30%"] {_"Alias"}
+				%th {_"QR kód"}
+				%th [width => "30px"] {_"Správa"}
 
-{else}
-	%p {_"Zatím zde nemáte žádné QR kódy."}
-{/if}
+			{foreach $qrList as $key => $row}
+				%tr
+					%td {$row["created"]|date:"j. n. Y H:i"}
+					%td
+						{if $row["article_id"]}
+							{$row["article_id"]}
+						{else}
+							-
+						{/if}
+					%td {$row["alias"]}
+					%td <img src="{$basePath}{$row['filename']}">
+					%td.center
+						<a n:href="delete!, id => $key" class="del confirm"></a>
+			{/foreach}
+
+	{else}
+		%p {_"Zatím zde nemáte žádné QR kódy."}
+	{/if}
