@@ -1,15 +1,24 @@
 {if $paginator->pageCount && $paginator->pageCount > 1}
-.pagination
-	%ul 
-		{foreach $steps as $step}
-			{if $step == $paginator->page}
-				%li.active <a href="#">{$step}</a>
-			{else}
-				%li <a n:href="this, page => $step">{$step}</a>
-			{/if}
+	<div class="pagination">
+		<ul>
+			{foreach $steps as $step}
+				{if $step == $paginator->page}
+					<li class="active">
+						<a href="#">{$step}</a>
+					</li>
 
-			{if $iterator->nextValue > $step + 1}
-				%li <a href="#" class="dislabled">…</a>
-			{/if}
-		{/foreach}
+				{else}
+					<li>
+						<a n:href="this, page => $step">{$step}</a>
+					</li>
+				{/if}
+
+				{if $iterator->nextValue > $step + 1}
+					<li>
+						<a href="#" class="dislabled">…</a>
+					</li>
+				{/if}
+			{/foreach}
+		</ul>
+	</div>
 {/if}

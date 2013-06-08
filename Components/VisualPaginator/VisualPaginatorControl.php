@@ -1,7 +1,7 @@
 <?php
 
-use Schmutzka\Application\UI\Control,
-	Nette\Utils\Paginator;
+use Nette\Application\UI\Control;
+use Nette\Utils\Paginator;
 
 /**
  * @author David Grudl
@@ -33,7 +33,7 @@ class VisualPaginator extends Control
 		$page = $paginator->page;
 		if ($paginator->pageCount < 2) {
 			$steps = array($page);
-		}	
+		}
 		else {
 			$arr = range(max($paginator->firstPage, $page - 2), min($paginator->lastPage, $page + 2));
 			$count = 2;
@@ -45,9 +45,10 @@ class VisualPaginator extends Control
 			$steps = array_values(array_unique($arr));
 		}
 
+		$this->template->setFile(__DIR__ . "/VisualPaginatorControl.latte");
 		$this->template->steps = $steps;
 		$this->template->paginator = $paginator;
-	
+
 		$this->template->render();
 	}
 
