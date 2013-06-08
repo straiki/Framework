@@ -16,6 +16,9 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
+	/** @inject @var Schmutzka\Models\Gallery */
+	public $galleryModel;
+
 
 	public function startup()
 	{

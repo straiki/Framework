@@ -114,15 +114,15 @@ class HomepagePresenter extends AdminModule\BasePresenter
 	{
 		$item = $this->loadItemHelper($this->articleModel, $id);
 
-		if ($this->moduleParams["attachment_files"]) {
+		if ($this->moduleParams->attachmentFiles) {
 			$this->template->attachmentFiels = $this->fileModel->fetchByType("article_attachment", $id);
 		}
 
-		if ($this->moduleParams["content_history"]) {
+		if ($this->moduleParams->contentHistory) {
 			$this->template->contentHistory = $this->articleContentModel->all(array("article_id" => $id))->select("user.login login, article_content.*")->order("edited DESC");
 		}
 
-		if ($this->moduleParams["promo_photo"] && $item["gallery_file_id"]) {
+		if ($this->moduleParams->promoPhoto && $item["gallery_file_id"]) {
 			$this->template->promoPhoto = $this->galleryFileModel->item($item["gallery_file_id"]);
 		}
 	}

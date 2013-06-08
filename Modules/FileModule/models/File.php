@@ -10,10 +10,13 @@ class File extends Base
 	 * @param string
 	 * @param int
 	 * @param string
+	 * @return NotORM_Result
 	 */
 	public function fetchByType($type, $keyId, $sort = "name")
 	{
-		return $this->table("type", $type)->where("key_id", $keyId)->order($sort)->fetchPairs("id");
+		return $this->table()->where($type . "_id", $keyId)
+			->order($sort)
+			->fetchPairs("id");
 	}
 
 }

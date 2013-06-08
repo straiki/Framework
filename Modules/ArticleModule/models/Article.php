@@ -12,8 +12,11 @@ class Article extends Base
 	/** @inject @var Schmutzka\Models\ArticleInCategory */
 	public $articleInCategoryModel;
 
+	/** @inject @var Schmutzka\Models\GalleryFile */
+	public $galleryFileModel;
+
 	/** @var string item select */
-	private $select = "article.*, gallery_file.name as titlePhoto, CONCAT(user.name, ' ', user.surname) AS authorName";
+	private $select = "article.*, gallery_file.name titlePhoto, user.name authorName";
 
 
 	/**
@@ -35,44 +38,32 @@ class Article extends Base
 			$result->limit($limit);
 		}
 
-		if ($this->moduleParams->publish_state) {
-			$result->where("publish_state", "public");
-		}
-
-		if ($this->moduleParams->publish_datetime) {
-			$result->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
-				->order("publish_datetime DESC");
-
-		} else {
-			$result->order("id DESC");
-		}
-
-		if ($this->moduleParams->categories_multi) {
-			foreach ($result as $key => $row) {
-				$result[$key]["categoryList"] = $this->articleInCategoryModel->getCategoryListByArticle($key);
-			}
-		}
+		$result = $this->completeResult($result);
 
 		return $result;
 	}
 
 
 	/**
-	 * Fetch front by category id
-	 * @param  int
+	 * Fetch front by category id(s)
+	 * @param  int|array
 	 * @return  NotORM_Result
 	 */
 	public function fetchFrontByCategory($categoryId)
 	{
-		if ($this->moduleParams->categories_multi) {
-		$result = $this->articleInCategoryModel->fetchAll()->where("article_in_category.article_category_id", $categoryId)
-			->join("gallery_file", "LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id")
-			->join("user", "LEFT JOIN user ON article.user_id = user.id")
+		$result = $this->articleInCategoryModel->fetchAll()
 			->select($this->select);
 
+		if ($this->moduleParams->categoriesMulti) {
+			$result->where("article_in_category.article_category_id", $categoryId)
+				->join("gallery_file", "LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id")
+				->join("user", "LEFT JOIN user ON article.user_id = user.id");
+
 		} else {
-			$result = $this->articleInCategoryModel->fetchAll(array("article_category_id" => $categoryId));
+			$result = $result->where("article_category_id", $categoryId);
 		}
+
+		$result = $this->completeResult($result);
 
 		return $result;
 	}
@@ -83,17 +74,22 @@ class Article extends Base
 	 * @param int
 	 * @return array|FALSE
 	 */
-	public function getItemFront($id)
+	public function fetchItemFront($id)
 	{
 		$result = $this->table("article.id", $id)
 			->select($this->select);
 
-		if ($this->moduleParams->publish_state) {
+		if ($this->moduleParams->publishState) {
 			$result->where("publish_state", "public");
 		}
 
 		if ($result) {
-			return $result->fetchRow();
+			$item = $result->fetchRow();
+			if ($this->moduleParams->attachmentGallery && $item["gallery_id"]) {
+				$item["gallery_files"] = $this->galleryFileModel->fetchOrderedListByGallery($page["gallery_id"]);
+			}
+
+			return $item;
 
 		} else {
 			return FALSE;
@@ -110,6 +106,72 @@ class Article extends Base
 	public function getModuleParams()
 	{
 		return $this->paramService->getModuleParams("article");
+	}
+
+
+	/**
+	 * Complete result
+	 * @param  NotORM_Result
+	 * @return  NotORM_Result
+	 */
+	private function completeResult($result)
+	{
+		$result = $this->addPublicState($result);
+		$result = $this->addOrder($result);
+		$result = $this->addMultiCategories($result);
+
+		return $result;
+	}
+
+
+	/**
+	 * Public state helper
+ 	 * @param  NotORM_Result
+	 * @return  NotORM_Result
+	 */
+	private function addPublicState($result)
+	{
+		if ($this->moduleParams->publishState) {
+			$result->where("publish_state", "public");
+		}
+
+		return $result;
+	}
+
+
+	/**
+	 * Order helper
+	 * @param  NotORM_Result
+	 * @return  NotORM_Result
+	 */
+	private function addOrder($result)
+	{
+		if ($this->moduleParams->publishDatetime) {
+			$result->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
+				->order("publish_datetime DESC");
+
+		} else {
+			$result->order("id DESC");
+		}
+
+		return $result;
+	}
+
+
+	/**
+	 * Add category list to result
+	 * @param NotORM_Result
+	 * @return NotORM_Result
+	 */
+	private function addMultiCategories($result)
+	{
+		if ($this->moduleParams->categoriesMulti) {
+			foreach ($result as $key => $row) {
+				$result[$key]["categoryList"] = $this->articleInCategoryModel->getCategoryListByArticle($key);
+			}
+		}
+
+		return $result;
 	}
 
 }

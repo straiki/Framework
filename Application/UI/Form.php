@@ -260,6 +260,7 @@ class Form extends Nette\Application\UI\Form
 	/**
 	 * @return UploadControl
 	 */
+	/*
 	public function addUpload($name, $label = NULL)
 	{
 		$basePath = $this->getHttpRequest()->url->scriptPath;
@@ -267,6 +268,7 @@ class Form extends Nette\Application\UI\Form
 
 		return $item;
 	}
+	*/
 
 
 	/* ****************************** seperated controls ****************************** */

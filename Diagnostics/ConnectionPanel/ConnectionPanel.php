@@ -2,10 +2,11 @@
 
 namespace Schmutzka\Panels;
 
-use Nette\Database\Helpers,
-	Nette\Diagnostics\Debugger;
+use Nette\Database\Helpers;
+use Nette\Diagnostics\Debugger;
+use Nette;
 
-class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel 
+class ConnectionPanel extends Nette\Database\Diagnostics\ConnectionPanel
 {
 	/** @var int maximum SQL length */
 	static public $maxLength = 1000;
@@ -17,7 +18,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 	private $queries = array();
 
 
-	public function logQuery(\Nette\Database\Statement $result, array $params = NULL)
+	public function logQuery(Nette\Database\Connection $connection, $result)
 	{
 		if ($this->disabled) {
 			return;
@@ -27,7 +28,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 			if (isset($row['file']) && is_file($row['file']) && strpos($row['file'], NETTE_DIR . DIRECTORY_SEPARATOR) !== 0) {
 				if (isset($row['function']) && strpos($row['function'], 'call_user_func') === 0) continue;
 				// if (strpos($row['file'], LIBS_DIR . DIRECTORY_SEPARATOR . "Schmutzka" . DIRECTORY_SEPARATOR . "Models" . DIRECTORY_SEPARATOR . "NotORM") === 0) continue;
-				if (isset($row['class']) && is_subclass_of($row['class'], '\\Nette\\Database\\Connection')) continue;
+				if (isset($row['class']) && is_subclass_of($row['class'], '\Nette\\Database\\Connection')) continue;
 				if (isset($row['class']) && in_array($row['class'], array('Nette\\Database\\Statement', 'NotORM_Result', 'NotORM', 'NotORM_Row'))) continue;
 				$source = array($row['file'], (int) $row['line']);
 				break;
@@ -43,7 +44,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 		return '<span title="Nette\\Database ' . htmlSpecialChars($this->name) . '">'
 			. '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC" />'
 			. ($this->totalTime ? sprintf('%0.0f', $this->totalTime * 1000) . ' ms' : '')
-			. ' [' . count($this->queries) . ' q.]' 
+			. ' [' . count($this->queries) . ' q.]'
 			. '</span>';
 	}
 
@@ -67,7 +68,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 
 			$timeTh = $time * 1000;
 
-			
+
 			$s .= '<tr><td>' . ($timeTh > 1 ? '0 <' : sprintf('%0.0f', $timeTh));
 			if ($explain) {
 				static $counter;
@@ -75,7 +76,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 				$s .= "<br /><a href='#' class='nette-toggler' rel='#nette-DbConnectionPanel-row-$counter'>explain&nbsp;&#x25ba;</a>";
 			}
 
-			$s .= '</td><td class="nette-DbConnectionPanel-sql">' . Helpers::dumpSql(self::$maxLength ? \Nette\Utils\Strings::truncate($sql, self::$maxLength) : $sql);
+			$s .= '</td><td class="nette-DbConnectionPanel-sql">' . Helpers::dumpSql(self::$maxLength ? Nette\Utils\Strings::truncate($sql, self::$maxLength) : $sql);
 			if ($explain) {
 				$s .= "<table id='nette-DbConnectionPanel-row-$counter' class='nette-collapsed'><tr>";
 				foreach ($explain[0] as $col => $foo) {
@@ -92,7 +93,7 @@ class ConnectionPanel extends \Nette\Database\Diagnostics\ConnectionPanel
 				$s .= "</table>";
 			}
 			if ($source) {
-				$s .= \Nette\Diagnostics\Helpers::editorLink($source[0], $source[1])->class('nette-DbConnectionPanel-source');
+				$s .= Nette\Diagnostics\Helpers::editorLink($source[0], $source[1])->class('nette-DbConnectionPanel-source');
 			}
 
 			$s .= '</td><td>';

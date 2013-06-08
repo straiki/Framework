@@ -2,7 +2,6 @@
 
 namespace Schmutzka\Application\Routers;
 
-use Nette;
 use NotORM;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
@@ -28,7 +27,7 @@ class ModuleRouterFactory
 
 		$router[] = new Route("index.php", "Front:Homepage:default", Route::ONE_WAY);
 		$router[] = new Route("index.php", "Admin:Homepage:default", Route::ONE_WAY);
-		$router[] = new Route("<module news|email|admin|page|user|file>/<presenter>/<action>[/<id>]", "Homepage:default");
+		$router[] = new Route("<module news|email|admin|page|article|user|file>/<presenter>/<action>[/<id>]", "Homepage:default");
 		if ($this->customModules) {
 			$router[] = new Route("<module " . implode($this->customModules, "|") . ">/<presenter>/<action>[/<id>]", "Homepage:default");
 		}

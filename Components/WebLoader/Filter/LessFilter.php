@@ -19,12 +19,7 @@ class LessFilter extends Nette\Object
 	 */
 	public function __invoke($code, WebLoader\Compiler $loader)
 	{
-		try {
-			return $this->lessc->parse($code);
-
-		} catch (\Exception $e) {
-			return $code;
-		}
+		return $this->lessc->parse($code);
 	}
 
 }

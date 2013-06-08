@@ -55,8 +55,13 @@ class Presenter extends AdminModule\BasePresenter
 		}
 
 		$modelName = $name . "Model";
+
 		if (!property_exists($this, $modelName)) {
 			$modelName = lcfirst($this->module) . ucfirst($modelName);
+		}
+
+		if (!property_exists($this, $modelName)) {
+			$modelName = lcfirst($this->module) . "Model";
 		}
 
 		return $this->{$modelName};

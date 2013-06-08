@@ -29,7 +29,7 @@ class ArticleGrid extends Grid
 
 		$this->addColumn("title", "Název");
 		if ($this->moduleParams->categories) {
-			if ($this->moduleParams->categories_multi) {
+			if ($this->moduleParams->categoriesMulti) {
 				$articleInCategoryModel = $this->articleInCategoryModel;
 				$this->addColumn("article_category_id", "Kategorie")->setRenderer(function ($row) use ($articleInCategoryModel) {
 					$categories = array();

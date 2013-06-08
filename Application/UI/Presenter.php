@@ -128,14 +128,15 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
+	 * Handles requests to create component
 	 * @param string
 	 * @return Nette\ComponentModel\IComponent
 	 */
 	protected function createComponent($name)
 	{
 		$component = parent::createComponent($name);
-		if (($component === NULL) && method_exists($this->context, ($create = "createService" .  ucfirst($name)))) {
-			$component = call_user_func(array($this->context, $create));
+		if ($component === NULL) {
+			$component = call_user_func(array($this->context, "createService" .  ucfirst($name)));
 		}
 
 		return $component;

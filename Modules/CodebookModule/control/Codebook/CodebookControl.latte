@@ -30,7 +30,7 @@
 			%td.center [n:if => $activeDisplay] {$row["display"]|inArray:$yesNo}
 			%td.center [n:if => $activeRank] {$row["rank"]|isEmpty}
 			<td class="center">
-				<a n:href="edit, id => $row['id']" class="edit ajax" title="Edit">&nbsp;</a> 
+				<a n:href="edit, id => $row['id']" class="edit ajax" title="Edit">&nbsp;</a>
 				{if $activeConvert AND $row["useCount"]}
 					<a n:href="convertItem,  id => $row['id']" class="convert _ajax">&nbsp;</a>
 				{else}

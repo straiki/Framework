@@ -24,11 +24,12 @@
 							%span.text {_"Odhlásit se"}
 						</a>
 
-					%li.btn.btn-inverse
+					<li n:class="btn, btn-inverse, $presenter->isLinkCurrent(':Admin:Homepage:settings') ? 'active'">
 						<a n:href=":Admin:Homepage:settings">
 							%i.icon.icon-cog
 							%span.text {_"Nastavení"}
 						</a>
+					</li>
 
 					%li.btn.btn-inverse
 						<a n:href=":Front:Homepage:">
@@ -56,13 +57,7 @@
 
 			{ifset #contentHeader}
 				#content-header
-					{include #contentHeader}
-			{/ifset}
-
-			{ifset #breadcrumb}
-				#breadcrumb
-					<a n:href=":Admin:Homepage:default" class="tip-bottom"><i class="icon-home"></i> Home</a>
-					{include #breadcrumb}
+					%h1 {include #contentHeader}
 			{/ifset}
 
 			{control flashMessageControl}
@@ -76,6 +71,7 @@
 {define #activeModules}
 
 	{ifset $activeModules["page"]}
+		{var $moduleParams = $cmsParams->modules->page}
 		<li n:class="submenu, $presenter->module == 'page' ? 'active open'">
 			%a [href => ""]
 				%i.icon.icon-file
@@ -84,6 +80,9 @@
 			%ul
 				{include #menuItem, path => ":Page:Homepage:default", icon => "icon-th-list", name => "Přehled stránek"}
 				{include #menuItem, path => ":Page:Homepage:add", icon => "icon-plus", name => "Přidat stránku"}
+				{if $moduleParams->menu}
+					{include #menuItem, path => ":Page:Menu:default", icon => "icon-th-large", name => "Menu"}
+				{/if}
 		</li>
 	{/ifset}
 
