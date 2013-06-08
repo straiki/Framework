@@ -1,12 +1,11 @@
 <?php
 
-namespace Schmutzka\Forms;
+namespace Components;
 
-use Nette;
-use Schmutzka;
 use Schmutzka\Application\UI\Form;
+use Schmutzka\Application\UI\Control;
 
-class LoginForm extends Form
+class LoginControl extends Control
 {
 	/** @var string */
 	public $loginColumn = "email";
@@ -30,35 +29,36 @@ class LoginForm extends Form
 	public $session;
 
 
-	public function build()
+	protected function createComponentForm()
 	{
-		parent::build();
-
+		$form = new Form;
 		if ($this->loginColumn == "login") {
-			$this->addText("login", $this->paramService->form->login->label)
+			$form->addText("login", $this->paramService->form->login->label)
 				->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
 				->addRule(~Form::EMAIL, $this->paramService->form->login->ruleFormat);
 
 		} elseif ($this->loginColumn == "email") {
-			$this->addText("login", $this->paramService->form->email->label)
+			$form->addText("login", $this->paramService->form->email->label)
 				->addRule(Form::FILLED, $this->paramService->form->email->ruleFilled)
 				->addRule(Form::EMAIL, $this->paramService->form->email->ruleFormat);
 		}
 
-		$this->addPassword("password", $this->paramService->form->password->label)
+		$form->addPassword("password", $this->paramService->form->password->label)
 			->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled);
 
 		if ($this->permalogin) {
-			$this->addCheckbox("permalogin", $this->paramService->form->permalogin->label)
+			$form->addCheckbox("permalogin", $this->paramService->form->permalogin->label)
 				->setDefaultValue(TRUE);
 		}
 
-		$this->addSubmit("send", $this->paramService->form->send->login)
+		$form->addSubmit("send", $this->paramService->form->send->login)
 			->setAttribute("class", "btn btn-primary");
+
+		return $form;
 	}
 
 
-	public function process($form)
+	public function processForm($form)
 	{
 		try {
 			$values = $form->values;
@@ -92,6 +92,13 @@ class LoginForm extends Form
 
 			$this->presenter->flashMessage($e->getMessage(), "error");
 		}
+	}
+
+
+	public function renderAdmin()
+	{
+		parent::useTemplate("admin");
+		$this->template->render();
 	}
 
 }

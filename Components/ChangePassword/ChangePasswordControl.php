@@ -1,13 +1,12 @@
 <?php
 
-namespace Schmutzka\Forms;
+namespace Components;
 
-use Nette;
-use Schmutzka;
 use Schmutzka\Security\UserManager;
 use Schmutzka\Application\UI\Form;
+use Schmutzka\Application\UI\Control;
 
-class ChangePasswordForm extends Form
+class ChangePasswordControl extends Control
 {
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
@@ -16,24 +15,25 @@ class ChangePasswordForm extends Form
 	public $user;
 
 
-	public function build()
+	protected function createComponentForm()
 	{
-		parent::build();
-
-		$this->addPassword("oldPassword", "Staré heslo:")
+		$form = new Form;
+		$form->addPassword("oldPassword", "Staré heslo:")
 			->addRule(Form::FILLED, "Zadejte staré heslo");
-		$this->addPassword("password", "Nové heslo:")
+		$form->addPassword("password", "Nové heslo:")
 			->addRule(Form::FILLED, "Zadejte nové heslo")
 			->addRule(Form::MIN_LENGTH, "Heslo musí mít aspoň %d znaků", 5);
-		$this->addPassword('passwordCheck', "Znovu nové heslo:")
+		$form->addPassword('passwordCheck', "Znovu nové heslo:")
 			->addRule(Form::FILLED, "Zadejte heslo k ověření")
-			->addRule(Form::EQUAL, "Hesla musejí být schodná",$this["password"]);
-		$this->addSubmit("send", "Změnit heslo")
+			->addRule(Form::EQUAL, "Hesla musejí být shodná", $form["password"]);
+		$form->addSubmit("send", "Změnit heslo")
 			->setAttribute("class", "btn btn-primary");
+
+		return $form;
 	}
 
 
-	public function process($form)
+	public function processForm($form)
 	{
 		$values = $form->values;
 		$userData = $this->userModel->item($this->user->id);
@@ -49,6 +49,13 @@ class ChangePasswordForm extends Form
 		}
 
 		$this->presenter->redirect("this");
+	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+		$this->template->render();
 	}
 
 }
