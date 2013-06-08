@@ -7,32 +7,8 @@ class Page extends Base
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
-
-	/**
-	 * Fetch front
-	 */
-	public function fetchFront()
-	{
-		return $this->table("publish_state", "public");
-	}	
-
-
-	/**
-	 * Get item front
-	 * @param int
-	 * @return array|FALSE
-	 */
-	public function getItemFront($id)
-	{
-		$result = $this->table("id", $id)
-			->where("publish_state", "public");
-
-		if (count($result)) {
-			return $result->fetchRow();
-		}
-
-		return FALSE;
-	}
+	/** @inject @var Schmutzka\Models\GalleryFile */
+	public $galleryFileModel;
 
 
 	/**
@@ -40,11 +16,13 @@ class Page extends Base
 	 * @param  int
 	 * @return  array
 	 */
-	public function item($id)
+	public function fetchItem($id)
 	{
+		$moduleParams = $this->paramService->getModuleParams("page");
+
 		$item = parent::item($id);
-		if ($this->paramService->cmsSetup->modules->page->access_to_roles) {
-			$item["access_to_roles"] = unserialize($item["access_to_roles"]);
+		if ($moduleParams->attachmentGallery && $item["gallery_id"]) {
+			$item["gallery_files"] = $this->galleryFileModel->fetchOrderedListByGallery($page["gallery_id"]);
 		}
 
 		return $item;

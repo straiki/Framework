@@ -6,11 +6,6 @@ parameters:
 			page:
 				active: FALSE
 				title: Stránky
-				showInSliderbox: FALSE
-				publishState: FALSE
-				publishTypes:
-					concept: Koncept
-					public: Publikován
 				customUrl: FALSE
 				perexShort: FALSE
 				perexLong: FALSE
@@ -19,9 +14,9 @@ parameters:
 				attachmentFiles: FALSE
 				adminNote: FALSE
 				contentHistory: FALSE
-				accessToRoles: FALSE
 				uid: FALSE
 				linkToPageArticle: FALSE
+				menu: FALSE
 
 			article:
 				active: FALSE
@@ -32,7 +27,8 @@ parameters:
 				publishDatetime: FALSE
 				publishState: FALSE
 				publishTypes:
-					%cmsSetup.modules.page.publishTypes%
+					concept: Koncept
+					public: Publikován
 				customUrl: FALSE
 				perexShort: FALSE
 				perexLong: FALSE
@@ -74,7 +70,6 @@ parameters:
 				useLogger: FALSE
 				newsletter: FALSE
 
-
 			user:
 				active: FALSE
 				title: Uživatelé
@@ -83,6 +78,7 @@ parameters:
 					admin: Administrátor
 				add: FALSE
 				passwordMinLength: 6
+				resendPassword: FALSE
 
 			file:
 				active: FALSE
@@ -137,6 +133,7 @@ factories:
 	# PageModule
 	pageControl: PageModule\Controls\PageControl
 	pageGrid: PageModule\Grids\PageGrid
+	frontMenuControl: PageModule\Controls\FrontMenuControl
 
 	# QrModule
 	qrControl: QrModule\Components\QrControl
@@ -156,6 +153,7 @@ webloader:
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/cms/cms.base.css
+				# - screenAdmin.css
 
 			filters:
 				- @lessFilter

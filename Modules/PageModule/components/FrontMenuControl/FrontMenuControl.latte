@@ -1,0 +1,6 @@
+{foreach $menuItems as $row}
+	{var $link = ":Front:Page:detail?uid={$row['uid']}"}
+	%li [n:class => "$presenter->isLinkCurrent($link) ? 'active'"]
+		<a n:phref="Page:detail, uid => $row['uid']">{$row['title']}</a>
+{/}
+
