@@ -74,37 +74,35 @@ nette:
 services:
 	routerFactory: RouterFactory
 	router: @routerFactory::createRouter
-
 	cache: Schmutzka\Caching\Cache(@cacheStorage, "dataCache")
-
-	- Schmutzka\Config\ParamService(@container::getParameters())
-	#- Services\SessionStorage
 	userManager: Schmutzka\Security\UserManager
-
 	template:
 		class: Schmutzka\Templates\TemplateService
 		setup:
 			- setLatte(@nette.latte)
+	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
+	pathFilter: Schmutzka\Components\WebLoader\Filter\PathFilter
 
+	- Schmutzka\Config\ParamService(@container::getParameters())
 	- Schmutzka\Templates\Helpers
-	- lessc
 	- Schmutzka\Models\Page
 	- Schmutzka\Models\Article
-	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
+	- lessc
+	#- Services\SessionStorage
 
 
 factories:
+	titleControl: Components\TitleControl
 	flashMessageControl: Components\FlashMessageControl
 	registrationControl: Components\RegistrationControl
 	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
 	callbackPanel: Schmutzka\Diagnostics\Panels\CallbackPanel
 
-	loginForm: Schmutzka\Forms\LoginForm
+	loginControl: Components\LoginControl
 	gaControl: Components\GaControl
-	changePasswordForm: Schmutzka\Forms\ChangePasswordForm
 	systemSession: Nette\Http\Session::getSection('system')
 	userControl: UserModule\Controls\UserControl
-	titleControl: Components\TitleControl
+	changePasswordControl: Components\ChangePasswordControl
 
 
 extensions:

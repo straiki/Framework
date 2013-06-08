@@ -74,6 +74,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 		$values["salt"] = Strings::random(22);
 		$values["password"] = self::calculateHash($values["password"], $values["salt"]);
 		$values["created"] = new Nette\DateTime;
+		$values["auth"] = TRUE;
 		unset($values["password2"]);
 
 		$userId = $this->userModel->insert($values);
@@ -90,8 +91,21 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 */
 	public function update($values, $id)
 	{
-		// todo
-		dd($values, $id);
+		if ($this->userModel->item(array("login" => $values["login"], "id != %i" => $id))) {
+			throw new \Exception("Toto jméno je již registrováno, zadejte jiné.");
+		}
+
+		if ($this->userModel->item(array("email" => $values["email"], "id != %i" => $id))) {
+			throw new \Exception("Tento email je již registrován, zadejte jiný.");
+		}
+
+		if ($values["password"]) {
+			$this->updatePasswordForUser($id, $values["password"]);
+		}
+
+		unset($values["password"], $values["password2"]);
+
+		$this->userModel->update($values, $id);
 	}
 
 
@@ -99,10 +113,10 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 	 * Create hashed password and salt and update for specific user
 	 * (this is update helper)
 	 *
-	 * @param string $email
+	 * @param array $cond
 	 * @param string $password
 	 */
-	public function updatePasswordForEmail($email, $password)
+	public function updatePasswordForUser($cond, $password)
 	{
 		$salt = Strings::random(22);
 		$password = self::calculateHash($password, $salt);
@@ -111,7 +125,6 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			"salt" => $salt,
 			"password" => $password
 		);
-		$cond["email"] = $email;
 
 		$this->userModel->update($user, $cond);
 	}

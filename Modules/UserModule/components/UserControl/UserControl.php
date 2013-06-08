@@ -59,23 +59,18 @@ class UserControl extends Control
 	{
 		$values = $form->values;
 
-		try {
-			if ($this->id) {
-				$this->userManager->update($values, $this->id);
+		if ($this->id) {
+			$this->userManager->update($values, $this->id);
 
-			} else {
-				$user = $this->userManager->register($values);
-				$this->id = $user["id"];
-			}
-
-			$this->presenter->flashMessage("Uloženo.", "success");
-			$this->presenter->redirect("edit", array(
-				"id" => $this->id
-			));
-
-		} catch (\Exception $e) {
-			$this->presenter->flashMessage($e->getMessage(), "error");
+		} else {
+			$user = $this->userManager->register($values);
+			$this->id = $user["id"];
 		}
+
+		$this->presenter->flashMessage("Uloženo.", "success");
+		$this->presenter->redirect("edit", array(
+			"id" => $this->id
+		));
 	}
 
 }
