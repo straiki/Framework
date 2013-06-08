@@ -92,23 +92,23 @@ services:
 
 
 factories:
-	titleControl: Components\TitleControl
-	flashMessageControl: Components\FlashMessageControl
-	registrationControl: Components\RegistrationControl
-	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
 	callbackPanel: Schmutzka\Diagnostics\Panels\CallbackPanel
-
-	loginControl: Components\LoginControl
+	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
+	flashMessageControl: Components\FlashMessageControl
 	gaControl: Components\GaControl
+	changePasswordForm: Schmutzka\Forms\ChangePasswordForm
+	loginControl: Components\LoginControl
+	registrationControl: Components\RegistrationControl
+	rssControl: Components\RssControl
 	systemSession: Nette\Http\Session::getSection('system')
+	titleControl: Components\TitleControl
 	userControl: UserModule\Controls\UserControl
-	changePasswordControl: Components\ChangePasswordControl
 
 
 extensions:
-	replicator: Kdyby\Replicator\DI\ReplicatorExtension
 	bootstrapRenderer: Kdyby\BootstrapFormRenderer\DI\RendererExtension
 	gpspicker: VojtechDobes\NetteForms\GpsPickerExtension
+	replicator: Kdyby\Replicator\DI\ReplicatorExtension
 	webloader: WebLoader\Nette\Extension
 
 
@@ -117,3 +117,4 @@ webloader:
 		default:
 			filters:
 				- @lessFilter
+				- @pathFilter

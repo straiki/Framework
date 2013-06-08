@@ -7,14 +7,13 @@
 
 namespace Schmutzka\Application\Routers;
 
-use Nette,
-	Nette\Utils\Strings,
-	Nette\Application\Request,
-	Schmutzka\Utils\Arrays;
-
-use Schmutzka\Utils\Name;
+use Nette;
+use Nette\Application\Request;
+use Nette\Utils\Strings;
 use NotORM_Result;
 use Schmutzka;
+use Schmutzka\Utils\Arrays;
+use Schmutzka\Utils\Name;
 
 class PairsRoute extends \Nette\Application\Routers\Route
 {
