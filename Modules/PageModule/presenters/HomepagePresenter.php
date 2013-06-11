@@ -2,23 +2,11 @@
 
 namespace PageModule;
 
-use AdminModule;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class HomepagePresenter extends AdminModule\BasePresenter
+class HomepagePresenter extends Presenter
 {
-	/** @persistent @var int */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\Page */
 	public $pageModel;
-
-
-	/**
-	 * @param int
-	 */
-	public function renderEdit($id)
-	{
-		$this->loadItemHelper($this->pageModel, $id);
-	}
 
 }

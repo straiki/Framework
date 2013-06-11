@@ -1,6 +1,6 @@
 <?php
 
-namespace UserModule\Controls;
+namespace UserModule\Components;
 
 use Nette;
 use Schmutzka;

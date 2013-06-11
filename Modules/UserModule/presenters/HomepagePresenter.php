@@ -2,11 +2,10 @@
 
 namespace UserModule;
 
-class HomepagePresenter extends \AdminModule\BasePresenter
-{
-	/** @persistent */
-	public $id;
+use Schmutzka\Application\UI\Module\Presenter;
 
+class HomepagePresenter extends Presenter
+{
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
@@ -17,8 +16,8 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 	public function handleDelete($id)
 	{
 		if ($user = $this->userModel->item($id)) {
-			if (in_array($user["role"], array("admin"))) {
-				$this->flashMessage("Tento uživatelský účet nelze smazat.", "error");
+			if ($user["role"] == "admin") {
+				$this->flashMessage("Administrátorský účet nelze smazat.", "error");
 
 			} else {
 				$this->userModel->delete($id);
@@ -30,15 +29,6 @@ class HomepagePresenter extends \AdminModule\BasePresenter
 		}
 
 		$this->redirect("this");
-	}
-
-
-	/**
-	 * @param int
-	 */
-	public function renderEdit($id)
-	{
-		$this->loadItemHelper($this->userModel, $id);
 	}
 
 }

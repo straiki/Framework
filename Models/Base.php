@@ -54,15 +54,6 @@ abstract class Base extends Nette\Object
 
 
 	/**
-	 * @deprecated
-	 */
-	public function all($key = array())
-	{
-		return $this->fetchAll($key);
-	}
-
-
-	/**
 	 * @param array
 	 * @return int
 	 */
@@ -112,7 +103,7 @@ abstract class Base extends Nette\Object
 	public function duplicate($key, $change = array())
 	{
 		if (is_array($key)) {
-			$result = $this->all($key);
+			$result = $this->fetchAll($key);
 
 		} else {
 			$row = $this->item($key);
@@ -171,6 +162,17 @@ abstract class Base extends Nette\Object
 	public function fetchPairs($id = "id", $column = NULL, $key = array())
 	{
 		return $this->table($key)->fetchPairs($id, $column);
+	}
+
+
+	/**
+	 * Fetch list shortcut
+	 * @param array
+	 * @return array
+	 */
+	public function fetchList($key = array())
+	{
+		return $this->fetchPairs("id", "name", $key);
 	}
 
 

@@ -2,9 +2,9 @@
 
 namespace EventModule;
 
-use Schmutzka;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class HomepagePresenter extends Schmutzka\Application\UI\Module\Presenter
+class HomepagePresenter extends Presenter
 {
 	/** @inject @var Schmutzka\Models\Event */
 	public $eventModel;

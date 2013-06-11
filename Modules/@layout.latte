@@ -36,29 +36,36 @@
 							%i.icon.icon-home
 							%span.text {_"Zpět na web"}
 						</a>
-				{/if}
+				{/}
 
 		#sidebar
 			%ul
 				{if $user->loggedIn}
-					{include #activeModules}
-					{include #customModules}
+					{foreach $activeModules as $module => $title}
+						{control adminMenuControl $module, $title}
+					{/}
 
 				{else}
-					<li n:class="$presenter->module == 'admin' ? 'active'">
+					%li.active
 						<a n:href=":Admin:Homepage:default">
-							<i class="icon icon-cog"></i>
-							{_"Přihlášení"}
+							%i.icon.icon-cog
+							Přihlášení
 						</a>
-					</li>
-				{/if}
+				{/}
 
 		#content
 
-			{ifset #contentHeader}
-				#content-header
-					%h1 {include #contentHeader}
-			{/ifset}
+			#content-header
+				%h1
+					{if !$user->loggedIn}
+						Přihlášení
+
+					{elseif $module == "admin"}
+						Vítejte v administraci
+
+					{else}
+						{control adminMenuControl:title}
+					{/}
 
 			{control flashMessageControl}
 
@@ -66,126 +73,3 @@
 				.row-fluid
 					.span12
 						{include #content}
-
-
-{define #activeModules}
-
-	{ifset $activeModules["page"]}
-		{var $moduleParams = $cmsParams->modules->page}
-		<li n:class="submenu, $presenter->module == 'page' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-file
-				%span {$activeModules["page"]}
-				%span.label {$layoutSetup["pageCount"]}
-			%ul
-				{include #menuItem, path => ":Page:Homepage:default", icon => "icon-th-list", name => "Přehled stránek"}
-				{include #menuItem, path => ":Page:Homepage:add", icon => "icon-plus", name => "Přidat stránku"}
-				{if $moduleParams->menu}
-					{include #menuItem, path => ":Page:Menu:default", icon => "icon-th-large", name => "Menu"}
-				{/if}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["article"]}
-		{var $moduleParams = $cmsParams->modules->article}
-		<li n:class="submenu, $presenter->module == 'article' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-file
-				%span {$activeModules["article"]}
-				%span.label {$layoutSetup["articleCount"]}
-			%ul
-				{include #menuItem, path => ":Article:Homepage:default", icon => "icon-th-list", name => "Přehled článků"}
-				{include #menuItem, path => ":Article:Homepage:add", icon => "icon-plus", name => "Přidat článek"}
-				{if $moduleParams->categories}
-					{include #menuItem, path => ":Article:Category:default", icon => "icon-th-list", name => "Přehled kategorií"}
-					{include #menuItem, path => ":Article:Category:add", icon => "icon-plus", name => "Přidat kategorii"}
-				{/if}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["event"]}
-		<li n:class="submenu, $presenter->module == 'event' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-screenshot
-				%span {$activeModules["event"]}
-			%ul
-				{include #menuItem, path => ":Event:Homepage:default", icon => "icon-th-list", name => "Přehled akcí"}
-				{include #menuItem, path => ":Event:Homepage:add", icon => "icon-plus", name => "Přidat akci"}
-				{include #menuItem, path => ":Event:Category:default", icon => "icon-th-list", name => "Přehled kategorií"}
-				{include #menuItem, path => ":Event:Category:add", icon => "icon-plus", name => "Přidat kategorii"}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["gallery"]}
-		<li n:class="submenu, $presenter->module == 'gallery' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-picture
-				%span {$activeModules["gallery"]}
-				%span.label {$layoutSetup["galleryCount"]}
-			%ul
-				{include #menuItem, path => ":Gallery:Homepage:default", icon => "icon-th-list", name => "Přehled fotogalerií"}
-				{include #menuItem, path => ":Gallery:Homepage:add", icon => "icon-plus", name => "Přidat fotogalerii"}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["email"]}
-		{var $moduleParams = $cmsParams->modules->email}
-		<li n:class="submenu, $presenter->module == 'email' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-envelope
-				%span {$activeModules["email"]}
-			%ul
-				{include #menuItem, path => ":Email:CustomEmail:default", icon => "icon-th-list", name => "Přehled šablon emailů"}
-				{include #menuItem, path => ":Email:CustomEmail:add", icon => "icon-plus", name => "Přidat šablonu"}
-				{include #menuItem, path => ":Email:Settings:default", icon => "icon-wrench", name => "Nastavení"}
-
-				{if $moduleParams->newsletter}
-					{include #menuItem, path => ":Email:Newsletter:default", icon => "icon-bullhorn", name => "Newsletter"}
-					{include #menuItem, path => ":Email:Newsletter:log", icon => "icon-th", name => "Evidence newsletterů"}
-				{/if}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["user"]}
-		{var $moduleParams = $cmsParams->modules->user}
-		<li n:class="submenu, $presenter->module == 'user' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-user
-				%span {$activeModules["user"]}
-				%span.label {$layoutSetup["userCount"]}
-			%ul
-				{include #menuItem, path => ":User:Homepage:default", icon => "icon-th-list", name => "Přehled uživatelů"}
-				{if $moduleParams->add || $user->id == 1}
-					{include #menuItem, path => ":User:Homepage:add", icon => "icon-plus", name => "Přidat uživatele"}
-				{/if}
-		</li>
-	{/ifset}
-
-	{ifset $activeModules["qr"]}
-		<li n:class="submenu, $presenter->module == 'qr' ? 'active open'">
-			%a [href => ""]
-				%i.icon.icon-qrcode
-				%span {$activeModules["qr"]}
-			%ul
-				{include #menuItem, path => ":QR:Homepage:default", icon => "icon-th-list", name => "Přehled kódů"}
-				{include #menuItem, path => ":QR:Homepage:add", icon => "icon-plus", name => "Vygenerovat nový"}
-		</li>
-	{/ifset}
-{/}
-
-
-{define #customModules}
-	{var $customModules = APP_DIR . "/templates/@adminModulesMenu.latte"}
-	{if file_exists($customModules)}
-		{include $customModules}
-	{/if}
-{/}
-
-
-{define #menuItem}
-	<li n:class="$presenter->isLinkCurrent($path) ? active">
-		<a n:href="{$path}, id => NULL">
-			<i class="icon {$icon}"></i> &nbsp; {_}{$name}{/_}
-		</a>
-	</li>
-{/}

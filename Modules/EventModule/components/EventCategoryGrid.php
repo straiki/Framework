@@ -1,6 +1,6 @@
 <?php
 
-namespace EventModule\Grids;
+namespace EventModule\Components;
 
 use NiftyGrid;
 use Schmutzka;
@@ -12,9 +12,6 @@ class EventCategoryGrid extends Grid
     public $eventCategoryModel;
 
 
-	/**
-	 * @param presenter
-	 */
     protected function configure($presenter)
     {
         $source = new NiftyGrid\DataSource($this->eventCategoryModel->fetchAll());
@@ -26,7 +23,7 @@ class EventCategoryGrid extends Grid
 			$this->addColumn("use_expiration", "Expirovat", "20%")->setBoolRenderer();
 		}
 		$this->addEditButton(NULL, TRUE);
-		$this->addDeleteButton(); 
+		$this->addDeleteButton();
     }
 
 }

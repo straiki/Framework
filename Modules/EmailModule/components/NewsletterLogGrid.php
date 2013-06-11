@@ -1,6 +1,6 @@
 <?php
 
-namespace EmailModule\Grids;
+namespace EmailModule\Components;
 
 use NiftyGrid;
 use Schmutzka\Forms\Form;

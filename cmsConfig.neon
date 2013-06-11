@@ -15,14 +15,12 @@ parameters:
 				adminNote: FALSE
 				contentHistory: FALSE
 				uid: FALSE
-				linkToPageArticle: FALSE
 				menu: FALSE
 
 			article:
 				active: FALSE
 				title: Články
-				categories: TRUE
-				categoriesMulti: FALSE
+				categories: FALSE
 				showInSliderbox: FALSE
 				publishDatetime: FALSE
 				publishState: FALSE
@@ -38,6 +36,8 @@ parameters:
 				adminNote: FALSE
 				contentHistory: FALSE
 				accessToRoles: FALSE
+				qr: FALSE
+				customAuthorName: FALSE
 
 			event:
 				active: FALSE
@@ -100,6 +100,8 @@ services:
 	- Schmutzka\Models\CustomEmail
 	- Schmutzka\Models\EmailLog
 	- Schmutzka\Models\EmailSettings
+	- Schmutzka\Models\Event
+	- Schmutzka\Models\EventCategory
 	- Schmutzka\Models\File
 	- Schmutzka\Models\Gallery
 	- Schmutzka\Models\GalleryFile
@@ -110,36 +112,42 @@ services:
 
 
 factories:
+	adminMenuControl: Components\AdminMenuControl
+
 	# ArticleModule
-	articleControl: ArticleModule\Controls\ArticleControl
-	articleCategoryControl: ArticleModule\Controls\ArticleCategoryControl
-	articleGrid: ArticleModule\Grids\ArticleGrid
-	articleCategoryGrid: ArticleModule\Grids\ArticleCategoryGrid
+	articleControl: ArticleModule\Components\ArticleControl
+	articleCategoryControl: ArticleModule\Components\ArticleCategoryControl
+	articleGrid: ArticleModule\Components\ArticleGrid
+	articleCategoryGrid: ArticleModule\Components\ArticleCategoryGrid
 
 	# EmailModule
-	customEmailGrid: EmailModule\Grids\CustomEmailGrid
+	customEmailGrid: EmailModule\Components\CustomEmailGrid
 	customEmailControl: EmailModule\Components\CustomEmailControl
 	emailSettingsControl: EmailModule\Components\EmailSettingsControl
 
+	# EventModule
+	eventControl: EventModule\Components\EventControl
+	eventGrid: EventModule\Components\EventGrid
+
 	# FileModule
-	fileControl: FileModule\Controls\FileControl
-	fileGrid: FileModule\Grids\FileGrid
+	fileControl: FileModule\Components\FileControl
+	fileGrid: FileModule\Components\FileGrid
 
 	# GalleryModule
-	galleryControl: GalleryModule\Controls\GalleryControl
-	galleryGrid: GalleryModule\Grids\GalleryGrid
-	uploadControl: GalleryModule\Controls\UploadControl
+	galleryControl: GalleryModule\Components\GalleryControl
+	galleryGrid: GalleryModule\Components\GalleryGrid
+	uploadControl: GalleryModule\Components\UploadControl
 
 	# PageModule
-	pageControl: PageModule\Controls\PageControl
-	pageGrid: PageModule\Grids\PageGrid
-	frontMenuControl: PageModule\Controls\FrontMenuControl
+	pageControl: PageModule\Components\PageControl
+	pageGrid: PageModule\Components\PageGrid
+	frontMenuControl: PageModule\Components\FrontMenuControl
 
 	# QrModule
 	qrControl: QrModule\Components\QrControl
 
 	# UserModule
-	userGrid: UserModule\Grids\UserGrid
+	userGrid: UserModule\Components\UserGrid
 
 
 webloader:
@@ -153,7 +161,6 @@ webloader:
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/cms/cms.base.css
-				# - screenAdmin.css
 
 			filters:
 				- @lessFilter

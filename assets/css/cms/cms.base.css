@@ -1,4 +1,66 @@
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~ Admin menu
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+
+#sidebar > ul ul li a.menuAddButton {
+	float:right;text-align:center;color:#FFF; width:20px; padding:10px; background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 50% 50%; margin: 0px 1px 0px 1px;
+
+	&:hover {
+		background-image: url("../img/plus.png"); background-repeat: none; background-position: 50% 50%;
+		background-color: #51A351;
+	}
+}
+
+#sidebar .submenu .active a:not(.menuAddButton) {
+	background: darken(@blue, 5%);
+	color: #FFF; .ts(1px, 1px, 1px, #333);
+}
+
+
+/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~ Screen admin
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+
+.tab-content {overflow:none;overflow:hidden;
+	.span12 {width:600px}
+}
+
+
+#testFormBuilder {
+	.removeButton {margin:-47px 0 0 186px;position:static;width:200px;margin-left:65px;
+		input[type=text] {width:50px;margin-right:120px}
+	}
+	.removeOptionButton {margin:-24px 0 0 146px;position:static}
+	.question {
+		label {display:none;}
+		input {margin-left:15px}
+		.controls {margin-left:0px}
+	}
+}
+
+
+#newsletterForm {
+	.email_list {width:810px;height:50px}
+}
+
+
+#exerciseControl {
+	#addOption {width: 400px; margin-top: 6px;
+		.btn {float: right;}
+	}
+
+	.title {padding:15px;
+		.checkbox {
+			label {margin-left: -20px;}
+		}
+	}
+	.text td {border: none;}
+}
+
+
+/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Forms
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
@@ -25,14 +87,9 @@ form {
 @blue: #0088CC;
 
 #content-header {
-	border-bottom: 3px solid lighten(@blue, 40%);
+	border-bottom: 3px solid #EEE;
+	.ish;
 }
-
-#sidebar .submenu .active a {
-	background: darken(@blue, 5%);
-	color: #FFF; .ts(1px, 1px, 1px, #333);
-}
-
 
 #article {
 	#pickImage {.clearfix;margin-bottom:20px;

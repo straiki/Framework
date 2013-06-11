@@ -1,6 +1,6 @@
 <?php
 
-namespace PageModule\Controls;
+namespace PageModule\Components;
 
 use Nette;
 use Nette\Utils\Html;
@@ -15,6 +15,9 @@ class PageControl extends TextControl
 
 	/** @inject @var Schmutzka\Models\PageContent */
 	public $pageContentModel;
+
+	/** @var string */
+	protected $type = "page";
 
 
 	/**
@@ -41,38 +44,18 @@ class PageControl extends TextControl
 		$form->addText("title", "Název stránky:")
 			->addRule(Form::FILLED, "Zadejte název stránky");
 
-		$form = $this->addFormCustomUrl($form);
+		$this->addFormCustomUrl($form);
 
 		if ($this->moduleParams->uid) {
 			$form->addText("uid", "UID:");
 		}
 
-		if ($this->moduleParams->linkToPageArticle || $this->moduleParams->perexShort || $this->moduleParams->perexLong) {
-			$form->addGroup("Obsah");
-			if ($this->moduleParams->linkToPageArticle) {
-				$form["obsah"]->setOption("description",
-					Html::el('div')->setHtml("[page:5:Odkaz na stránku s id = 5], [article:5:Odkaz na článek s id = 5]")
-				);
-			}
+		$form->addGroup("Obsah");
+		$this->addFormPerexShort($form);
+		$this->addFormPerexLong($form);
+		$this->addFormContent($form);
 
-			if ($this->moduleParams->perexShort) {
-				$form->addTextArea("perex_short", "Perex (kratší):")
-					->setOption("description", "Krátké shrnutí stránky zobrazující se např. pod nadpisem.")
-					->setAttribute("class", "ckeditor");
-			}
-
-			if ($this->moduleParams->perexLong) {
-				$form->addTextArea("perex_long", "Perex (delší):")
-					->setOption("description", "Shrnutí obsahu zobrazující se např. ve výpisu článků.")
-					->setAttribute("class", "ckeditor");
-			}
-		}
-
-
-		$form->addTextarea("content", "Obsah:")
-			->setAttribute("class", "ckeditor");
-
-		$form = $this->addFormAttachments($form);
+		$this->addFormAttachments($form);
 
 		$form->addSubmit("send", "Uložit")
 			->setAttribute("class", "btn btn-primary");
@@ -81,46 +64,10 @@ class PageControl extends TextControl
 	}
 
 
-	public function preProcessValues($values)
-	{
-		if ((isset($values["url"]) && $values["url"] == NULL) || !isset($values["url"])) {
-			$values["url"] = $this->getUniqueUrl($values["title"]);
-		}
-
-		$values["edited"] = new Nette\DateTime;
-		$values["user_id"] = $this->user->id;
-
-		if ($this->id == NULL) {
-			$values["created"] = $values["edited"];
-		}
-
-		$values = $this->preProcessFormStashAttachments($values);
-
-		return $values;
-	}
-
-
-	public function postProcessValues($values, $id)
-	{
-		if ($this->moduleParams->contentHistory) {
-			$array = array(
-				"content" => $values["content"],
-				"page_id" => $id,
-				"user_id" => $this->user->id,
-				"edited" => new Nette\DateTime
-			);
-
-			$this->pageContentModel->insert($array);
-		}
-
-		$this->postProcessFormSaveAttachments($this->id, "page");
-	}
-
-
 	public function render()
 	{
 		parent::useTemplate();
-		$this->loadTemplateValues("page");
+		$this->loadTemplateValues();
 		$this->template->render();
 	}
 

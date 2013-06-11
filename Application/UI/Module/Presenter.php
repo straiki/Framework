@@ -10,7 +10,6 @@ class Presenter extends AdminModule\BasePresenter
 	/** @persistent @var int */
 	public $id;
 
-
 	/**
 	 * @param  int
 	 */
@@ -26,6 +25,22 @@ class Presenter extends AdminModule\BasePresenter
 	public function renderEdit($id)
 	{
 		$this->loadItemHelper($this->model, $id);
+	}
+
+
+	/**
+	 * Sort helper
+	 * @param  array
+	 * @param string
+	 */
+	public function handleSort($data, $rankKey = "rank")
+	{
+		$data = explode(",", $data);
+		$i = 1;
+		foreach ($data as $item) {
+			$this->model->update(array($rankKey => $i), $item);
+			$i++;
+		}
 	}
 
 

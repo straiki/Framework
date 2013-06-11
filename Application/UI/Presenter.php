@@ -67,7 +67,10 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	public function handleLogout()
 	{
 		$this->user->logout();
-		$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
+		if ($this->paramService->flashes->onLogout) {
+			$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
+		}
+
 		$this->redirectOnLogout();
 	}
 
@@ -191,7 +194,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 	/**
 	 * Load item helper
-	 * @param instaceof Schmutzka\Models\Base
+	 * @param Schmutzka\Models\Base
 	 * @param int
 	 * @param string
 	 */

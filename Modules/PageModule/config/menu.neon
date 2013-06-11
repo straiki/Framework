@@ -1,0 +1,10 @@
+baseIcon: icon-file
+items:
+	"Přehled stránek":
+		path: Homepage:default
+		icon: icon-th-list
+		addPath: Homepage:add
+	"Menu":
+		cond: menu
+		path: Menu:default
+		icon: icon-th-large

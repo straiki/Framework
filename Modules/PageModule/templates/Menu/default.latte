@@ -1,30 +1,28 @@
-{#contentHeader}{_"Menu stránek"}{/}
-
-
 {#content}
-	{if count($pages)}
 
-		%table.table.table-bordered.table-condensed.table-striped
-			%thead
-				%tr
-					%th Stránka
-					%th [width => "15%"] Zobrazit
-					%th [width => "15%"] Změnit pořadí
+{if count($pages)}
 
-				%tbody#sortable [data-sort-link => {link sort!}]
-					{foreach $pages as $id => $page}
-						%tr [id => {$id}]
-							%td {$page["title"]}
-							%td
-								{if $page["menu_active"]}
-									ano - <a n:href="setActive!, id => $id, to => FALSE">skrýt</a>
-								{else}
-									ne - <a n:href="setActive!, id => $id, to => TRUE">zobrazit</a>
-								{/}
+	%table.table.table-bordered.table-condensed.table-striped
+		%thead
+			%tr
+				%th Stránka
+				%th [width => "15%"] Zobrazit
+				%th [width => "15%"] Změnit pořadí
 
-							%td.move Přesuň řádek
-					{/}
+			%tbody#sortable [data-sort-link => {link sort!}]
+				{foreach $pages as $id => $page}
+					%tr [id => {$id}]
+						%td {$page["title"]}
+						%td
+							{if $page["menu_active"]}
+								ano - <a n:href="setActive!, id => $id, to => FALSE">skrýt</a>
+							{else}
+								ne - <a n:href="setActive!, id => $id, to => TRUE">zobrazit</a>
+							{/}
 
-	{else}
-		%p.alert.alert-info Zatím nemáte žádné stránky.
-	{/}
+						%td.move Přesuň řádek
+				{/}
+
+{else}
+	%p.alert.alert-info Zatím nemáte žádné stránky.
+{/}

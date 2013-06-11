@@ -1,6 +1,6 @@
 <?php
 
-namespace PageModule\Grids;
+namespace PageModule\Components;
 
 use Nette;
 use Schmutzka;

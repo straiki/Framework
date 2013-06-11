@@ -2,19 +2,22 @@
 
 namespace Components;
 
+use Nette;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Control;
 
+/**
+ * @method setForgotLink(string)
+ * @method getForgotLink()
+ * @method setLoginColumn(string)
+ * @method getLoginColumn()
+ * @method setPermalogin(bool)
+ * @method getPermalogin()
+ */
 class LoginControl extends Control
 {
-	/** @var string */
-	public $loginColumn = "email";
-
 	/** @var array */
 	public $onLoginSuccess = array();
-
-	/** @var bool */
-	public $permalogin = FALSE;
 
 	/** @var array */
 	public $onLoginError = array();
@@ -28,30 +31,39 @@ class LoginControl extends Control
 	/** @inject @var Nette\Http\Session */
 	public $session;
 
+	/** @var string */
+	private $forgotLink = NULL;
+
+	/** @var string */
+	private $loginColumn = "email";
+
+	/** @var bool */
+	private $permalogin = FALSE;
+
 
 	protected function createComponentForm()
 	{
 		$form = new Form;
-		if ($this->loginColumn == "login") {
-			$form->addText("login", $this->paramService->form->login->label)
-				->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
-				->addRule(~Form::EMAIL, $this->paramService->form->login->ruleFormat);
 
-		} elseif ($this->loginColumn == "email") {
-			$form->addText("login", $this->paramService->form->email->label)
-				->addRule(Form::FILLED, $this->paramService->form->email->ruleFilled)
-				->addRule(Form::EMAIL, $this->paramService->form->email->ruleFormat);
+		$formLabels = $this->paramService->form;
+		$customLabels = $formLabels->{$this->loginColumn};
+
+		$form->addText("login", $customLabels->label)
+			->addRule(Form::FILLED, $customLabels->ruleFilled);
+
+		if ($this->loginColumn == "email") {
+			$form["login"]->addRule(Form::EMAIL, $customLabels->ruleFormat);
 		}
 
-		$form->addPassword("password", $this->paramService->form->password->label)
-			->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled);
+		$form->addPassword("password", $formLabels->password->label)
+			->addRule(Form::FILLED, $formLabels->password->ruleFilled);
 
 		if ($this->permalogin) {
-			$form->addCheckbox("permalogin", $this->paramService->form->permalogin->label)
+			$form->addCheckbox("permalogin", $formLabels->permalogin->label)
 				->setDefaultValue(TRUE);
 		}
 
-		$form->addSubmit("send", $this->paramService->form->send->login)
+		$form->addSubmit("send", $formLabels->send->login)
 			->setAttribute("class", "btn btn-primary");
 
 		return $form;
@@ -85,13 +97,24 @@ class LoginControl extends Control
 			$this->presenter->restoreRequest($baseSession->backlink); // @todo refactor to absolute param - standart!
 			$this->presenter->redirect("Homepage:default");
 
-		} catch (\Nette\Security\AuthenticationException $e) {
+		} catch (Nette\Security\AuthenticationException $e) {
 			if ($this->onLoginError) {
 				$this->onLoginError($values);
 			}
 
 			$this->presenter->flashMessage($e->getMessage(), "error");
 		}
+	}
+
+
+	public function render()
+	{
+		parent::useTemplate();
+		if ($this->forgotLink) {
+			$this->template->forgotLink = $this->forgotLink;
+		}
+
+		$this->template->render();
 	}
 
 

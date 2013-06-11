@@ -34,26 +34,6 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 			if (isset($this->paramService->cmsSetup->modules->{$this->module})) {
 				$this->template->moduleParams = $this->moduleParams = $this->paramService->cmsSetup->modules->{$this->module};
 			}
-
-			// layout setup
-			$layoutSetup = array();
-			if (isset($activeModules["page"])) {
-				$layoutSetup["pageCount"] = $this->pageModel->count();
-			}
-
-			if (isset($activeModules["article"])) {
-				$layoutSetup["articleCount"] = $this->articleModel->count();
-			}
-
-			if (isset($activeModules["gallery"])) {
-				$layoutSetup["galleryCount"] = $this->galleryModel->count();
-			}
-
-			if (isset($activeModules["user"])) {
-				$layoutSetup["userCount"] = $this->userModel->count();
-			}
-
-			$this->template->layoutSetup = $layoutSetup;
 		}
 
 		if (!$this->user->loggedIn) {

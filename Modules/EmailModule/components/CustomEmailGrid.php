@@ -1,10 +1,11 @@
 <?php
 
-namespace EmailModule\Grids;
+namespace EmailModule\Components;
 
 use NiftyGrid;
+use Schmutzka\Application\UI\Module\Grid;
 
-class CustomEmailGrid extends NiftyGrid\Grid
+class CustomEmailGrid extends Grid
 {
 	/** @inject @var Schmutzka\Models\CustomEmail */
     public $customEmailModel;

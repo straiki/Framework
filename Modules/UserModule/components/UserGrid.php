@@ -1,6 +1,6 @@
 <?php
 
-namespace UserModule\Grids;
+namespace UserModule\Components;
 
 use Schmutzka;
 use NiftyGrid;

@@ -2,17 +2,50 @@
 
 namespace Schmutzka\Models;
 
-use Schmutzka\Utils\Name;
-use Nette;
-use NotORM;
-
 abstract class BaseJoint extends Base
 {
-	/** @var Schmutzka\Models\* first model */
-	protected $firstModel;
+	/** @var string */
+	protected $mainKeyName;
 
-	/** @var Schmutzka\Models\* second model */
-	protected $secondModel;
+	/** @var string */
+	protected $otherKeyName;
 
-	
+
+	/**
+	 * Fetch by main
+	 * @param  int
+	 * @param  string|NULL
+	 * @return  array
+	 */
+	public function fetchByMain($id, $secondKey = NULL)
+	{
+		return $this->table($this->mainKeyName, $id)->fetchPairs($this->otherKeyName, $secondKey ?: $this->otherKeyName);
+	}
+
+
+	/**
+	 * Update current data - remove old, add new
+	 * @param  int
+	 * @param  array
+	 */
+	public function modify($id, $data)
+	{
+		$oldItems = $this->table($this->mainKeyName, $id)->fetchPairs($this->otherKeyName);
+		$key[$this->mainKeyName] = $id;
+
+		foreach ($data as $otherKey) {
+			$key[$this->otherKeyName] = $otherKey;
+			if (!isset($oldItems[$otherKey])) {
+				$this->insert($key);
+			}
+
+			unset($oldItems[$otherKey]);
+		}
+
+		foreach ($oldItems as $otherKey) {
+			$key[$this->otherKeyName] = $otherKey;
+			$this->delete($key);
+		}
+	}
+
 }

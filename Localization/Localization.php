@@ -12,22 +12,11 @@ class Localization extends Nette\Object
 	/** @var array  */
 	public $defaultLang = "en";
 
-	/** @var Nette\Http\Request */
-	private $httpRequest;
+	/** @inject @var Nette\Http\Request */
+	public $httpRequest;
 
-	/** @var Nette\Http\Response  */
-	private $httpResponse;
-
-
-	/**
-	 * @param Nette\Http\Request
-	 * @param Nette\Http\Response
-	 */
-	public function __construct(Nette\Http\Request $httpRequest, Nette\Http\Response $httpResponse) 
-	{ 
-		$this->httpRequest = $httpRequest;
-		$this->httpResponse= $httpResponse;
-	}	
+	/** @inject @var Nette\Http\Response */
+	public $httpResponse;
 
 
 	/**
@@ -37,11 +26,11 @@ class Localization extends Nette\Object
 	{
 		$cookieName = $this->getCookieName();
 		$lang = $this->httpRequest->getCookie($cookieName);
-		if ($lang AND $this->isAllowed($lang)) {
+		if ($lang && $this->isAllowed($lang)) {
 			return $lang;
 		}
 
-		$lang = $this->httpRequest->detectLanguage($this->allowedLangs);	
+		$lang = $this->httpRequest->detectLanguage($this->allowedLangs);
 		if ($this->isAllowed($lang)) {
 			return $lang;
 		}
@@ -49,7 +38,7 @@ class Localization extends Nette\Object
 		return $this->defaultLang;
 	}
 
-	
+
 	/**
 	 * Saves lang via cookie
 	 * @param string
@@ -59,10 +48,10 @@ class Localization extends Nette\Object
 		$cookieName = $this->getCookieName();
 		$this->httpResponse->setCookie($cookieName, $lang, "+ 100 days");
 	}
-	
+
 
 	/**
-	 * Get lang cookie name	 
+	 * Get lang cookie name
 	 */
 	private function getCookieName()
 	{
@@ -76,8 +65,8 @@ class Localization extends Nette\Object
 	 */
 	private function isAllowed($lang)
 	{
-		$this->allowedLangs = array_merge(array($this->defaultLang), $this->allowedLangs);
-		return in_array($lang, $this->allowedLangs);
+		$this->allowedLangs = array_merge(array($this->defaultLang), $this->fetchAllowedLangs);
+		return in_array($lang, $this->fetchAllowedLangs);
 	}
 
 }

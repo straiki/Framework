@@ -4,16 +4,25 @@ namespace Components;
 
 use Schmutzka;
 
+
+/**
+ * @method setSep(string)
+ * @method getSep()
+ * @method setMainTitleSep(string)
+ * @method getMainTitleSep()
+ * @method setAlwaysShowMainTitle(bool)
+ * @method getAlwaysShowMainTitle()
+ */
 class TitleControl extends Schmutzka\Application\UI\Control
 {
 	/** @var string */
-	public $sep = " | ";
+	private $sep = " | ";
 
 	/** @var string */
-	public $mainTitleSep = " | ";
+	private $mainTitleSep = " | ";
 
 	/** @var string */
-	public $alwaysShowMainTitle = FALSE;
+	private $alwaysShowMainTitle = FALSE;
 
 	/** @var string */
 	private $mainTitle;

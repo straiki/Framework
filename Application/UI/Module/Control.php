@@ -19,7 +19,7 @@ class Control extends Schmutzka\Application\UI\Control
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-		if (($this->id || ($this->id = $presenter->id)) && isset($this["form"])) {
+		if (($this->id || (property_exists($presenter, "id") && $this->id = $presenter->id)) && isset($this["form"])) {
 			$this["form"]["send"]->caption = "Uložit";
 			$this["form"]["send"]
 				->setAttribute("class", "btn btn-primary");

@@ -37,10 +37,10 @@ body {
     height: 196px;
 	background: #ffffff;
     box-shadow: 0 0 4px #000000;
-    border-radius: 7px;
+    border-radius: 7px 7px 0 0;
     overflow: hidden !important;
     text-align: center;
-    position: relative;   
+    position: relative;
 }
 
 #loginbox form{
@@ -86,6 +86,6 @@ body {
 
 @media (max-width: 480px){
     #logo, #loginbox {
-        width: 80%; 
-    }    
+        width: 80%;
+    }
 }

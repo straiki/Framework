@@ -1,6 +1,6 @@
 <?php
 
-namespace PageModule\Controls;
+namespace PageModule\Components;
 
 use Schmutzka\Application\UI\Control;
 

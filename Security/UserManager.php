@@ -14,7 +14,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 
 
 	/**
-	 * Performs an authentication.
+	 * Performs an authentication
 	 * @return Nette\Security\Identity
 	 * @throws Nette\Security\AuthenticationException
 	 */
@@ -42,7 +42,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 
 
 	/**
-	 * Computes salted password hash.
+	 * Computes salted password hash
 	 * @param  string
 	 * @return string
 	 */

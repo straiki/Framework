@@ -20,6 +20,19 @@ class Article extends Base
 
 
 	/**
+	 * @param  array
+	 * @return  NotORM_Result
+	 */
+	public function fetchAll($cond = array())
+	{
+		$result = parent::fetchAll();
+		$result = $this->completeResult($result);
+
+		return $result;
+	}
+
+
+	/**
 	 * Fetch front
 	 * @param  array
 	 * @param int|NULL
@@ -54,13 +67,10 @@ class Article extends Base
 		$result = $this->articleInCategoryModel->fetchAll()
 			->select($this->select);
 
-		if ($this->moduleParams->categoriesMulti) {
+		if ($this->moduleParams->categories) {
 			$result->where("article_in_category.article_category_id", $categoryId)
 				->join("gallery_file", "LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id")
 				->join("user", "LEFT JOIN user ON article.user_id = user.id");
-
-		} else {
-			$result = $result->where("article_category_id", $categoryId);
 		}
 
 		$result = $this->completeResult($result);
@@ -97,6 +107,19 @@ class Article extends Base
 	}
 
 
+	/**
+	 * @param  id
+	 * @return  array
+	 */
+	public function item($id)
+	{
+		$item = parent::item($id);
+		$item = $this->completeItem($item);
+
+		return $item;
+	}
+
+
 	/********************** helpers **********************/
 
 
@@ -118,7 +141,7 @@ class Article extends Base
 	{
 		$result = $this->addPublicState($result);
 		$result = $this->addOrder($result);
-		$result = $this->addMultiCategories($result);
+		$result = $this->addCategories($result);
 
 		return $result;
 	}
@@ -163,15 +186,28 @@ class Article extends Base
 	 * @param NotORM_Result
 	 * @return NotORM_Result
 	 */
-	private function addMultiCategories($result)
+	private function addCategories($result)
 	{
-		if ($this->moduleParams->categoriesMulti) {
+		if ($this->moduleParams->categories) {
 			foreach ($result as $key => $row) {
-				$result[$key]["categoryList"] = $this->articleInCategoryModel->getCategoryListByArticle($key);
+				$result[$key] = $this->completeItem($row);
 			}
 		}
 
 		return $result;
+	}
+
+
+	/**
+	 * @param  array|NotORM_Row
+	 * @return array
+	 */
+	private function completeItem($item)
+	{
+		$item["article_categories"] = $this->articleInCategoryModel->fetchByMain($item["id"]);
+		$item["article_categories_name"] = $this->articleInCategoryModel->fetchByMain($item["id"], "article_category.name");
+
+		return $item;
 	}
 
 }

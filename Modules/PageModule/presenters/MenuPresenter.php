@@ -2,13 +2,10 @@
 
 namespace PageModule;
 
-use AdminModule;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class MenuPresenter extends AdminModule\BasePresenter
+class MenuPresenter extends Presenter
 {
-	/** @persistent @var int */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\Page */
 	public $pageModel;
 
@@ -36,12 +33,7 @@ class MenuPresenter extends AdminModule\BasePresenter
 	 */
 	public function handleSort($data)
 	{
-		$data = explode(",", $data);
-		$i = 1;
-		foreach ($data as $item) {
-			$this->pageModel->update(array("menu_rank" => $i), $item);
-			$i++;
-		}
+		parent::handleSort($data, "menu_rank");
 	}
 
 }

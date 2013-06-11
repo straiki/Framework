@@ -41,4 +41,22 @@ $(document).ready(function() {
 		}
 	});
 
+	// 6. sortable rows for grid table
+	$(".tbodySortable table tbody").sortable({
+		delay: 200,
+		distance: 15,
+
+		update: function (event, ui) {
+			var rankList = $('.tbodySortable table tbody').sortable('toArray').toString();
+			var sortLink = $('.tbodySortable').data("sort-link");
+
+			/*
+			var paramName = $('#sortable').data("param-name");
+			alert(paramName);
+			*/
+
+			$.post(sortLink, { data: rankList });
+		}
+	});
+
 });

@@ -2,23 +2,11 @@
 
 namespace GalleryModule;
 
-use AdminModule;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class HomepagePresenter extends AdminModule\BasePresenter
+class HomepagePresenter extends Presenter
 {
-	/** @persistent @var int */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\Gallery */
 	public $galleryModel;
-
-
-	/**
-	 * @param int
-	 */
-	public function renderEdit($id)
-	{
-		$this->loadItemHelper($this->galleryModel, $id);
-	}
 
 }

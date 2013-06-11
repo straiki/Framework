@@ -46,7 +46,7 @@ class PairsRoute extends \Nette\Application\Routers\Route
 	 * @param string
 	 * @param array
 	 * @param array
-	 * @param NotORM_Result
+	 * @param Schmutzka\Models\Base
 	 * @param Nette\Caching\Cache
 	 * @param array
 	 */
