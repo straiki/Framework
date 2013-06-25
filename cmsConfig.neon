@@ -90,6 +90,10 @@ parameters:
 				active: FALSE
 				title: QR generátor
 
+			logger:
+				active: FALSE
+				title: Logger
+
 	jQuery: "jquery-1.10.1.min.js"
 
 

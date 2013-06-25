@@ -39,6 +39,7 @@ class AdminMenuControl extends Control
 		$module = $this->presenter->module;
 
 		$view = $this->presenter->view;
+		$title = NULL;
 
 		if ($view == "add") {
 			$path = substr($this->presenter->name, strlen($module) + 1);
@@ -53,11 +54,16 @@ class AdminMenuControl extends Control
 
 		} elseif ($view == "edit") {
 			$item = $this->presenter->template->item;
-			$title = "Úprava položky: " . (isset($item["title"]) ? $item["title"] : $item["login"]);
+			$title = "Úprava položky" .
+				(isset($item["title"]) ? ": " . $item["title"] :
+					(isset($item["name"]) ? ": " . $item["name"] :
+						(isset($item["login"]) ? ": " . $item["login"] :
+					NULL)));
 
 		} else {
 			$path = substr($this->presenter->name . ":" . $view, strlen($module) + 1);
 			$menu = $this->getMenu($module);
+
 			foreach ($menu->items as $key => $row) {
 				if ($row->path == $path) {
 					$title = $key;
@@ -65,10 +71,10 @@ class AdminMenuControl extends Control
 			}
 		}
 
-
 		$this->template->title = $title;
 		$this->template->render();
 	}
+
 
 	/********************** helpers **********************/
 
@@ -80,10 +86,10 @@ class AdminMenuControl extends Control
 	 */
 	public function getMenu($module)
 	{
-		if (file_exists($config = MODULES_DIR . "/" . $module . "Module/config/menu.neon")) {
+		if (file_exists($config = MODULES_DIR . "/" . ucfirst($module) . "Module/config/menu.neon")) {
 			$config = Nette\Utils\Neon::decode(file_get_contents($config));
 
-		} elseif(file_exists($config = APP_DIR . "/" . $module . "Module/config/menu.neon")) {
+		} elseif(file_exists($config = APP_DIR . "/" . ucfirst($module) . "Module/config/menu.neon")) {
 			$config = Nette\Utils\Neon::decode(file_get_contents($config));
 		}
 

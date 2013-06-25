@@ -42,7 +42,6 @@ class ParamService extends Nette\Object
 		$modules = $this->params->cmsSetup->modules;
 		$array = array();
 		foreach ($modules as $key => $row) {
-
 			if ($row->active) {
 				$array[$key] = $row->title;
 			}

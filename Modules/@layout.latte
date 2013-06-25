@@ -54,18 +54,22 @@
 				{/}
 
 		#content
+			{capture $contentHeader|trim|strip}
+				{if !$user->loggedIn}
+					Přihlášení
 
-			#content-header
-				%h1
-					{if !$user->loggedIn}
-						Přihlášení
+				{elseif $module == "admin"}
+					Vítejte v administraci
 
-					{elseif $module == "admin"}
-						Vítejte v administraci
+				{else}
+					{control adminMenuControl:title}
+				{/}
+			{/}
 
-					{else}
-						{control adminMenuControl:title}
-					{/}
+			{if $contentHeader}
+				#content-header
+					%h1 {$contentHeader}
+			{/}
 
 			{control flashMessageControl}
 

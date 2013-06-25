@@ -17,8 +17,10 @@
 {define #menuItem}
 
 <li n:class="$presenter->isLinkCurrent($path) ? active">
-	<a n:if="isset($addPath) && $addPath" n:phref="$addPath" class="btn btn-success menuAddButton" n:tooltip="Přidej" data-placement="right">&nbsp;</a>
-	<a n:phref="$path, id => NULL, participantId => NULL">
+	<a n:if="isset($addPath) && $addPath" n:phref="$addPath, id => NULL" class="menuAddButton">&nbsp;
+		%span.btn.btn-success.menuAddButtonIcon
+	</a>
+	<a n:phref="$path, id => NULL">
 		<i class="icon {$icon}"></i> &nbsp; {$name}
 	</a>
 </li>

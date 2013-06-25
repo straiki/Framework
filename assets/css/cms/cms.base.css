@@ -1,15 +1,21 @@
+.loggerDetail {
+	width: 100%; border: 5px solid #FFF;height:600px;
+}
+
+
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Admin menu
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
 #sidebar > ul ul li a.menuAddButton {
-	float:right;text-align:center;color:#FFF; width:20px; padding:10px; background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 50% 50%; margin: 0px 1px 0px 1px;
-
-	&:hover {
-		background-image: url("../img/plus.png"); background-repeat: none; background-position: 50% 50%;
-		background-color: #51A351;
-	}
+	float:right;text-align:center;color:#FFF; /*width:20px;*/ padding:5px; margin: 0px 0px 0px 1px; background: #333;
+		.menuAddButtonIcon {background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 30% 50%; display:block; padding:14px; margin-top: -20px; .rc(0);
+			&:hover {background-color: #51A351;}
+		}
+		&:hover {background-color: #222;
+			.menuAddButtonIcon {background-color: #51A351;}
+		}
 }
 
 #sidebar .submenu .active a:not(.menuAddButton) {
@@ -169,6 +175,8 @@ legend + .control-group {
 .addIco {.ico(add)}
 
 .del {.ico(del, 50%, 50%);}
+.delLeft {.ico(del, 0%, 0%);}
+
 a.del {text-decoration:none;}
 
 .edit {.ico(edit, 50%, 50%)}
