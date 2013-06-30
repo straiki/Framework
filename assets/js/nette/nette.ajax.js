@@ -6,10 +6,10 @@
  * @copyright Copyright (c) 2012 Vojtěch Dobeš
  * @license MIT
  *
- * @version 1.2.1
+ * @version 1.2.2
  */
 
-(function($, undefined) {
+(function(window, $, undefined) {
 
 if (typeof $ != 'function') {
 	return console.error('nette.ajax.js: jQuery is missing, load it please');
@@ -88,12 +88,12 @@ var nette = function () {
 		} else if (callbacks === undefined) {
 			return inner.contexts[name];
 		} else if (!callbacks) {
-			$.each(['init', 'load', 'before', 'start', 'success', 'complete', 'error'], function (index, event) {
+			$.each(['init', 'load', 'prepare', 'before', 'start', 'success', 'complete', 'error'], function (index, event) {
 				inner.on[event][name] = undefined;
 			});
 			inner.contexts[name] = undefined;
 		} else if (typeof name == 'string' && inner.contexts[name] !== undefined) {
-			throw 'Cannot override already registered nette-ajax extension.';
+			throw "Cannot override already registered nette-ajax extension '" + name + "'.";
 		} else {
 			inner.ext(callbacks, context, name);
 		}
@@ -158,7 +158,7 @@ var nette = function () {
 				ui: ui,
 				el: $el,
 				isForm: $el.is('form'),
-				isSubmit: $el.is('input[type=submit]'),
+				isSubmit: $el.is('input[type=submit]') || $el.is('button[type=submit]'),
 				isImage: $el.is('input[type=image]'),
 				form: null
 			};
@@ -204,7 +204,7 @@ var nette = function () {
 
 		xhr = $.ajax(settings);
 
-		if (xhr) {
+		if (xhr && (typeof xhr.statusText === 'undefined' || xhr.statusText !== 'canceled')) {
 			xhr.done(function (payload, status, xhr) {
 				inner.fire({
 					name: 'success',
@@ -237,6 +237,10 @@ $.nette = new ($.extend(nette, $.nette ? $.nette : {}));
 
 $.fn.netteAjax = function (e, options) {
 	return $.nette.ajax(options || {}, this[0], e);
+};
+
+$.fn.netteAjaxOff = function () {
+	return this.off('.nette');
 };
 
 $.nette.ext('validation', {
@@ -348,9 +352,11 @@ $.nette.ext('forms', {
 $.nette.ext('snippets', {
 	success: function (payload) {
 		var snippets = [];
+		var elements = [];
 		if (payload.snippets) {
 			for (var i in payload.snippets) {
 				var $el = this.getElement(i);
+				elements.push($el.get(0));
 				$.each(this.beforeQueue, function (index, callback) {
 					if (typeof callback == 'function') {
 						callback($el);
@@ -363,24 +369,33 @@ $.nette.ext('snippets', {
 					}
 				});
 			}
+			var defer = $(elements).promise();
+			$.each(this.completeQueue, function (index, callback) {
+				if (typeof callback == 'function') {
+					defer.done(callback);
+				}
+			});
 		}
-		this.before(snippets);
 	}
 }, {
 	beforeQueue: [],
 	afterQueue: [],
+	completeQueue: [],
 	before: function (callback) {
 		this.beforeQueue.push(callback);
 	},
 	after: function (callback) {
 		this.afterQueue.push(callback);
 	},
+	complete: function (callback) {
+		this.completeQueue.push(callback);
+	},
 	updateSnippet: function ($el, html, back) {
 		if (typeof $el == 'string') {
 			$el = this.getElement($el);
 		}
 		// Fix for setting document title in IE
-		if ($el.get(0).tagName == 'TITLE') {
+		if ($el.is('title')) {
 			document.title = html;
 		} else {
 			this.applySnippet($el, html, back);
@@ -453,29 +468,26 @@ $.nette.ext('abort', {
 	}
 }, {xhr: null});
 
+$.nette.ext('load', {
+	success: function () {
+		$.nette.load();
+	}
+});
+
 // default ajaxification (can be overridden in init())
 $.nette.ext('init', {
 	load: function (rh) {
 		$(this.linkSelector).off('click.nette', rh).on('click.nette', rh);
-		var $forms = $(this.formSelector);
-		$forms.off('submit.nette', rh).on('submit.nette', rh);
-		$forms.off('click.nette', ':image', rh).on('click.nette', ':image', rh);
-		$forms.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
-
-		var buttonSelector = this.buttonSelector;
-		$(buttonSelector).each(function () {
-			$(this).closest('form')
-				.off('click.nette', buttonSelector, rh)
-				.on('click.nette', buttonSelector, rh);
-		});
-	},
-	success: function () {
-		$.nette.load();
+		$(this.formSelector).off('submit.nette', rh).on('submit.nette', rh)
+			.off('click.nette', ':image', rh).on('click.nette', ':image', rh)
+			.off('click.nette', ':submit', rh).on('click.nette', ':submit', rh);
+		$(this.buttonSelector).closest('form')
+			.off('click.nette', this.buttonSelector, rh).on('click.nette', this.buttonSelector, rh);
 	}
 }, {
 	linkSelector: 'a.ajax',
 	formSelector: 'form.ajax',
-	buttonSelector: 'input.ajax[type="submit"], input.ajax[type="image"]'
+	buttonSelector: 'input.ajax[type="submit"], button.ajax[type="submit"], input.ajax[type="image"]'
 });
 
-})(window.jQuery);
+})(window, window.jQuery);

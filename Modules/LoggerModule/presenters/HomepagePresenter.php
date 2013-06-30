@@ -30,7 +30,6 @@ class HomepagePresenter extends Presenter
 	{
 		$this->template->filename = $file;
 		if (file_exists($file = $this->logDir . "/" . $file)) {
-
 			$this->template->file = $file;
 
 		} else {
