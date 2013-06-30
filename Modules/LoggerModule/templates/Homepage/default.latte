@@ -15,4 +15,7 @@
 				%td.center [width => "3%"]
 					<a n:href="delete!, file => $row['fullname']" class="del"></a>
 		{/}
+
+{else}
+	%p.alert.alert-success Žádné chyby k vyřízení.
 {/}

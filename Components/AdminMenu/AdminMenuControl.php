@@ -35,15 +35,14 @@ class AdminMenuControl extends Control
 	public function renderTitle()
 	{
 		parent::useTemplate("title");
-
 		$module = $this->presenter->module;
 
 		$view = $this->presenter->view;
 		$title = NULL;
+		$menu = $this->getMenu($module);
 
 		if ($view == "add") {
 			$path = substr($this->presenter->name, strlen($module) + 1);
-			$menu = $this->getMenu($module);
 			foreach ($menu->items as $key => $row) {
 				if (Strings::contains($row->path, $path)) {
 					$title = $key;
@@ -60,15 +59,17 @@ class AdminMenuControl extends Control
 						(isset($item["login"]) ? ": " . $item["login"] :
 					NULL)));
 
-		} else {
+		} elseif (isset($menu->items)) {
 			$path = substr($this->presenter->name . ":" . $view, strlen($module) + 1);
-			$menu = $this->getMenu($module);
-
 			foreach ($menu->items as $key => $row) {
 				if ($row->path == $path) {
 					$title = $key;
 				}
 			}
+
+		} else {
+			$moduleParams = $this->paramService->getModuleParams($module);
+			$title = $moduleParams->title;
 		}
 
 		$this->template->title = $title;

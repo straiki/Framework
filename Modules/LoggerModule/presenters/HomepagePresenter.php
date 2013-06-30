@@ -18,7 +18,7 @@ class HomepagePresenter extends Presenter
 		if (file_exists($file = $this->logDir . "/" . $file)) {
 			unlink($file);
 			$this->flashMessage("Smazáno.", "success");
-			$this->redirect("this");
+			$this->redirect("default");
 		}
 	}
 

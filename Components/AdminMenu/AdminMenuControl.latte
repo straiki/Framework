@@ -1,17 +1,27 @@
-<li n:class="submenu, $presenter->module == $module ? 'active open'">
-	<a href="">
-		<i n:class="icon, $menu->baseIcon"></i>
-		{$title}
-	</a>
-	%ul
-		{foreach $menu->items as $label => $item}
-			{if !isset($item->cond) || (isset($item->cond) && $moduleParams->{$item->cond})}
-				{var $path = ":" . ucfirst($module) . ":" . $item->path}
-				{var $addPath = isset($item->addPath) ? (":" . ucfirst($module) . ":" . $item->addPath) : NULL}
-				{include #menuItem, path => $path, icon => $item->icon, name => $label, addPath => $addPath}
+{ifset $menu->items}
+	<li n:class="submenu, $presenter->module == $module ? 'active open'">
+		<a href="">
+			<i n:class="icon, $menu->baseIcon"></i>
+			{$title}
+		</a>
+		%ul
+			{foreach $menu->items as $label => $item}
+				{if !isset($item->cond) || (isset($item->cond) && $moduleParams->{$item->cond})}
+					{var $path = ":" . ucfirst($module) . ":" . $item->path}
+					{var $addPath = isset($item->addPath) ? (":" . ucfirst($module) . ":" . $item->addPath) : NULL}
+					{include #menuItem, path => $path, icon => $item->icon, name => $label, addPath => $addPath}
+				{/}
 			{/}
-		{/}
-</li>
+	</li>
+
+{else}
+	<li n:class="topmenu, $presenter->module == $module ? 'active'">
+		<a href="{plink :{$module}:Homepage:default}">
+			<i n:class="icon, $menu->baseIcon"></i>
+			{$title}
+		</a>
+	</li>
+{/}
 
 
 {define #menuItem}

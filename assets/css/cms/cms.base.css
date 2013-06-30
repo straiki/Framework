@@ -1,3 +1,5 @@
+@blue: #51A351;
+
 .loggerDetail {
 	width: 100%; border: 5px solid #FFF;height:600px;
 }
@@ -8,19 +10,25 @@
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-#sidebar > ul ul li a.menuAddButton {
-	float:right;text-align:center;color:#FFF; /*width:20px;*/ padding:5px; margin: 0px 0px 0px 1px; background: #333;
-		.menuAddButtonIcon {background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 30% 50%; display:block; padding:14px; margin-top: -20px; .rc(0);
-			&:hover {background-color: #51A351;}
-		}
-		&:hover {background-color: #222;
-			.menuAddButtonIcon {background-color: #51A351;}
-		}
+#sidebar > ul ul li a.menuAddButton {float:right;text-align:center;color:#FFF; /*width:20px;*/ padding:5px; margin: 0px 0px 0px 1px; background: #333;
+	.menuAddButtonIcon {background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 30% 50%; display:block; padding:14px; margin-top: -20px; .rc(0);
+		&:hover {background-color: #51A351;}
+	}
+	&:hover {background-color: #222;
+		.menuAddButtonIcon {background-color: #51A351;}
+	}
+
 }
 
 #sidebar .submenu .active a:not(.menuAddButton) {
 	background: darken(@blue, 5%);
 	color: #FFF; .ts(1px, 1px, 1px, #333);
+}
+
+#sidebar > ul > li.topmenu.active {
+	background-color: @blue;
+	background-image: none;
+	a {color: #FFF;}
 }
 
 
