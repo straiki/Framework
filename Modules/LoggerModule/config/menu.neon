@@ -1,5 +1,2 @@
-baseIcon: icon-user
-items:
-	"Přehled chyb":
-		path: Homepage:default
-		icon: icon-th-list
+baseIcon: icon-fire
+primaryAdminOnly: TRUE

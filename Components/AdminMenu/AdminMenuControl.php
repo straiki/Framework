@@ -15,6 +15,9 @@ class AdminMenuControl extends Control
 	/** @inject @var Nette\Http\Request */
 	public $httpRequest;
 
+	/** @inject @var Schmutzka\Security\User */
+	public $user;
+
 
 	/**
 	 * @param string
@@ -23,8 +26,11 @@ class AdminMenuControl extends Control
 	public function render($module, $title)
 	{
 		parent::useTemplate();
+		$this->template->menu = $menu = $this->getMenu($module);
+		if (isset($menu->primaryAdminOnly) && $this->user->id != 1) {
+			return;
+		}
 
-		$this->template->menu = $this->getMenu($module);
 		$this->template->moduleParams = $this->paramService->getModuleParams($module);
 		$this->template->module = $module;
 		$this->template->title = $title;
