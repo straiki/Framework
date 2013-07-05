@@ -4,11 +4,6 @@ namespace Schmutzka\Utils;
 
 use Nette;
 
-/**
- * tableFromClass($class)
- * mpv($activePresenter, $part = NULL)
- */
-
 class Name extends Nette\Object
 {
 
@@ -29,6 +24,22 @@ class Name extends Nette\Object
 		}
 
 		return strtr($table, $replace);
+	}
+
+
+	/**
+	 * @param string
+	 * @return string
+	 * @example CustomModule => custom-module
+	 */
+	public static function upperToDashedLower($string)
+	{
+		$replace = array();
+		foreach (range("A", "Z") as $letter) {
+			$replace[$letter] = "-" . strtolower($letter);
+		}
+
+		return strtr($string, $replace);
 	}
 
 

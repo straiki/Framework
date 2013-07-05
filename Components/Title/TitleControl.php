@@ -4,10 +4,11 @@ namespace Components;
 
 use Schmutzka;
 
-
 /**
  * @method setSep(string)
  * @method getSep()
+ * @method setMainTitle(string)
+ * @method getMainTitle()
  * @method setMainTitleSep(string)
  * @method getMainTitleSep()
  * @method setAlwaysShowMainTitle(bool)
@@ -50,28 +51,13 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	}
 
 
-	/********************** setters **********************/
-
-
 	/**
-	 * Add custom title
 	 * @param string
 	 * @return this
 	 */
 	public function addTitle($title)
 	{
 		$this->titles[] = $title;
-		return $this;
-	}
-
-
-	/**
-	 * @param string
-	 * @return this
-	 */
-	public function setMainTitle($value)
-	{
-		$this->mainTitle = $value;
 		return $this;
 	}
 

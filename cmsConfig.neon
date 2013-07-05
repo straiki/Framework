@@ -94,6 +94,10 @@ parameters:
 				active: FALSE
 				title: Logger
 
+			textSnippet:
+				active: FALSE
+				title: Textíky
+
 	jQuery: "jquery-1.10.1.min.js"
 
 
@@ -111,6 +115,7 @@ services:
 	- Schmutzka\Models\GalleryFile
 	- Schmutzka\Models\PageContent
 	- Schmutzka\Models\Qr
+	- Schmutzka\Models\TextSnippet
 	- QrModule\Services\QrGenerator
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
 
@@ -149,6 +154,10 @@ factories:
 
 	# QrModule
 	qrControl: QrModule\Components\QrControl
+
+	# TextSnippetModule
+	textSnippetControl: TextSnippetModule\Components\TextSnippetControl
+	textSnippetGrid: TextSnippetModule\Components\TextSnippetGrid
 
 	# UserModule
 	userGrid: UserModule\Components\UserGrid

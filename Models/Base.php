@@ -216,6 +216,16 @@ abstract class Base extends Nette\Object
 
 
 	/**
+	 * @param  string
+	 * @return array
+	 */
+	public function fetchByUid($uid)
+	{
+		return $this->table("uid", $uid)->fetchRow();
+	}
+
+
+	/**
 	 * Get last id
 	 * @param string
 	 */

@@ -2,21 +2,12 @@
 
 namespace Schmutzka\Application\Routers;
 
-use NotORM;
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
+use Schmutzka\Utils\Name;
 
 class ModuleRouterFactory
 {
-	/** @inject @var NotORM */
-	public $database;
-
-	/** @inject @var Nette\Caching\Cache */
-	public $cache;
-
-	/** @inject @var Schmutzka\Models\User */
-	public $userModel;
-
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
@@ -32,12 +23,16 @@ class ModuleRouterFactory
 		$router[] = new Route("index.php", "Admin:Homepage:default", Route::ONE_WAY);
 
 		$activeModules = array_keys($this->paramService->getActiveModules());
-		$router[] = new Route("<module admin|" . implode($activeModules + $this->customModules, "|") . ">/<presenter>/<action>[/<id>]", "Homepage:default");
+		$router[] = new Route("<module admin|" . Name::upperToDashedLower(implode($activeModules + $this->customModules, "|")) . ">/<presenter>/<action>[/<id>]", "Homepage:default");
 
 		return $router;
 	}
 
 
+	/**
+	 * @param  self
+	 * @return self
+	 */
 	public function createFrontRouter($router)
 	{
 		$frontRouter = $router[] = new RouteList("Front");

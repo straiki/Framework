@@ -1,6 +1,6 @@
 <?php
 
-namespace Schmutzka\Config;
+namespace Schmutzka;
 
 use Nette;
 
@@ -9,8 +9,9 @@ class Configurator extends Nette\Configurator
 
 	/**
 	 * @param bool|array
+	 * @param bool
 	 */
-	public function __construct($debug = NULL)
+	public function __construct($debug = NULL, $autoloadConfig = TRUE)
 	{
 		parent::__construct();
 
@@ -26,11 +27,28 @@ class Configurator extends Nette\Configurator
 			->register();
 
 		$this->addConfig($this->dir . "/../libs/Schmutzka/defaultConfig.neon", FALSE);
-		if ($this->defaultParameters["environment"] == "development") {
-			$this->addConfig($this->dir . "/config/config.local.neon", FALSE);
 
-		} else {
-			$this->addConfig($this->dir . "/config/config.prod.neon", FALSE);
+		if ($autoloadConfig) {
+			if ($this->defaultParameters["environment"] == "development") {
+				$this->addConfig($this->dir . "/config/config.local.neon", FALSE);
+
+			} else {
+				$this->addConfig($this->dir . "/config/config.prod.neon", FALSE);
+			}
+		}
+	}
+
+
+	/**
+	 * @param  array
+	 * @param  string
+	 */
+	public function loadConfigByHost($hostConfigs, $host)
+	{
+		foreach ($hostConfigs as $key => $config) {
+			if ($key == $host) {
+				$this->addConfig($this->dir . "/config/" . $config, FALSE);
+			}
 		}
 	}
 

@@ -1,0 +1,6 @@
+baseIcon: icon-align-left
+items:
+	"Přehled textíků":
+		path: Homepage:default
+		icon: icon-th-list
+		addPath: Homepage:add
