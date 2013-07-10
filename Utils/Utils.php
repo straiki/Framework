@@ -2,14 +2,9 @@
 
 namespace Schmutzka;
 
-/**
- * xmlToArray(SimpleXMLElement/string)
- * getFirstSet(...)
- * getEmailServer($email, $url = FALSE)
- * getWhatpulseUserStats($id)
- */
+use Nette;
 
-class Utils extends \Nette\Object
+class Utils extends Nette\Object
 {
 
 	/**
@@ -48,7 +43,7 @@ class Utils extends \Nette\Object
 	 * @param string
 	 * @param bool
 	 * @return string
-	 */	
+	 */
 	public static function getEmailServer($email, $url = FALSE)
 	{
 		list($name, $domain) = explode("@", $email);
@@ -63,23 +58,6 @@ class Utils extends \Nette\Object
 		}
 
 		return NULL;
-	}
-
-
-	/**
-	 * Get whatpulse users stats
-	 * @param int
-	 * @return array
-	 */
-	public static function getWhatpulseUserStats($uid) 
-	{
-		$url = "http://api.whatpulse.org/user.php?UserID=" . $uid;
-		$data = file_get_contents($url);
-
-		$data = self::xmlToArray($data);
-		$data = $data["WhatPulse"];
-
-		return $data;
 	}
 
 }

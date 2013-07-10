@@ -8,20 +8,8 @@ use Schmutzka\Utils\Time;
 
 class Helpers extends Nette\Object
 {
-	/** @inject @var Schmutzka\Models\Page */
-	public $pageModel;
-
-	/** @inject @var Schmutzka\Models\Article */
-	public $articleModel;
-
-	/** @inject @var Schmutzka\Models\GalleryFile */
-	public $galleryFileModel;
-
 	/** @inject @var Nette\Http\IRequest */
 	public $httpRequest;
-
-	/** @inject @var QrModule\Services\QrGenerator */
-	public $qrGenerator;
 
 
 	public function loader($helper)
@@ -29,34 +17,6 @@ class Helpers extends Nette\Object
 		if (method_exists($this, $helper)) {
 			return callback($this, $helper);
 		}
-	}
-
-
-	/**
-	 * Generate QR code for particular url
-	 * @param  string  $string
-	 * @param  integer $size
-	 * @return string
-	 */
-	public function generateQR($url, $size = 150)
-	{
-		return "<img src='" . $this->qrGenerator->generateImageForUrl($url, $size) . "'' alt='qr-code'>";
-	}
-
-
-	/**
-	 * Show image
-	 * @param int
-	 * @return string
-	 */
-	public function galleryFile($id)
-	{
-		$galleryFile = $this->galleryFileModel->item($id);
-		$basePath = $this->httpRequest->url->scriptPath;
-
-		$filePath = $basePath . "upload/gallery/" . $galleryFile["gallery_id"] . "/h127/" . $galleryFile["name"];
-
-		return "<img src='" . $filePath . "' alt='Thumb file' class='thumb'>";
 	}
 
 
@@ -88,6 +48,7 @@ class Helpers extends Nette\Object
 	/**
 	 * Display link without "http://"
 	 * @param string
+	 * @return string
 	 */
 	public static function displayUrl($url)
 	{
@@ -96,19 +57,8 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Difference in minutes
-	 * @param int
-	 * @param int
-	 */
-	public static function minDiff($time1, $time2)
-	{
-		return Time::timestampDiff($time1, $time2, "min");
-	}
-
-
-	/**
-	 * Get suffix
 	 * @param string
+	 * @return string
 	 */
 	public static function suffix($file)
 	{
@@ -117,26 +67,6 @@ class Helpers extends Nette\Object
 	}
 
 
-	/**
-	 * Minutes to readable time
-	 * @param int
-	 * @param int
-	 */
-	public static function minsToTime($mins, $type = 1)
-	{
-		return Time::im($mins, $type);
-	}
-
-
-	/**
-	 * Time to seconds
-	 * @param mixed
-	 * @param string
-	 */
-	public static function inSeconds($time, $inputFormat = NULL)
-	{
-		return Time::inSeconds($time, $inputFormat);
-	}
 
 
 	/**
@@ -149,43 +79,8 @@ class Helpers extends Nette\Object
 	}
 
 
-	/**
-	 * highlight_string without '<?php' at the beggining
-	 */
-	public static function highlight($code)
-	{
-		$code = "<?php ".$code;
-		$split = array('&lt;?php&nbsp;' => '');
-		return strtr(highlight_string($code,TRUE),$split);
-	}
-
 
 	/**
-	 * Combine few fileds to 1 line
-	 * param ... array
-	 * @dev version
-	 */
-	public function combineFields()
-	{
-		$args = func_get_args();
-		$data = array_shift($args);
-
-		$sep = $args[0];
-
-		$temp = "";
-		foreach($args[1] as $key) {
-
-			if (isset($data[$key])) {
-				$temp .= $data[$key] . $sep;
-			}
-		}
-
-		return trim($temp, $sep);
-	}
-
-
-	/**
-	 * Ternal shortcut
 	 * @param mixed
 	 * @param string
 	 * @param string
@@ -193,19 +88,15 @@ class Helpers extends Nette\Object
 	 */
 	public static function ternal($value, $one = "ano", $two = "ne", $cond = 1)
 	{
-		if ($value == $cond) {
-			return $one;
-
-		} else {
-			return $two;
-		}
+		return ($value == $cond) ? $one : $two;
 	}
 
 
 	/**
-	 * Return set value
 	 * @param mixed
 	 * @param string
+	 * @param string
+	 * @return string
 	 */
 	public function isEmpty($value, $emptyReturn = "-", $notEmptyReturn = NULL)
 	{
@@ -235,20 +126,19 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Round function
 	 * @param float
 	 * @param int
 	 * @return int
 	 */
-	public static function round($n, $precision)
+	public static function round($n, $precision = 0)
 	{
 		return round($n, $precision);
 	}
 
 
 	/**
-	 * Converts date to words in Czech.
-	 * @param mixed $date
+	 * Converts date to words in Czech
+	 * @param mixed
 	 * @return string
 	 */
 	public static function dateAgoInWords($date)
@@ -344,7 +234,6 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Plural
 	 * @param  int
 	 * @return mixed
 	 */
@@ -392,43 +281,6 @@ class Helpers extends Nette\Object
 	}
 
 
-	/********************** date structures & localization **********************/
-
-
-	/**
-	 * Localized day
-	 * @param mixed
-	 * @param string
-	 * @param string
-	 * @return string
-	 */
-	public static function dayName($date, $lang = "cs", $type = "short")
-	{
-		dd("move to datetime");
-		$day = (is_int($date) ? $date : date("N", strtotime($date)));
-
-		if ($type == "short") {
-			if ($lang == "en") {
-				if ($type == "short") {
-					return date("D", strtotime($date));
-
-				} else {
-					return date("l", strtotime($date));
-				}
-			}
-		}
-
-		static $dayNames = array(
-			"cs" => array(
-				"short" => array(1 => "po", "út", "st", "èt", "pá", "so", "ne"),
-				"long" => array(1 => "pondìlí", "úterý", "støeda", "ètvrtek", "pátek", "sobota", "nedìle")
-			)
-		);
-
-		return $dayNames[$lang][$type][$day];
-	}
-
-
 	/**
 	 * Date default values
 	 * @param string
@@ -437,28 +289,6 @@ class Helpers extends Nette\Object
 	public static function date($date, $format = "j. n. Y H:i")
 	{
 		return Nette\Templating\Helpers::date($date, $format);
-	}
-
-
-	/**
-	 * Returns month name
-	 * @param int $month
-	 */
-	public static function month($month, $monthList = array("leden", "únor", "bøezen", "duben", "kvìten", "èerven", "èervenec", "srpen", "záøí", "øíjen", "listopad", "prosinec"))
-	{
-		dd("helpers move to datetime");
-		return $monthList[$month - 1];
-	}
-
-
-	/**
-	 * Returns Czech weekday
-	 * @param int $weekday
-	 */
-	public static function weekday($weekday, $weekdayList = array("pondìlí", "úterý", "støeda", "ètvrtek", "pátek", "sobota", "nedìle"))
-	{
-		dd("helpers move to datetime");
-		return $week[$weekday - 1];
 	}
 
 
@@ -495,64 +325,6 @@ class Helpers extends Nette\Object
 		}
 
 		return $term;
-	}
-
-
-	/**
-	 * Translate
-	 * @hotfix
-	 */
-	public function translate($s)
-	{
-		return $s;
-	}
-
-
-	/*** cms ***/
-
-
-	/**
-	 * Enable page/article links
-	 * @param string
-	 * @return string
-	 */
-	public function enablePageArticleLinks($string)
-	{
-		preg_match_all('#(\[[^\[\]\n]++\])#U', $string, $matches);
-
-		dd("my helpers");
-
-		$pageList = $this->pageModel->fetchPairs("id", "url");
-		$articleList = $this->articleModel->fetchPairs("id", "url");
-		$from = $to = $replaceList = array();
-
-		foreach ($matches as $row) {
-			if ($row) {
-				$item = $row[0];
-				$item = trim($item, "[]");
-
-				$itemParts = explode(":", $item);
-				if (count($itemParts) != 3) {
-					continue;
-				}
-				list($type, $id, $node) = $itemParts;
-				$node = trim($node, "\"");
-
-				if ($type == "page") {
-					$from[] = $row[0];
-					$to[] = "<a href='../stranka/" . $pageList[$id] . "'>" . $node . "</a>";  // move to appliaction, link!, base path +
-
-				} elseif ($type = "article") {
-					$from[] = $row[0];
-					$to[] = "<a href='../clanek/" . $pageList[$id] . "'>" . $node . "</a>";
-				}
-
-			}
-		}
-
-		$string = str_replace($from, $to, $string);
-
-		return $string;
 	}
 
 }

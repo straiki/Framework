@@ -81,30 +81,21 @@ services:
 		class: Schmutzka\Templates\TemplateService
 		setup:
 			- setLatte(@nette.latte)
-	userManager: Schmutzka\Security\UserManager
 
 	- lessc
 	- Schmutzka\Config\ParamService(@container::getParameters())
-	- Schmutzka\Models\Page
-	- Schmutzka\Models\Article
 	- Schmutzka\Templates\Helpers
 	#- Services\SessionStorage
 
 
 factories:
 	callbackPanel: Schmutzka\Diagnostics\Panels\CallbackPanel
-	contactControl: Components\ContactControl
 	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
 	flashMessageControl: Components\FlashMessageControl
 	gaControl: Components\GaControl
-	changePasswordControl: Components\ChangePasswordControl
-	loginControl: Components\LoginControl
-	registrationControl: Components\RegistrationControl
-	remindPasswordControl: Components\RemindPasswordControl
 	rssControl: Components\RssControl
 	systemSession: Nette\Http\Session::getSection('system')
 	titleControl: Components\TitleControl
-	userControl: UserModule\Components\UserControl
 
 
 extensions:

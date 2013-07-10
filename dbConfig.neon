@@ -1,0 +1,10 @@
+services:
+	userManager: Schmutzka\Security\UserManager
+
+factories:
+	changePasswordControl: Components\ChangePasswordControl
+	contactControl: Components\ContactControl
+	loginControl: Components\LoginControl
+	registrationControl: Components\RegistrationControl
+	remindPasswordControl: Components\RemindPasswordControl
+	userControl: UserModule\Components\UserControl
