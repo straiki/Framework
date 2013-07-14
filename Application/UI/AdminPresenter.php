@@ -19,12 +19,12 @@ class AdminPresenter extends FrontModule\BasePresenter
 		if (! $this->user->isLoggedIn()) {
 			if ($this->unloggedRedirect != $currentSite) {
 				$this->flashMessage("Pro přístup do této sekce se musíte přihlásit.", "info");
-				$this->redirectOnLogout();
+				$this->redirect(":Admin:Homepage:default");
 			}
 
 		} elseif ($this->context->hasService("Nette\Security\IAuthorizator") && ! $this->user->isAllowed($this->name, $this->action)) {
 			$this->flashMessage("Na vstup do této sekce nemáte dostatečné oprávnění.", "warning");
-			$this->redirectOnLogout();
+			$this->redirect(":Front:Homepage:default");
 		}
 	}
 

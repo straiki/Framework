@@ -16,6 +16,9 @@ use Schmutzka\Application\UI\Control;
  */
 class LoginControl extends Control
 {
+	/** @persistent @var string */
+	public $backlink;
+
 	/** @var array */
 	public $onLoginSuccess = array();
 
@@ -39,6 +42,13 @@ class LoginControl extends Control
 
 	/** @var bool */
 	private $permalogin = FALSE;
+
+
+	public function attached($presenter)
+	{
+		parent::attached($presenter);
+		$this->backlink = $presenter->backlink;
+	}
 
 
 	protected function createComponentForm()
@@ -92,9 +102,7 @@ class LoginControl extends Control
 				$this->presenter->flashMessage($this->paramService->flashes->onLogin, "success");
 			}
 
-			$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
-			$baseSession = $this->session->getSection("baseSession_" . $sectionKey);
-			$this->presenter->restoreRequest($baseSession->backlink); // @todo refactor to absolute param - standart!
+			$this->presenter->restoreRequest($this->backlink);
 			$this->presenter->redirect("Homepage:default");
 
 		} catch (Nette\Security\AuthenticationException $e) {
