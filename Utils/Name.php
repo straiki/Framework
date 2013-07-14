@@ -11,19 +11,14 @@ class Name extends Nette\Object
 	 * Get table name by class name
 	 * @param string
 	 * @return string
-	 * @example Pages => pages, ArticleTag => article_tag
+	 * @example Models\Pages => pages, Models\ArticleTag => article_tag
 	 */
 	public static function tableFromClass($class)
 	{
 		$table = explode("\\", $class);
 		$table = lcfirst(array_pop($table));
 
-		$replace = array();
-		foreach (range("A", "Z") as $letter) {
-			$replace[$letter] = "_" . strtolower($letter);
-		}
-
-		return strtr($table, $replace);
+		return self::upperToUnderscoreLower($table);
 	}
 
 
@@ -34,12 +29,18 @@ class Name extends Nette\Object
 	 */
 	public static function upperToDashedLower($string)
 	{
-		$replace = array();
-		foreach (range("A", "Z") as $letter) {
-			$replace[$letter] = "-" . strtolower($letter);
-		}
+		return strtr($string, self::getReplaceAlphabetBy("-"));
+	}
 
-		return strtr($string, $replace);
+
+	/**
+	 * @param string
+	 * @return string
+	 * @example customTable => custom_table
+	 */
+	public static function upperToUnderscoreLower($string)
+	{
+		return strtr($string, self::getReplaceAlphabetBy("_"));
 	}
 
 
@@ -104,5 +105,24 @@ class Name extends Nette\Object
 
 		return $module;
 	}
+
+
+	/********************** helpers **********************/
+
+
+	/**
+	 * @param  string
+	 * @return array
+	 */
+	private static function getReplaceAlphabetBy($char)
+	{
+		$replace = array();
+		foreach (range("A", "Z") as $letter) {
+			$replace[$letter] = $char . strtolower($letter);
+		}
+
+		return $replace;
+	}
+
 
 }

@@ -31,23 +31,23 @@
 
 
 		{if $mail["html"]}
-			%tr 
+			%tr
 				%th [colspan => 2] Html version
-			%tr 
+			%tr
 				%td [colspan => 2]
 					{!$mail["html"]}
-			%tr 
+			%tr
 				%th [colspan => 2] Raw html
-			%tr 
+			%tr
 				%td [colspan => 2]
 					{$mail["html"]}
 		{else}
-			%tr 
+			%tr
 				%th [colspan => 2] Text version
-			%tr 
+			%tr
 				%td [colspan => 2]
 					{$mail["body"]}
-		{/if}
+		{/}
 
 	</table>
 
@@ -55,7 +55,7 @@
 {define #emails}
 	{foreach $emailList as $key => $value}
 		<a href="mailto:{$key}">
-			{if isset($value)}{$value}{else}{$key}{/if}
+			{if isset($value)}{$value}{else}{$key}{/}
 		</a>{sep}, {/sep}
 	{/foreach}
 {/define}

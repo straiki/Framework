@@ -36,14 +36,9 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	{
 		parent::useTemplate();
 
-		if ($this->isHomepage()) {
-			$title = $this->mainTitle;
-
-		} else {
-			$title = implode($this->sep, $this->titles);
-			if ($this->alwaysShowMainTitle) {
-				$title .= ($title ? $this->mainTitleSep : NULL) . $this->mainTitle;
-			}
+		$title = implode($this->sep, $this->titles);
+		if ($this->alwaysShowMainTitle) {
+			$title .= ($title ? $this->mainTitleSep : NULL) . $this->mainTitle;
 		}
 
 		$this->template->title = $title;
@@ -62,16 +57,13 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	}
 
 
-	/********************** helpers **********************/
-
-
 	/**
 	 * @return bool
 	 */
-	private function isHomepage()
+	public function isHomepage()
 	{
-		$name = $this->getPresenter()->name;
-		$action = $this->getPresenter()->action;
+		$name = $this->presenter->name;
+		$action = $this->presenter->action;
 
 		return ($action == "default" && in_array($name, array("Front:Homepage", "Homepage")));
 	}

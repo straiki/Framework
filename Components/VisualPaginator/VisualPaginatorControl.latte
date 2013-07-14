@@ -11,14 +11,14 @@
 					<li>
 						<a n:href="this, page => $step">{$step}</a>
 					</li>
-				{/if}
+				{/}
 
 				{if $iterator->nextValue > $step + 1}
 					<li>
 						<a href="#" class="dislabled">…</a>
 					</li>
-				{/if}
+				{/}
 			{/foreach}
 		</ul>
 	</div>
-{/if}
+{/}

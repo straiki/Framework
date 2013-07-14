@@ -1,10 +1,10 @@
 {snippet}
 
 	{if $isFavorite}
-		<a n:class="$favoriteClass, $useAjax ? ajax" n:href="unfavour!, id => $id" {if $useTooltip}n:tooltip="Odebrat z oblíbených"{/if}>&nbsp;</a>
+		<a n:class="$favoriteClass, $useAjax ? ajax" n:href="unfavour!, id => $id" {if $useTooltip}n:tooltip="Odebrat z oblíbených"{/}>&nbsp;</a>
 
 	{else}
-		<a n:class="$nonFavoriteClass, $useAjax ? ajax" n:href="favour!,  id => $id" {if $useTooltip}n:tooltip="Přidat do oblíbených"{/if}>&nbsp;</a>
-	{/if}	
+		<a n:class="$nonFavoriteClass, $useAjax ? ajax" n:href="favour!,  id => $id" {if $useTooltip}n:tooltip="Přidat do oblíbených"{/}>&nbsp;</a>
+	{/}
 
 {/snippet}

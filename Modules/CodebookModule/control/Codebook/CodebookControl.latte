@@ -2,7 +2,7 @@
 
 {if $activeConvert AND isset($showConverForm)}
 	{control convertForm}
-{/if}
+{/}
 
 
 <table class="table">
@@ -35,7 +35,7 @@
 					<a n:href="convertItem,  id => $row['id']" class="convert _ajax">&nbsp;</a>
 				{else}
 					<a n:href="delete!  id => $row['id']" class="del ajax" onClick="return confirm('Really?')">&nbsp;</a>
-				{/if}
+				{/}
 			</td>
 		</tr>
 	{/foreach}

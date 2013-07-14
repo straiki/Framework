@@ -16,7 +16,9 @@ use Schmutzka\Application\UI\Control;
  * @method getShowEmail()
  * @method setMailTo(string|array)
  * @method getMailTo()
- * @method setLogSender(array)
+ * @method setMailFrom(string)
+ * @method getMailFrom()
+ * @method setLogSender(bool|array)
  * @method getLogSender()
  */
 class ContactControl extends Control
@@ -35,6 +37,9 @@ class ContactControl extends Control
 
 	/** @var string|array */
 	private $mailTo;
+
+	/** @var string */
+	private $mailFrom;
 
 	/** @var bool */
 	private $showEmail = TRUE;
@@ -120,7 +125,7 @@ class ContactControl extends Control
 				}
 
 				$from .= "\n\n";
-				$message->setFrom($email, $name);
+				$message->setFrom($email ?: $this->mailFrom, $name);
 			}
 		}
 

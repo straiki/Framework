@@ -12,7 +12,8 @@ class MenuPresenter extends Presenter
 
 	public function renderDefault()
 	{
-		$this->template->pages = $this->pageModel->fetchAll()->order("menu_rank");
+		$this->template->pages = $this->pageModel->fetchAll()
+			->order("menu_rank");
 	}
 
 
@@ -25,15 +26,6 @@ class MenuPresenter extends Presenter
 		$this->pageModel->update(array("menu_active" => $to), $id);
 		$this->flashMessage("Zobrazení změneno.", "success");
 		$this->redirect("this");
-	}
-
-
-	/**
-	 * @param  array
-	 */
-	public function handleSort($data)
-	{
-		parent::handleSort($data, "menu_rank");
 	}
 
 }

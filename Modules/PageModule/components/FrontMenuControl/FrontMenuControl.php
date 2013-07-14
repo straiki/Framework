@@ -13,7 +13,9 @@ class FrontMenuControl extends Control
 	public function render()
 	{
 		parent::useTemplate();
-		$this->template->menuItems = $this->pageModel->fetchAll(array("menu_active" => TRUE))->order("menu_rank");
+		$this->template->menuItems = $this->pageModel->fetchAll(array(
+			"menu_active" => TRUE
+		))->order("menu_rank");
 		$this->template->render();
 	}
 

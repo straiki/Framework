@@ -37,7 +37,7 @@
 				<a n:href="delete!  id => $item[0]['id']" class="del" onClick="return confirm('Really?')">&nbsp;</a>
 				{if count($item[1])}
 					{include #item, structure => $item[1]}
-				{/if}
+				{/}
 			</li>
 		{/foreach}
 	</ul>

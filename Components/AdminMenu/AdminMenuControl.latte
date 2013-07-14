@@ -6,9 +6,9 @@
 		</a>
 		%ul
 			{foreach $menu->items as $label => $item}
-				{if !isset($item->cond) || (isset($item->cond) && $moduleParams->{$item->cond})}
+				{if (!isset($item->cond) || (isset($item->cond) && $moduleParams->{$item->cond}))}
 					{var $path = ":" . ucfirst($module) . ":" . $item->path}
-					{var $addPath = isset($item->addPath) ? (":" . ucfirst($module) . ":" . $item->addPath) : NULL}
+					{var $addPath = isset($item->addPath) ? ":" . ucfirst($module) . ":" . $item->addPath}
 					{include #menuItem, path => $path, icon => $item->icon, name => $label, addPath => $addPath}
 				{/}
 			{/}
