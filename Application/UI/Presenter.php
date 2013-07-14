@@ -11,8 +11,11 @@ use WebLoader;
 
 abstract class Presenter extends Nette\Application\UI\Presenter
 {
-	/** @persistent */
+	/** @persistent @var string */
 	public $lang;
+
+	/** @persistent @var string */
+	public $backlink;
 
 	/** @var string */
 	public $module;
@@ -29,14 +32,8 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @inject @var Schmutzka\Templates\TemplateService */
 	public $templateService;
 
-	/** @var Nette\Http\SessionSection */
-	protected $baseSession;
-
-	/** @var string */
-	protected $onLogoutLink;
-
-	/** @var callable */
-	protected $helpersCallback;
+	/** @var array|callable[] */
+	protected $helpersCallbacks = array();
 
 
 	public function startup()
@@ -45,25 +42,12 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 		$this->module = Name::mpv($this->presenter, "module");
 
-		$sectionKey = substr(sha1($this->paramService->wwwDir), 6);
-		$this->baseSession = $this->session->getSection("baseSession_" . $sectionKey);
-		$this->user->storage->setNamespace("user_ " . $sectionKey);
-
-		if ($this->user->loggedIn) {
-			if (isset($this->paramService->logUserActivity)) {
-				$this->user->logUserActivity($this->paramService->logUserActivity);
-			}
-		}
-
-		if ($this->isRequestStoreable($this->presenter, $this->signal)) {
-			$this->baseSession->requestBacklink = $this->storeRequest();
+		if ($this->user->loggedIn && $this->paramService->logUserActivity) {
+			$this->user->logLastActive();
 		}
 	}
 
 
-	/**
-	 * Logout
-	 */
 	public function handleLogout()
 	{
 		$this->user->logout();
@@ -71,25 +55,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 			$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
 		}
 
-		$this->redirectOnLogout();
-	}
-
-
-	/**
-	 * Redirect after logout
-	 */
-	protected function redirectOnLogout()
-	{
-		if ($this->onLogoutLink) {
-			$this->redirect($this->onLogoutLink);
-		}
-
-		if (Strings::startsWith($this->link(":Front:Homepage:default"), "error")) {
-			$this->redirect("Homepage:default");
-
-		} else {
-			$this->redirect(":Front:Homepage:default");
-		}
+		$this->redirect(":Front:Homepage:default");
 	}
 
 
@@ -97,7 +63,6 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * Create template
 	 * @param string
 	 */
 	public function createTemplate($class = NULL)
@@ -105,17 +70,14 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 		$template = parent::createTemplate($class);
 		$this->templateService->configure($template, $this->lang);
 
-		if ($this->helpersCallback) {
-			$template->registerHelperLoader($this->helpersCallback);
+		foreach ($this->helpersCallbacks as $helpersCallback) {
+			$template->registerHelperLoader($helpersCallback);
 		}
 
 		return $template;
 	}
 
 
-	/**
-	 * Format template layout
-	 */
 	public function formatLayoutTemplateFiles()
 	{
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
@@ -168,8 +130,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * Delete helper
-	 * @param Schmutzka\Models\*
+	 * @param Schmutzka\Models\Base
 	 * @param int
 	 * @param string
 	 */
@@ -187,21 +148,22 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 		}
 
 		if ($redirect) {
-			$this->redirect($redirect, array("id" => NULL));
+			$this->redirect($redirect, array(
+				"id" => NULL
+			));
 		}
 	}
 
 
 	/**
-	 * Load item helper
 	 * @param Schmutzka\Models\Base
 	 * @param int
 	 * @param string
 	 */
 	protected function loadItemHelper($model, $id, $redirect = "default")
 	{
-		if ($id == NULL) {
-			return NULL;
+		if (!$id) {
+			return FALSE;
 		}
 
 		if ($item = $model->item($id)) {
@@ -210,34 +172,10 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 
 		} else {
 			$this->flashMessage("Tento záznam neexistuje.", "error");
-			$this->redirect($redirect, array("id" => NULL));
+			$this->redirect($redirect, array(
+				"id" => NULL
+			));
 		}
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Is reuqest storeable
-	 * @param string
-	 * @param string
-	 */
-	private function isRequestStoreable($presenter, $signal)
-	{
-		$mvp = Schmutzka\Utils\Name::mpv($presenter);
-		$presenter = $mvp[1];
-		$view = $mvp[2];
-
-		if ($presenter == "homepage" || $presenter == "registration" || $view == "login") {
-			return FALSE;
-		}
-
-		if (is_array($signal) && (in_array("authorize", $signal) || in_array("login", $signal))) {
-			return FALSE;
-		}
-
-		return TRUE;
 	}
 
 }
