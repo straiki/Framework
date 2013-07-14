@@ -6,15 +6,12 @@ parameters:
 			page:
 				active: FALSE
 				title: Stránky
-				customUrl: FALSE
 				perexShort: FALSE
 				perexLong: FALSE
-				# promoPhoto: TRUE
 				attachmentGallery: FALSE
 				attachmentFiles: FALSE
 				adminNote: FALSE
 				contentHistory: FALSE
-				uid: FALSE
 				menu: FALSE
 
 			article:
@@ -27,7 +24,6 @@ parameters:
 				publishTypes:
 					concept: Koncept
 					public: Publikován
-				customUrl: FALSE
 				perexShort: FALSE
 				perexLong: FALSE
 				promoPhoto: FALSE
@@ -79,6 +75,7 @@ parameters:
 				add: FALSE
 				passwordMinLength: 6
 				resendPassword: FALSE
+				logLastActive: TRUE
 
 			file:
 				active: FALSE
@@ -201,7 +198,7 @@ webloader:
 				- %assetsDir%/js/jquery/%jQuery%
 				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
 				- %assetsDir%/js/bootstrap/bootstrap.min.js
-				- %assetsDir%/js/nette/nette.forms.js
+				- %assetsDir%/js/nette/netteForms.js
 				- %assetsDir%/js/nette/nette.rules.js
 				- %assetsDir%/js/nette/nette.ajax.js
 				- %assetsDir%/js/datepicker.js

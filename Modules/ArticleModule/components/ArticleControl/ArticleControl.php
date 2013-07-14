@@ -76,8 +76,6 @@ class ArticleControl extends TextControl
 					->setAttribute("data-placeholder", "Zde můžete omezit zobrazení pouze pro určité uživatele")
 					->setAttribute("class", "chosen width400");
 			}
-
-			$this->addFormCustomUrl($form);
 		}
 
  		$form->addGroup("Obsah");

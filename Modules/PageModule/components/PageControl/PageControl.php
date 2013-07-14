@@ -42,13 +42,8 @@ class PageControl extends TextControl
 		$form = new Form;
 		$form->addGroup("");
 		$form->addText("title", "Název stránky:")
-			->addRule(Form::FILLED, "Zadejte název stránky");
-
-		$this->addFormCustomUrl($form);
-
-		if ($this->moduleParams->uid) {
-			$form->addText("uid", "UID:");
-		}
+			->addRule(Form::FILLED, "Zadejte název stránky")
+			->setAttribute("class", "span6");
 
 		$form->addGroup("Obsah");
 		$this->addFormPerexShort($form);

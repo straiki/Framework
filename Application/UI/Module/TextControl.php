@@ -64,19 +64,6 @@ abstract class TextControl extends Control
 	/**
 	 * @param Nette\Application\UI\Form
 	 */
-	protected function addFormCustomUrl(Form $form)
-	{
-		if ($this->moduleParams->customUrl) {
-			$form->addText("url", "Url adresa:")
-				->setOption("description", "Bude automaticky vygenerována z názvu")
-				->setAttribute("class", "span6");
-		}
-	}
-
-
-	/**
-	 * @param Nette\Application\UI\Form
-	 */
 	protected function addFormAttachments($form)
 	{
 		if ($this->moduleParams->attachmentGallery || $this->moduleParams->attachmentFiles) {
@@ -106,9 +93,7 @@ abstract class TextControl extends Control
 	 */
 	public function preProcessValues($values)
 	{
-		if ((isset($values["url"]) && $values["url"] == NULL) || !isset($values["url"])) {
-			$values["url"] = $this->getUniqueUrl($values["title"]);
-		}
+		$values["url"] = $this->getUniqueUrl($values["title"]);
 		$values["edited"] = new Nette\DateTime;
 		$values["user_id"] = $this->user->id;
 
