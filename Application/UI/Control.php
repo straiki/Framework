@@ -37,7 +37,7 @@ abstract class Control extends Nette\Application\UI\Control
 	}
 
 
-	/** 
+	/**
 	 * Sets up template
 	 * @param string
 	 */
@@ -56,6 +56,21 @@ abstract class Control extends Nette\Application\UI\Control
 	{
 		$class = $this->getReflection();
 		return dirname($class->getFileName()) . "/" . $class->getShortName() . ucfirst($name) . ".latte";
+	}
+
+
+	/**
+	 * @param  string
+	 * @return Nette\ComponentModel\IComponent
+	 */
+	protected function createComponent($name)
+	{
+		if ($component = parent::createComponent($name)) {
+			return $component;
+
+		} else {
+			return $this->presenter->createComponent($name);
+		}
 	}
 
 }
