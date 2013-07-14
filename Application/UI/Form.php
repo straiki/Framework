@@ -2,11 +2,14 @@
 
 namespace Schmutzka\Application\UI;
 
+use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
 use Nette;
 use Nette\Utils\Html;
 use Schmutzka\Forms\Controls;
-use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
 
+/**
+ * @method setProcessor(callable)
+ */
 class Form extends Nette\Application\UI\Form
 {
 	/** validators */
@@ -24,11 +27,11 @@ class Form extends Nette\Application\UI\Form
 	/** @var bool */
 	public $useBootstrap = TRUE;
 
-	/** @var callable */
-	protected $processor;
-
 	/** @inject @var Nette\Localization\ITranslator */
 	public $translator;
+
+	/** @var callable */
+	protected $processor;
 
 	/** @var bool */
 	private $isBuilt = FALSE;
@@ -62,35 +65,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Custom form render for separate form
-	 * @seeks APP_DIR/Forms/{formName}.latte
-	 * @seeks LIBS_DIR/Schmutzka/Modules/{moduleName}/Forms/{formName}.latte
-	 */
-	public function renderTemplate()
-	{
-		$className = strtr($this->getReflection()->name, array("\\" => "/"));
-		$className = strtr($className, array("Forms" => "forms"));
-		$files[] = APP_DIR . "/" . lcfirst($className) . ".latte";
-		$files[] = LIBS_DIR . "/Schmutzka/Modules/" . $className . ".latte";
-
-		foreach ($files as $file) {
-			if (file_exists($file)) {
-				$template = $this->createTemplate($file);
-				foreach ($this as $key => $value) {
-					if (is_array($value) || is_string($value) || is_int($value)) {
-						$template->{$key} = $value;
-					}
-				}
-
-				return $template->render();
-			}
-		}
-
-		throw new \Exception("$file not found.");
-	}
-
-
-	/**
 	 * Changes position of control
 	 * @param string
 	 * @param string
@@ -111,6 +85,7 @@ class Form extends Nette\Application\UI\Form
 	 * Set defaults accepts array, object or empty string
 	 * @param array|object
 	 * @param bool
+	 * @return  this
 	 */
 	public function setDefaults($defaults, $erase = FALSE)
 	{
@@ -128,12 +103,12 @@ class Form extends Nette\Application\UI\Form
 	public function addError($message)
 	{
 		$this->valid = FALSE;
-		$this->flashMessage($message, "error");
+		$this->presenter->flashMessage($message, "error");
 	}
 
 
 	/**
-	 * Will be called when the component becomes attached to a monitored object
+	 * Is called when the component becomes attached to a monitored object
 	 * @param Nette\Application\IComponent
 	 */
 	protected function attached($presenter)
@@ -186,34 +161,17 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Returns values as array
-	 * @param bool
+	 * @param  bool
+	 * @return  array|ArrayHash
 	 */
-	public function getValues($removeEmpty = FALSE)
+	public function getValues($asArray = TRUE)
 	{
-		$values = parent::getValues(TRUE);
-
-		if ($this->getHttpData()) {
-			foreach ($this->getHttpData() as $key => $value) {
-				if (isset($this[$key])) {
-					if ($this[$key] instanceof Nette\Forms\Controls\SubmitButton) {
-
-					} elseif (empty($values[$key]) && $value && $key != "_token_") {
-						$values[$key] = $value;
-					}
-				}
-			}
-		}
-
+		$values = parent::getValues($asArray);
 		if ($this->processor && is_callable($this->processor)) {
 			$values = call_user_func($this->processor, $values);
 
-		} elseif (method_exists($this->parent, lcfirst($this->getName()) . "Processor") && is_callable($this->processor)) { // find and use values processor if exists
+		} elseif (method_exists($this->parent, lcfirst($this->getName()) . "Processor") && is_callable($this->processor)) {
 			$values = call_user_func($this->processor, $values);
-		}
-
-		if ($removeEmpty) {
-			$values = array_filter($values);
 		}
 
 		return $values;
@@ -221,7 +179,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Get submit control name
 	 * @return string
 	 */
 	public function getSubmitName()
@@ -231,7 +188,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Set id for the form
 	 * @param string
 	 * @return this
 	 */
@@ -243,7 +199,6 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Set target for the form
 	 * @param string
 	 * @return this
 	 */
@@ -254,38 +209,14 @@ class Form extends Nette\Application\UI\Form
 	}
 
 
-	/* ****************************** improved inputs ****************************** */
+	/* ****************************** controls ****************************** */
 
 
 	/**
-	 * @return UploadControl
-	 */
-	/*
-	public function addUpload($name, $label = NULL)
-	{
-		$basePath = $this->getHttpRequest()->url->scriptPath;
-		$item = $this[$name] = new Controls\UploadControl($label, $basePath);
-
-		return $item;
-	}
-	*/
-
-
-	/* ****************************** seperated controls ****************************** */
-
-
-	/**
-	 * @return DatePicker
-	 */
-	public function addDatePicker($name, $label = NULL, $cols = NULL)
-	{
-		return $this[$name] = new Controls\DatePicker($label, $cols, NULL);
-	}
-
-
-
-	/**
-	 * @return AntispamControl
+	 * @param  string
+	 * @param  string
+	 * @param  string
+	 * @return Controls\AntispamControl
 	 */
 	public function addAntispam($name = "antispam", $label = "Toto pole vymažte.", $msg = "Byl detekován pokus o spam")
 	{
@@ -294,10 +225,10 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Adds suggest
 	 * @param string
-	 * @param string
+	 * @param string|NULL
 	 * @param array
+	 * @return  Controls\SuggestControl
 	 */
 	public function addSuggest($name, $label = NULL, $suggestList)
 	{
@@ -306,43 +237,25 @@ class Form extends Nette\Application\UI\Form
 
 
 	/**
-	 * Adds datepicker time
+	 * @param  string
+	 * @param  string|NULL
+	 * @param  int|NULL
+	 * @return Controls\DatePicker
+	 */
+	public function addDatePicker($name, $label = NULL, $cols = NULL)
+	{
+		return $this[$name] = new Controls\DatePicker($label, $cols, NULL);
+	}
+
+
+	/**
 	 * @param string
-	 * @param string
+	 * @param string|NULL
+	 * @return Controls\DateTimePicker
 	 */
 	public function addDateTimePicker($name, $label = NULL)
 	{
 		return $this[$name] = new Controls\DateTimePicker($label);
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Create template
-	 * @param string
-	 * @return Nette\Templating\FileTemplate
-	 */
-	public function createTemplate($file = NULL)
-	{
-		$template = $this->getPresenter()->createTemplate();
-		if ($file) {
-			$template->setFile($file);
-		}
-
-		return $template;
-	}
-
-
-	/**
-	 * @param callable
-	 * @return self
-	 */
-	public function setProcessor($processor)
-	{
-		$this->processor = $processor;
-		return $this;
 	}
 
 }
