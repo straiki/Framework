@@ -40,7 +40,6 @@ class User extends Nette\Security\User
 
 
 	/**
-	 * Get user role
 	 * @return  string
 	 */
 	public function getRole()
@@ -50,17 +49,13 @@ class User extends Nette\Security\User
 	}
 
 
-	/**
-	 * Log user activity
-	 */
-	public function logUserActivity()
+	public function logLastActive()
 	{
-		$array["last_active"] = new Nette\DateTime;
-
-		$lastActive =  $this->userModel->fetchSingle($column, $this->id);
+		$lastActive =  $this->userModel->fetchSingle("last_active", $this->id);
 		$lastUpdate = time() - strtotime($lastActive);
 
 		if ($lastUpdate > (3 * 60)) { // log max once per 3 mins
+			$array["last_active"] = new Nette\DateTime;
 			$this->userModel->update($array, $this->id); // 60 ms!
 		}
 	}
