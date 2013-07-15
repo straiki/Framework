@@ -6,16 +6,14 @@ use Schmutzka\Application\UI\Control;
 
 class FrontMenuControl extends Control
 {
-	/** @inject @var Schmutzka\Models\Page */
-	public $pageModel;
+	/** @inject @var Schmutzka\Models\PageTree */
+	public $pageTreeModel;
 
 
 	public function render()
 	{
 		parent::useTemplate();
-		$this->template->menuItems = $this->pageModel->fetchAll(array(
-			"menu_active" => TRUE
-		))->order("menu_rank");
+		$this->template->menuItems = $this->pageTreeModel->fetchFront();
 		$this->template->render();
 	}
 

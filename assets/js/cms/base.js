@@ -59,4 +59,30 @@ $(document).ready(function() {
 		}
 	});
 
+
+	// 7. sortable nested menu
+	$('.frontMenu').nestable({
+		'maxDepth': 2
+
+	}).on('change', function() {
+		var sortLink = $(this).data("sort-link");
+		var menuList = $(this).nestable('serialize');
+		menuList = window.JSON.stringify(menuList);
+
+		console.log(menuList);
+
+		$.get(sortLink, {
+			data: menuList
+		});
+	});
+
 });
+
+
+// ajax
+jQuery(window).load(function () {
+	jQuery.nette.ext('init').linkSelector = 'a.ajax';
+	jQuery.nette.ext('init').formSelector = 'form.ajax';
+	jQuery.nette.init();
+});
+

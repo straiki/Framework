@@ -1,5 +1,27 @@
-{foreach $menuItems as $row}
-	{var $link = ":Front:Page:detail?id={$row['id']}"}
-	%li [n:class => "$presenter->isLinkCurrent($link) ? 'active'"]
-		<a n:phref="Page:detail, id => $row['id']">{$row['title']}</a>
+%ul.nav
+	{foreach $menuItems as $row}
+		{if isset($row["children"]) && count($row["children"])}
+			%li.dropdown
+				<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+					{$row["title"]}
+					%b.caret
+				</a>
+
+				%ul.dropdown-menu
+					{foreach $row["children"] as $row}
+						{include #item, row => $row}
+					{/}
+
+		{else}
+			{include #item, row => $row}
+		{/}
+	{/}
+
+
+{define #item}
+
+{var $link = ":Front:Page:detail?id={$row['id']}"}
+%li [n:class => "$presenter->isLinkCurrent($link) ? 'active'"]
+	<a n:phref="Page:detail, id => $row['id']">{$row['title']}</a>
+
 {/}

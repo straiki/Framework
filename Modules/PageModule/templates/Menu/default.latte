@@ -1,27 +1,28 @@
 {#content}
 
-{if count($pages)}
+{if count($pageTreeStructure)}
 
-	%table.table.table-bordered.table-condensed.table-striped
-		%thead
-			%tr
-				%th Stránka
-				%th [width => "15%"] Zobrazit
-				%th [width => "15%"] Změnit pořadí
-
-			%tbody#sortable [data-sort-link => {link sort!}]
-				{foreach $pages as $id => $page}
-					%tr [id => {$id}]
-						%td {$page["title"]}
-						%td
-							{if $page["menu_active"]}
-								ano - <a n:href="setActive!, id => $id, to => FALSE">skrýt</a>
+	<div class="dd frontMenu" data-sort-link="{link sortMenu!}">
+		{#itemList}
+			%ol.dd-list
+				{foreach $pageTreeStructure as $id => $item}
+					<li class="dd-item dd3-item" data-id="{$id}">
+						.dd-handle.dd3-handle Drag
+						.dd3-content
+							{$item["title"]}
+							{if $item["menu_active"]}
+								<a n:href="setActive!, id => $id, to => FALSE">skrýt</a>
 							{else}
-								ne - <a n:href="setActive!, id => $id, to => TRUE">zobrazit</a>
+								<a n:href="setActive!, id => $id, to => TRUE">zobrazit</a>
 							{/}
 
-						%td.move Přesuň řádek
+						{if isset($item["children"]) && count($item["children"])}
+							{include #itemList, pageTreeStructure => $item["children"]}
+						{/}
+					</li>
 				{/}
+		{/}
+	</div>
 
 {else}
 	%p.alert.alert-info Zatím nemáte žádné stránky.

@@ -113,6 +113,7 @@ services:
 	- Schmutzka\Models\GalleryFile
 	- Schmutzka\Models\Page
 	- Schmutzka\Models\PageContent
+	- Schmutzka\Models\PageTree
 	- Schmutzka\Models\Qr
 	- Schmutzka\Models\TextSnippet
 	- QrModule\Services\QrGenerator
@@ -173,6 +174,7 @@ webloader:
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/cms/cms.base.css
+				- %assetsDir%/css/jquery/jquery.nestable.css
 
 			filters:
 				- @lessFilter
@@ -209,6 +211,7 @@ webloader:
 				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
 				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
 				- %assetsDir%/js/jquery/chosen/chosen.jquery.min.js
+				- %assetsDir%/js/jquery/jquery.nestable.js
 
 		adminLogin:
 			files:

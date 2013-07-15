@@ -10,47 +10,29 @@ class BaseTree extends Base
 	public $structure;
 
 	/** @var string key column name */
-	private $idColumn;
+	protected $idColumn = "id";
 
 	/** @var string parent key column name */
-	private $parentColumn;
+	protected $parentColumn = "parent_id";
 
 
 	/**
 	 * @param array
-	 * @param string
-	 * @param string
-	 * @callback build()
+	 * @return array { [ id => { [ NotORM_Row => ..., children ] } ] }
 	 */
-	public function __construct($dataArray, $parentColumn = "parent_id", $idColumn = "id")
+	public function fetchStructure($cond = array())
 	{
-		$this->parentColumn = $parentColumn;
-		$this->idColumn = $idColumn;
-
-		$this->structure = $this->build($dataArray);	
-	}
-
-
-	/**
-	 * Build tree structure
-	 * @param result
-	 * @param string
-	 * @param string	 
-	 * @return array
-	 */
-	private function build($dataArray)
-	{
+		$data = $this->fetchData($cond);
 		$structure = array();
-		$i = 0;
-	
-		foreach ($dataArray as $row) {
-			if (!$row[$this->parentColumn]) { // main cells with no parent
-				$structure[$row[$this->idColumn]][] = $row;
+
+		foreach ($data as $row) {
+			if (!$row[$this->parentColumn]) { // no parent items
+				$structure[$row[$this->idColumn]] = $row;
 			}
 		}
 
-		foreach ($structure as $row) {
-			$structure[$row[0][$this->idColumn]][] = $this->getChildren($row[0][$this->idColumn], $dataArray);
+		foreach ($structure as &$row) {
+			$row["children"] = $this->getChildren($cond, $row[$this->idColumn]);
 		}
 
 		return $structure;
@@ -58,67 +40,66 @@ class BaseTree extends Base
 
 
 	/**
-	 * Returns children by record id
-	 * @param int
-	 * @return array
-	 */
-	private function getChildren($parentId, $dataArray) {
-		$array = array();
-		foreach($dataArray as $row) {
-			if($row[$this->parentColumn] == $parentId) {
-				if(!is_array($row)) {  // result from database
-					$row = iterator_to_array($row);
-				}
-				$array[$row[$this->idColumn]][] = $row; // info o buňce
-			}
-		}
-
-		foreach($array as $key => $values) { 
-			$array[$key][] = self::getChildren($key, $dataArray); // info o dětech
-		}
-
-		if(count($array)) {
-			return $array;
-		}
-		return NULL;
-	}
-
-
-	/**
 	 * Convert siple structure to fullroad pair lsit
-	 * @param result (fetchPairs by id)
 	 * @param string
-	 * @param string
-	 * @param string	
 	 * @return array
 	 * from: 5 => Current category
 	 * to: 5 => Main \ Subcategory \ Current category
 	 */
-	public static function fullroadView($treeList, $parentColumn = "parent_id", $nameColumn = "name",  $sep = " » ")
+	public function fullroadView($sep = " » ")
 	{
+		$data = $this->fetchData()->fetchPairs("id");
 		$array = array();
 
-		foreach($treeList as $key => $row) {
-			$item = $row[$nameColumn];
-			$above = $treeList[$key]["parent_id"];
-	
+		foreach($data as $key => $row) {
+			$item = $row[$this->idColumn];
+			$above = $data[$key][$this->parentColumn];
+
 			while(isset($above)) {
-				$item = $treeList[$above][$nameColumn] . $sep . $item;
-				$above = $treeList[$above]["parent_id"];
+				$item = $data[$above][$this->idColumn] . $sep . $item;
+				$above = $data[$above][$this->parentColumn];
 			}
+
 			$array[$key] = $item;
 		}
 
-		return $array;		
+		return $array;
 	}
 
 
+	/********************** helpers **********************/
+
+
 	/**
-	 * Get structure
+	 * Returns children by record id
+	 * @param array
+	 * @param int
+	 * @return array
 	 */
-	public function getStructure()
+	private function getChildren($cond, $parentId)
 	{
-		return $this->structure;
+		$data = $this->fetchData($cond);
+		$array = array();
+
+		foreach ($data as $row) {
+			if ($row[$this->parentColumn] == $parentId) {
+				if (!is_array($row)) {  // result from database
+					$row = iterator_to_array($row);
+				}
+
+				$array[$row[$this->idColumn]] = $row;
+			}
+		}
+
+		foreach ($array as $key => $row) {
+			$row["children"] = self::getChildren($cond, $key);
+		}
+
+		if (count($array)) {
+			return $array;
+		}
+
+		return NULL;
 	}
 
 }
