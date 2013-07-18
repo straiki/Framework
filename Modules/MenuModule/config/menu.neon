@@ -1,7 +1,6 @@
-baseIcon: icon-file
+baseIcon: icon-list-alt
 items:
-	"Přehled stránek":
+	"Položky menu":
 		path: Homepage:default
 		icon: icon-th-list
 		addPath: Homepage:add
-
