@@ -46,6 +46,9 @@
 	{elseif $item["type"] == "separator"}
 		---
 
+	{elseif $item["type"] == "link_internal"}
+		{$item["title"]} (view: {$item["path"]})
+
 	{elseif $item["type"] == "link"}
 		{$item["title"]} (url: {$item["url"]})
 	{/}

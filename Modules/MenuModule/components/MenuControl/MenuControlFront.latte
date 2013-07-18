@@ -35,6 +35,10 @@
 		%li [n:class => "$presenter->isLinkCurrent($link) ? 'active'"]
 			<a n:phref="Page:detail, id => $row['page_id']">{$row['pageTitle']}</a>
 
+	{elseif $row["type"] == "link_internal"}
+		%li [n:class => "$presenter->isLinkCurrent($row['path']) ? 'active'"]
+			<a n:phref="$row['path']">{$row['title']}</a>
+
 	{elseif $row["type"] == "link"}
 		%li	<a href="{$row['url']}">{$row['title']}</a>
 

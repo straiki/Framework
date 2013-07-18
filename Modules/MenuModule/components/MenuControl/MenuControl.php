@@ -24,7 +24,8 @@ class MenuControl extends Control
 		$form->addGroup("");
 		$typeList = array(
 			"page" => "Stránka",
-			"link" => "Odkaz",
+			"link_internal" => "Interní odkaz",
+			"link" => "Externí odkaz",
 			"drop" => "Podmenu",
 			"separator" => "Oddělovač"
 		);
@@ -33,10 +34,13 @@ class MenuControl extends Control
 			->addCondition(Form::EQUAL, "page")
 				->toggle("page")
 			->endCondition()
+			->addCondition(Form::EQUAL, "link_internal")
+				->toggle("link_internal")
+			->endCondition()
 			->addCondition(Form::EQUAL, "link")
 				->toggle("link")
 			->endCondition()
-			->addCondition(Form::EQUAL, array("link", "drop"))
+			->addCondition(Form::EQUAL, array("link_internal", "link", "drop"))
 				->toggle("title");
 
 		$form->addToggleGroup("page");
@@ -56,6 +60,11 @@ class MenuControl extends Control
 			->setAttribute("class", "span6")
 			->addConditionOn($form["type"], Form::EQUAL, "link")
 				->addRule(Form::FILLED, "Zadejte adresu odkazu");
+
+		$form->addToggleGroup("link_internal");
+		$form->addText("path", "Presenter:view:")
+			->addConditionOn($form["type"], Form::EQUAL, "link_internal")
+				->addRule(Form::FILLED, "Zadejte konkrétní view");
 
 		$form->addGroup("");
 		$form->addSubmit("send", "Uložit")
