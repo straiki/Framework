@@ -1,4 +1,16 @@
+parameters:
+	database:
+		driver: mysql
+		host: localhost
+		username: root
+		password:
+	logUserActivity: TRUE
+
 services:
+	dbcache: NotORM_Cache_Include("%tempDir%/notorm.cache")
+	database: NotORM(@nette.database.default::getPdo(), NULL, @dbcache)
+	user: Schmutzka\Security\User
+	userModel: Schmutzka\Models\User
 	userManager: Schmutzka\Security\UserManager
 
 factories:
@@ -8,3 +20,10 @@ factories:
 	registrationControl: Components\RegistrationControl
 	remindPasswordControl: Components\RemindPasswordControl
 	userControl: UserModule\Components\UserControl
+
+nette:
+	database:
+		default:
+			dsn: "%database.driver%:host=%database.host%;dbname=%database.dbname%"
+			user: %database.username%
+			password: %database.password%

@@ -3,11 +3,12 @@
 namespace Components;
 
 use Nette;
+use Nette\Utils\Strings;
 use Schmutzka;
-use Schmutzka\Mail\Message;
 use Schmutzka\Application\UI\Control;
 use Schmutzka\Application\UI\Form;
-use Nette\Utils\Strings;
+use Schmutzka\Mail\Message;
+use Schmutzka\Security\UserManager;
 
 class RegistrationControl extends Control
 {
@@ -42,17 +43,13 @@ class RegistrationControl extends Control
 	public $paramService;
 
 
-	/**
-	 * Registration form
-	 */
-	protected function createComponentRegistrationForm()
+	protected function createComponentForm()
 	{
 		$userModel = $this->userModel;
 
 		$form = new Form;
 		$form->addText("login", $this->paramService->form->login->label)
 			->addRule(Form::FILLED, $this->paramService->form->login->ruleFilled)
-			// ->addRule(Form::PATTERN, $this->paramService->form->login->rulePattern, "[a-zA-Z0-9_-]{5,}")
 			->addRule(function ($input) use ($userModel) {
 				return ! $userModel->item(array("login" => $input->value));
 			}, $this->paramService->form->login->alreadyExists);
@@ -64,14 +61,9 @@ class RegistrationControl extends Control
 				return ! $userModel->item(array("email" => $input->value));
 			}, $this->paramService->form->email->alreadyExists);
 
-
 		$form->addPassword("password", $this->paramService->form->password->label)
 			->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled)
 			->addRule(Form::MIN_LENGTH, $this->paramService->form->password->length, 5);
-
-		$form->addPassword("password2", $this->paramService->form->passwordAgain->label)
-			->addRule(Form::FILLED, $this->paramService->form->passwordAgain->ruleFilled)
-			->addRule(Form::EQUAL, $this->paramService->form->passwordAgain->ruleEqual, $form["password"]);
 
 		$form->addSubmit("send", $this->paramService->form->send->register)
 			->setAttribute("class", "btn btn-primary");
@@ -80,17 +72,13 @@ class RegistrationControl extends Control
 	}
 
 
-	/**
-	 * Process form
-	 * @param Form
-	 */
-	public function processRegistrationForm(Form $form)
+	public function processForm(Form $form)
 	{
 		$rawValues = $values = $form->getValues();
-		unset($values["conditions"], $values["password2"]);
+		unset($values["conditions"]);
 
 		$values["salt"] = Strings::random(22);
-		$values["password"] = Schmutzka\Security\UserManager::calculateHash($values["password"], $values["salt"]);
+		$values["password"] = UserManager::calculateHash($values["password"], $values["salt"]);
 		$values["created"] = new Nette\DateTime;
 
 		if ($this->requireAuthorization) {
@@ -112,10 +100,10 @@ class RegistrationControl extends Control
 
 		if ($this->loginAfter) {
 			$this->user->login($values[$this->loginAfter], $rawValues["password"]);
-			$this->getPresenter()->flashMessage($this->paramService->registration->onSuccessAndLogin, "success");
+			$this->presenter->flashMessage($this->paramService->registration->onSuccessAndLogin, "success");
 
 		} else {
-			$this->getPresenter()->flashMessage($this->paramService->registration->onSuccess, "success");
+			$this->presenter->flashMessage($this->paramService->registration->onSuccess, "success");
 		}
 
 		$this->redirect("this");
@@ -139,9 +127,11 @@ class RegistrationControl extends Control
 	 */
 	private function sendAuthorizationEmail($values)
 	{
-		$values["auth_url"] = $this->link("//AuthorizeUser!", array("hash" => $values["auth_hash"]));
+		$values["auth_url"] = $this->link("//AuthorizeUser!", array(
+			"hash" => $values["auth_hash"]
+		));
 
-		$message = new Nette\Mail\Message;
+		$message = new Message;
 		$message->setFrom($this->from);
 		$message->addTo($values["email"]);
 
@@ -154,12 +144,13 @@ class RegistrationControl extends Control
 
 
 	/**
-	 * Authorization
 	 * @param string
 	 */
 	public function handleAuthorizeUser($hash)
 	{
-		if ($user = $this->userModel->item(array("auth_hash" => $hash))) {
+		if ($user = $this->userModel->item(array(
+			"auth_hash" => $hash
+		))) {
 			$array = array(
 				"auth" => 1,
 				"auth_hash" => NULL
@@ -170,13 +161,13 @@ class RegistrationControl extends Control
 				$this->sendSuccessEmail($user);
 			}
 
-			$this->getPresenter()->flashMessage($this->paramService->registration->onAuthSuccess, "success");
+			$this->presenter->flashMessage($this->paramService->registration->onAuthSuccess, "success");
 
 		} else {
-			$this->getPresenter()->flashMessage($this->paramService->registration->onAuthError, "error");
+			$this->presenter->flashMessage($this->paramService->registration->onAuthError, "error");
 		}
 
-		$this->getPresenter()->redirect($this->onAuthorizeRedirect);
+		$this->presenter->redirect($this->onAuthorizeRedirect);
 	}
 
 

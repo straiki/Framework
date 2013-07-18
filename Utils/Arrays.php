@@ -4,16 +4,6 @@ namespace Schmutzka\Utils;
 
 use Nette;
 
-/**
- * hasAllKeys($array, $requiredKeys)
- * keySum($array, $key)
- * minMax($array)
- * extractKey($array, $key)
- * clearEmpty($array)
- * sortBySubKey($array, $subkey)
- * sortBySubKeyReverse($array, $subkey)
- * findByKeyValue($array, $key, $find, $returnArrayStrict)
- */
 
 class Arrays extends Nette\Object
 {
@@ -33,7 +23,7 @@ class Arrays extends Nette\Object
 					}
 				}
 			}
-			
+
 		} else {
 			foreach ($requiredKeys as $key) {
 				if (!array_key_exists($key, $array)) {
@@ -83,11 +73,11 @@ class Arrays extends Nette\Object
 
 
 	/**
-	 * Get 1 column into array 	
+	 * Get 1 column into array
 	 * @param array
 	 * @param string
  	 * @return array
-	 */ 
+	 */
 	public static function extractKey($array, $key)
 	{
 		$result = array();
@@ -119,7 +109,7 @@ class Arrays extends Nette\Object
 					$result[$key] = trim($value);
 
 				} elseif (count($value)) {
-					$result[$key] = $value;						
+					$result[$key] = $value;
 				}
 			}
 		}
@@ -128,7 +118,7 @@ class Arrays extends Nette\Object
 	}
 
 
-	/**	
+	/**
 	 * Order array by subkey
 	 * @param array
 	 * @param string
@@ -136,15 +126,22 @@ class Arrays extends Nette\Object
 	public static function sortBySubKey(&$array, $subkey)
 	{
 		$keys = array();
+		$array = (array) $array;
+
 		foreach ($array as $subarray) {
-			$keys[] = $subarray[$subkey];
+			if (isset($subarray[$subkey])) {
+				$keys[] = $subarray[$subkey];
+
+			} else {
+				$keys[] = 10e3;
+			}
 		}
 
 		array_multisort($keys, SORT_ASC, $array);
 	}
 
 
-	/**	
+	/**
 	 * Order array by subkey
 	 * @param mixed
 	 * @return array
@@ -160,12 +157,12 @@ class Arrays extends Nette\Object
 	}
 
 
-	/**	
+	/**
 	 * Find row with specific key value
 	 * @param array
 	 * @param string
 	 * @param string
-	 * @return mixed 
+	 * @return mixed
 	 */
 	public static function findByKeyValue(array $array, $key, $find, $returnArrayStrict = FALSE)
 	{
@@ -176,7 +173,7 @@ class Arrays extends Nette\Object
 
 			if (is_array($compare)) {
 				while (is_array($compare)) {
-					$compare = array_shift($compare); 
+					$compare = array_shift($compare);
 				}
 			}
 
@@ -200,7 +197,7 @@ class Arrays extends Nette\Object
 
 
 	/**
-	 * Determine, if is one level array or multiple level array 
+	 * Determine, if is one level array or multiple level array
 	 * @param array
 	 * @return bool
 	 */

@@ -4,6 +4,7 @@ namespace Schmutzka\Config;
 
 use Nette;
 use Nette\Utils\Strings;
+use Schmutzka\Utils\Arrays;
 use Schmutzka\Utils\Name;
 
 class ParamService extends Nette\Object
@@ -41,6 +42,9 @@ class ParamService extends Nette\Object
 	{
 		$modules = $this->params->cmsSetup->modules;
 		$array = array();
+
+		Arrays::sortBySubkey($modules, "rank");
+
 		foreach ($modules as $key => $row) {
 			if ($row->active) {
 				$array[$key] = $row->title;

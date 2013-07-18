@@ -7,6 +7,7 @@ php:
 parameters:
 	libsDir: %appDir%/../libs
 	assetsDir: %libsDir%/Schmutzka/assets
+	jQuery: "jquery-1.10.1.min.js"
 
 	flashes:
 		onLogin: Byli jste úspěšně přihlášeni
@@ -26,13 +27,9 @@ parameters:
 			ruleFormat: "Email nemá správný formát"
 			alreadyExists: "Zadaný email již existuje."
 		password:
-			label: "Přihlašovací heslo:"
+			label: "Heslo:"
 			ruleFilled: "Zadejte heslo"
 			length: "Heslo musí mít aspoň %d znaků."
-		passwordAgain:
-			label: "Heslo znovu:"
-			ruleFilled: "Zadejte heslo pro kontrolu"
-			ruleEqual: "Hesla se neshodují."
 		permalogin:
 			label: "Zapamatovat"
 		send:

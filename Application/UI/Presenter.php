@@ -55,7 +55,12 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 			$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
 		}
 
-		$this->redirect(":Front:Homepage:default");
+		if ($this->module) {
+			$this->redirect(":Front:Homepage:default");
+
+		} else {
+			$this->redirect("Homepage:default");
+		}
 	}
 
 

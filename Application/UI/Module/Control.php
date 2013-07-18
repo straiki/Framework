@@ -15,6 +15,9 @@ class Control extends Schmutzka\Application\UI\Control
 	/** @inject @var Schmutzka\Config\ParamService */
 	public $paramService;
 
+	/** @var string */
+	protected $onProcessRedirect;
+
 
 	public function attached($presenter)
 	{
@@ -63,7 +66,15 @@ class Control extends Schmutzka\Application\UI\Control
 		$this->postProcessValues($values, $this->id);
 
 		$this->presenter->flashMessage("Uloženo.", "success");
-		$this->presenter->redirect("edit", array("id" => $this->id));
+
+		if ($this->onProcessRedirect) {
+			$this->presenter->redirect($this->onProcessRedirect);
+
+		} else {
+			$this->presenter->redirect("edit", array(
+				"id" => $this->id
+			));
+		}
 	}
 
 

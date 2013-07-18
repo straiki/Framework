@@ -4,8 +4,11 @@ namespace Schmutzka\Application\UI;
 
 use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
 use Nette;
+use Nette\Forms\Controls\TextInput;
 use Nette\Utils\Html;
+use Nette\Utils\Validators;
 use Schmutzka\Forms\Controls;
+
 
 /**
  * @method setProcessor(callable)
@@ -104,6 +107,20 @@ class Form extends Nette\Application\UI\Form
 	{
 		$this->valid = FALSE;
 		$this->presenter->flashMessage($message, "error");
+	}
+
+
+	/**
+	 * @param string
+	 * @param string|NULL
+	 */
+	public function addToggleGroup($id, $label = NULL)
+	{
+		$fieldset = Html::el("fieldset")->id($id)
+			->style("display:none");
+
+		$this->addGroup($label)
+			->setOption("container", $fieldset);
 	}
 
 
@@ -256,6 +273,25 @@ class Form extends Nette\Application\UI\Form
 	public function addDateTimePicker($name, $label = NULL)
 	{
 		return $this[$name] = new Controls\DateTimePicker($label);
+	}
+
+
+	/**
+	 * @param  string
+	 * @param  string|NULL
+	 * @return  TextInput
+	 */
+	public function addUrl($name, $label = NULL)
+	{
+		$control = $this[$name] = new TextInput($label);
+		$control->addFilter(function ($value) {
+				return Validators::isUrl($value) ? $value : "http://$value";
+			})
+			->addCondition(Form::FILLED)
+			->addCondition(~Form::EQUAL, "http://")
+				->addRule(Form::URL, "Opravte adresu odkazu");
+
+		return $control;
 	}
 
 }

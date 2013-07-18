@@ -19,7 +19,8 @@ abstract class BaseJoint extends Base
 	 */
 	public function fetchByMain($id, $secondKey = NULL)
 	{
-		return $this->table($this->mainKeyName, $id)->fetchPairs($this->otherKeyName, $secondKey ?: $this->otherKeyName);
+		return $this->table($this->mainKeyName, $id)
+			->fetchPairs($this->otherKeyName, $secondKey ?: $this->otherKeyName);
 	}
 
 
@@ -30,7 +31,9 @@ abstract class BaseJoint extends Base
 	 */
 	public function modify($id, $data)
 	{
-		$oldItems = $this->table($this->mainKeyName, $id)->fetchPairs($this->otherKeyName);
+		$oldItems = $this->table($this->mainKeyName, $id)
+			->fetchPairs($this->otherKeyName);
+
 		$key[$this->mainKeyName] = $id;
 
 		foreach ($data as $otherKey) {

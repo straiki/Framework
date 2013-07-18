@@ -12,7 +12,6 @@ parameters:
 				attachmentFiles: FALSE
 				adminNote: FALSE
 				contentHistory: FALSE
-				menu: FALSE
 
 			article:
 				active: FALSE
@@ -34,6 +33,10 @@ parameters:
 				accessToRoles: FALSE
 				qr: FALSE
 				customAuthorName: FALSE
+
+			menu:
+				active: FALSE
+				title: Menu
 
 			event:
 				active: FALSE
@@ -95,8 +98,6 @@ parameters:
 				active: FALSE
 				title: Textíky
 
-	jQuery: "jquery-1.10.1.min.js"
-
 
 services:
 	- Schmutzka\Models\Article
@@ -111,9 +112,9 @@ services:
 	- Schmutzka\Models\File
 	- Schmutzka\Models\Gallery
 	- Schmutzka\Models\GalleryFile
+	- Schmutzka\Models\Menu
 	- Schmutzka\Models\Page
 	- Schmutzka\Models\PageContent
-	- Schmutzka\Models\PageTree
 	- Schmutzka\Models\Qr
 	- Schmutzka\Models\TextSnippet
 	- QrModule\Services\QrGenerator
@@ -147,10 +148,12 @@ factories:
 	galleryGrid: GalleryModule\Components\GalleryGrid
 	uploadControl: GalleryModule\Components\UploadControl
 
+	# MenuModule
+	menuControl: MenuModule\Components\MenuControl
+
 	# PageModule
 	pageControl: PageModule\Components\PageControl
 	pageGrid: PageModule\Components\PageGrid
-	frontMenuControl: PageModule\Components\FrontMenuControl
 
 	# QrModule
 	qrControl: QrModule\Components\QrControl

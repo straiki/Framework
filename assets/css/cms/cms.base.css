@@ -5,6 +5,7 @@
 }
 
 
+
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Admin menu
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
@@ -90,6 +91,21 @@ form {
 	}
 }
 
+
+/*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	~ MenuModule
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+
+.dd {
+	.active {.ico(active, 0, 50%);
+		&:hover {.inactive}
+	}
+	.inactive {.ico(inactive, 0, 50%);
+		&:hover {.active}
+	}
+
+	.active, .inactive, .edit {margin-right: 10px;}
+}
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Admin
@@ -182,12 +198,12 @@ legend + .control-group {
 
 .addIco {.ico(add)}
 
-.del {.ico(del, 50%, 50%);}
+.del {.icoCms(del, 50%, 50%);}
 .delLeft {.ico(del, 0%, 0%);}
 
 a.del {text-decoration:none;}
 
-.edit {.ico(edit, 50%, 50%)}
+.edit {.icoCms(edit, 50%, 50%)}
 
 .emailMe {.ico(emailMe)}
 
@@ -220,6 +236,12 @@ th.time, .time {.ico(time, 0%, 50%, 30px)}
 .ico(@image, @x: 0px, @y: 50%, @l: 20px) {
 	background:url("../../images/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
 }
+
+.icoCms(@image, @x: 0px, @y: 50%, @l: 20px) {
+	background:url("../../images/cms/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
+}
+
+
 
 
 .btn {cursor: piointer}
