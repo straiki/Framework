@@ -4,9 +4,9 @@ namespace Schmutzka\Application\UI\Module;
 
 use NiftyGrid;
 
-class Grid extends NiftyGrid\Grid
+abstract class Grid extends NiftyGrid\Grid
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Schmutzka\Models\User */

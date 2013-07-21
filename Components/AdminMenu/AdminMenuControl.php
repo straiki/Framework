@@ -9,7 +9,7 @@ use Schmutzka\Application\UI\Control;
 
 class AdminMenuControl extends Control
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Nette\Http\Request */
@@ -57,7 +57,7 @@ class AdminMenuControl extends Control
 
 			$title .= " - nová položka";
 
-		} elseif ($view == "edit") {
+		} elseif (Strings::startsWith($view, "edit")) {
 			$item = $this->presenter->template->item;
 			$title = "Úprava položky" .
 				(isset($item["title"]) ? ": " . $item["title"] :

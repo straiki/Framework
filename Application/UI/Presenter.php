@@ -26,7 +26,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @inject @var Nette\Caching\Cache */
 	public $cache;
 
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Schmutzka\Templates\TemplateService */

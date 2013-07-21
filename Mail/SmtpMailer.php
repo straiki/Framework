@@ -30,16 +30,16 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 	private $dumpMailSession;
 
 
-	public function __construct(Schmutzka\Config\ParamService $paramService, Nette\Http\Session $session)
-	{ 
-		parent::__construct((array) $paramService->mailer); 			
+	public function __construct(Schmutzka\ParamService $paramService, Nette\Http\Session $session)
+	{
+		parent::__construct((array) $paramService->mailer);
 
 		if ($this->debugMode = $paramService->debugMode) {
 			$this->dumpMailSession = $session->getSection("dumpMail");
 		}
 
-		$this->useLogger = isset($paramService->params["mailer"]["useLogger"]) ? TRUE : FALSE; 
-	}	
+		$this->useLogger = isset($paramService->params["mailer"]["useLogger"]) ? TRUE : FALSE;
+	}
 
 
 	/**
@@ -47,18 +47,18 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 	 * @param Nette\Mail\Message
 	 */
 	public function send(Nette\Mail\Message $message)
-	{	
+	{
 		// default headers prevents error
 		if (!$message->getHeader("From")) {
 			$message->setFrom("example@gmail.com"); // replaced by login email
 		}
 
 		// dump bar
-		if ($this->debugMode) { 
+		if ($this->debugMode) {
 			$i = rand(1,1000);
-			$this->dumpMailSession->{$i} = $this->getData($message); 
+			$this->dumpMailSession->{$i} = $this->getData($message);
 			$this->dumpMailSession->setExpiration("+10 seconds", $i);
-		} 
+		}
 
 		if ($this->useLogger) {
 			$this->emailLogModel->insert($this->getData($message, TRUE));
@@ -86,19 +86,19 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 		$template = new Nette\Templating\FileTemplate();
 		$template->registerFilter(new Nette\Latte\Engine());
 		$template->setFile(MODULES_DIR . "/EmailModule/templates/@blankEmail.latte");
-	
+
 		$replaceArray = array();
 		foreach ($values as $key => $value) {
 			$key = "%" . strtoupper($key) . "%";
 			$replaceArray[$key] = $value;
 		}
 
-		$body = strtr($customEmail["body"], $replaceArray);	
+		$body = strtr($customEmail["body"], $replaceArray);
 		if (!$includeSubject) {
 			return $body;
 		}
 
-		$subject = strtr($customEmail["subject"], $replaceArray);	
+		$subject = strtr($customEmail["subject"], $replaceArray);
 		return array(
 			"body" => $body,
 			"subject" => $subject

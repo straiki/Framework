@@ -3,8 +3,8 @@
 namespace PageModule\Components;
 
 use Nette;
-use Schmutzka;
 use NiftyGrid;
+use Schmutzka;
 use Schmutzka\Application\UI\Module\Grid;
 
 class PageGrid extends Grid
@@ -13,10 +13,7 @@ class PageGrid extends Grid
 	public $pageModel;
 
 
-	/**
-	 * @param  Nette\Application\IPresenter $presenter
-	 */
-	protected function configure(Nette\Application\IPresenter $presenter)
+	protected function configure($presenter)
 	{
 		$moduleParams = $presenter->moduleParams;
 		$source = new NiftyGrid\DataSource($this->pageModel->fetchAll());

@@ -38,7 +38,7 @@ abstract class BaseJoint extends Base
 
 		foreach ($data as $otherKey) {
 			$key[$this->otherKeyName] = $otherKey;
-			if (!isset($oldItems[$otherKey])) {
+			if ( ! isset($oldItems[$otherKey])) {
 				$this->insert($key);
 			}
 
@@ -47,6 +47,37 @@ abstract class BaseJoint extends Base
 
 		foreach ($oldItems as $otherKey) {
 			$key[$this->otherKeyName] = $otherKey;
+			$this->delete($key);
+		}
+	}
+
+
+	/**
+	 * Update current data - remove old, add new
+	 * @param  int
+	 * @param  array
+	 */
+	public function modifyArrayData($id, $data)
+	{
+		$oldItemsIds = $this->table($this->mainKeyName, $id)
+			->fetchPairs("id", "id");
+
+		$checkKey[$this->mainKeyName] = $id;
+
+		foreach ($data as $key => $value) {
+			$checkKey[$this->otherKeyName] = $key;
+
+			if ($idToRemove = $this->table($checkKey)->fetchSingle("id")) {
+				unset($oldItemsIds[$idToRemove]);
+				$this->update($value, $idToRemove);
+
+			} else {
+				$value[$this->mainKeyName] = $id;
+				$this->insert($value);
+			}
+		}
+
+		foreach ($oldItemsIds as $key) {
 			$this->delete($key);
 		}
 	}

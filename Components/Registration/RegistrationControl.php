@@ -39,7 +39,7 @@ class RegistrationControl extends Control
 	/** @inject @var Schmutzka\Security\User */
 	public $user;
 
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 

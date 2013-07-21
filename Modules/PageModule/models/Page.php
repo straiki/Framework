@@ -4,7 +4,7 @@ namespace Schmutzka\Models;
 
 class Page extends Base
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Schmutzka\Models\GalleryFile */

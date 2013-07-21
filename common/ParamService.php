@@ -1,6 +1,6 @@
 <?php
 
-namespace Schmutzka\Config;
+namespace Schmutzka;
 
 use Nette;
 use Nette\Utils\Strings;
@@ -35,7 +35,6 @@ class ParamService extends Nette\Object
 
 
 	/**
-	 * Get active modules
 	 * @return array
 	 */
 	public function getActiveModules()
@@ -56,7 +55,6 @@ class ParamService extends Nette\Object
 
 
 	/**
-	 * Get active module params
 	 * @param string
 	 * @return array
 	 */

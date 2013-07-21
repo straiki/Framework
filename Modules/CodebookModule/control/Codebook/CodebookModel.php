@@ -4,7 +4,7 @@ namespace Models;
 
 class Codebook extends Base
 {
-	
+
 	/**
 	 * Check table existence, create elsewhere
 	 * @var string
@@ -17,7 +17,7 @@ class Codebook extends Base
 		catch (\PDOException $e) { // table does not exist -> create it
 			$createSql = file_get_contents(__DIR__."\create.sql");
 			$this->getPdo($createSql);
-		}	
+		}
 	}
 
 
@@ -44,7 +44,7 @@ class Codebook extends Base
 	}
 
 
-	/** 
+	/**
 	 * Get codebook list
 	 * @param string
 	 * @param bool include hidden
@@ -59,7 +59,7 @@ class Codebook extends Base
 		if ($showAll == TRUE) {
 			$result = $this->table("type", $type)->order("rank")->fetchPairs("id");
 			$array = array();
-			foreach($result as $key => $value) {
+			foreach ($result as $key => $value) {
 				$array[$key] = $value;
 				$array[$key]["column"] = $column;
 				$array[$key]["useCount"] = $this->getCodeUseCount($column, $key); // počet použití daného kódu
@@ -74,7 +74,7 @@ class Codebook extends Base
 	/**
 	 * Returns all code by type in pairs
 	 * @param string
-	 */	
+	 */
 	public function getCodeListByType($type)
 	{
 			return $this->table("type", $type)->order("rank, value")->fetchPairs("id", "value");
@@ -84,7 +84,7 @@ class Codebook extends Base
 
 	/**
 	 * Number of use case
-	 * @param array 
+	 * @param array
 	 */
 	private function getCodeUseCount(array $whereUsed, $value)
 	{
@@ -126,7 +126,7 @@ class Codebook extends Base
 	}
 
 
-	/** 
+	/**
 	 * Anulls code use
 	 * @param string
 	 * @param string

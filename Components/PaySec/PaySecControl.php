@@ -29,11 +29,11 @@ class PaySecControl extends Control
 
 
 	/**
-	 * @param Schmutzka\Config\ParamService
+	 * @param Schmutzka\ParamService
 	 * @param Schmutzka\Shop\Basket
 	 */
-	function inject(Schmutzka\Config\ParamService $paramService, Schmutzka\Shop\Basket $basket) 
-	{ 
+	function inject(Schmutzka\ParamService $paramService, Schmutzka\Shop\Basket $basket)
+	{
 		$settings = $paramService->params["paysec"];
 		$this->settings = $settings[$settings["use"]];
 		$this->basket = $basket;
@@ -57,11 +57,11 @@ class PaySecControl extends Control
 		// test!
 		$backUrl = $this->link("//process", array(
 			"id" => $paymentId
-		)) . "&result={0}";  // {0} will be replaced by result state 
+		)) . "&result={0}";  // {0} will be replaced by result state
 		$cancelUrl = $this->link("//cancel", array(
 			"id" => $paymentId
 		));
-		
+
 		$form = new Form/*($this, $name)*/; // @intentionaly: required for custom action
 		// $form->setAction($this->settings["gateway"]);
 
@@ -79,7 +79,7 @@ class PaySecControl extends Control
 		$form->addSubmit("cancel", "Zrušit objednávku")
 			->setAttribute("class","btn btn-large")
 			->onClick[] = callback($this, "processCancel");
-		
+
 		return $form;
 	}
 
@@ -118,7 +118,7 @@ class PaySecControl extends Control
 	public function handleProcess($id, $result)
 	{
 		$userName = $this->settings["userName"];
-		$password = $this->settings["password"];		
+		$password = $this->settings["password"];
 
 		$this->orderModel->update(array(
 			"result" => $result
@@ -200,7 +200,7 @@ class PaySecControl extends Control
 	private function cancelOrder($id)
 	{
 		$this->orderModel->cancelOrder($id);
-		$this->presenter->flashMessage("Váš pokyn k zamítnutí platby byl proveden úspěšně. Pokud budete chtít objednat vstupenky, vložte je znovu do košíku.", "success");	
+		$this->presenter->flashMessage("Váš pokyn k zamítnutí platby byl proveden úspěšně. Pokud budete chtít objednat vstupenky, vložte je znovu do košíku.", "success");
 		$this->basket->emptyBasket();
 		$this->presenter->redirect($this->awayRedirect);
 	}

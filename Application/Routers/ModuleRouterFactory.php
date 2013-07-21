@@ -8,7 +8,7 @@ use Schmutzka\Utils\Name;
 
 class ModuleRouterFactory
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Schmutzka\Models\Page */

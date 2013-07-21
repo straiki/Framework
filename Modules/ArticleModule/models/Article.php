@@ -6,7 +6,7 @@ use Nette;
 
 class Article extends Base
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Schmutzka\Models\ArticleInCategory */

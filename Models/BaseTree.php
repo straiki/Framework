@@ -51,7 +51,7 @@ class BaseTree extends Base
 		$data = $this->fetchData()->fetchPairs("id");
 		$array = array();
 
-		foreach($data as $key => $row) {
+		foreach ($data as $key => $row) {
 			$item = $row[$this->idColumn];
 			$above = $data[$key][$this->parentColumn];
 

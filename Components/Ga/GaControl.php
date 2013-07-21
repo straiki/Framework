@@ -9,7 +9,7 @@ use Schmutzka\Application\UI\Control;
 
 class GaControl extends Control
 {
-	/** @inject @var Schmutzka\Config\ParamService */
+	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
 	/** @inject @var Nette\Http\Request */

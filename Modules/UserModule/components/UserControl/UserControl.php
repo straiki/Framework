@@ -7,6 +7,7 @@ use Schmutzka;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Module\Control;
 
+
 class UserControl extends Control
 {
 	/** @inject @var Schmutzka\Models\User */
@@ -39,12 +40,6 @@ class UserControl extends Control
 
 		} else {
 			$form["password"]->setOption("description", "Zadejte nové heslo pro jeho změnu.");
-		}
-
-		$form->addPassword("password2", $this->paramService->form->passwordAgain->label);
-		if ($this->id == NULL) {
-			$form["password2"]->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled)
-				->addRule(Form::MIN_LENGTH, $this->paramService->form->password->length, 5);
 		}
 
 		$form->addGroup("");

@@ -3,8 +3,8 @@
 namespace Schmutzka\Security;
 
 use Nette;
-use Nette\Utils\Strings;
 use Nette\Security\AuthenticationException as AE;
+use Nette\Utils\Strings;
 use NotORM;
 
 class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
@@ -75,7 +75,6 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 		$values["password"] = self::calculateHash($values["password"], $values["salt"]);
 		$values["created"] = new Nette\DateTime;
 		$values["auth"] = TRUE;
-		unset($values["password2"]);
 
 		$userId = $this->userModel->insert($values);
 
@@ -103,7 +102,7 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 			$this->updatePasswordForUser($id, $values["password"]);
 		}
 
-		unset($values["password"], $values["password2"]);
+		unset($values["password"]);
 
 		$this->userModel->update($values, $id);
 	}

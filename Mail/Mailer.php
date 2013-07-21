@@ -29,7 +29,7 @@ class Mailer extends Nette\Mail\SendmailMailer
 	private $emailLogModel;
 
 
-	public function __construct(Schmutzka\Config\ParamService $paramService, Nette\Http\Session $session, Schmutzka\Models\CustomEmail $customEmailModel, Schmutzka\Models\EmailLog $emailLogModel)
+	public function __construct(Schmutzka\ParamService $paramService, Nette\Http\Session $session, Schmutzka\Models\CustomEmail $customEmailModel, Schmutzka\Models\EmailLog $emailLogModel)
 	{
 		if ($this->debugMode = $paramService->debugMode) {
 			$this->dumpMailSession = $session->getSection("dumpMail");

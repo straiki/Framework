@@ -4,21 +4,22 @@ namespace Schmutzka;
 
 use Nette;
 
+
 class Configurator extends Nette\Configurator
 {
 
 	/**
-	 * @param bool|array
+	 * @param bool|string|array
 	 * @param bool
 	 */
 	public function __construct($debug = NULL, $autoloadConfig = TRUE)
 	{
 		parent::__construct();
 
-		$this->enableDebugger($this->dir . "/../log");
 		if ($debug) {
 			$this->setDebugMode($debug);
 		}
+		$this->enableDebugger($this->dir . "/../log");
 
 		$this->setTempDirectory($this->dir . "/../temp");
 		$this->createRobotLoader()
@@ -26,7 +27,7 @@ class Configurator extends Nette\Configurator
 			->addDirectory($this->dir . "/../libs/")
 			->register();
 
-		$this->addConfig($this->dir . "/../libs/Schmutzka/defaultConfig.neon", FALSE);
+		$this->addConfig($this->dir . "/../libs/Schmutzka/configs/default.neon", FALSE);
 
 		if ($autoloadConfig) {
 			if ($this->defaultParameters["environment"] == "development") {
@@ -40,7 +41,7 @@ class Configurator extends Nette\Configurator
 
 
 	/**
-	 * @param  array
+	 * @param  array { [ string => string ] }
 	 * @param  string
 	 */
 	public function loadConfigByHost($hostConfigs, $host)
@@ -60,6 +61,8 @@ class Configurator extends Nette\Configurator
 	{
 		$defaultParameters = parent::getDefaultParameters();
 		$defaultParameters["appDir"] = $this->dir;
+
+
 
 		return $defaultParameters;
 	}

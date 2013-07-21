@@ -15,13 +15,6 @@ function dd()
 }
 
 
-function ed($value)
-{
-	echo $value;
-	die;
-}
-
-
 function td($values)
 {
 	echo "<table border=1 style='border-color:#DDD;border-collapse:collapse; font-family:Courier New; color:#222; font-size:13px' cellspacing=0 cellpadding=5>";
