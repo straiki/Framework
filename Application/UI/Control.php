@@ -3,6 +3,7 @@
 namespace Schmutzka\Application\UI;
 
 use Nette;
+use Nette\Utils\Strings;
 use Schmutzka;
 
 abstract class Control extends Nette\Application\UI\Control
@@ -12,6 +13,28 @@ abstract class Control extends Nette\Application\UI\Control
 
 	/** @inject @var Schmutzka\Templates\TemplateService */
 	public $templateService;
+
+
+	/**
+	 * Automatic view setup
+	 * @param  string
+	 * @param  array
+	 * @todo simulate as presenter render!
+	 */
+	public function __call($name, $args)
+	{
+		if ( ! method_exists($this, $name) && Strings::startsWith($name, "render")) {
+			$view = lcfirst(substr($name, 6));
+
+			// before
+			$this->useTemplate($view);
+
+			// call if exists
+
+			// after
+			$this->template->render();
+		}
+	}
 
 
 	/**
