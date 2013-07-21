@@ -26,15 +26,20 @@ class User extends Nette\Security\User
 
 
 	/**
-	 * Update user identity data
+	 * Update user identity data, and db record optionaly
 	 * @param array
+	 * @param bool
 	 */
-	public function updateIdentity(array $values)
+	public function updateIdentity(array $values, $updateDb = FALSE)
 	{
 		foreach ($this->identity->data as $key => $value) {
 			if (array_key_exists($key, $values)) {
 				$this->identity->{$key} = $values[$key];
 			}
+		}
+
+		if ($updateDb) {
+			$this->userModel->update($values, $this->id);
 		}
 	}
 
@@ -73,7 +78,7 @@ class User extends Nette\Security\User
 		unset($user["password"]);
 
 		$identity = new Nette\Security\Identity($user["id"], (isset($user["role"]) ? $user["role"] : "user"), $user);
-		$this->user->login($identity); // fix
+		$this->login($identity);
 	}
 
 }
