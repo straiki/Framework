@@ -1,24 +1,23 @@
 <?php
 
-/**
- * @use
- * $frontRouter[] = new PairsRoute("predmet/<id>", "Subject:detail", NULL, $container->database->subject, $container->cache, "subjectList");
- */
-
 namespace Schmutzka\Application\Routers;
 
 use Nette;
 use Nette\Application\Request;
 use Nette\Utils\Strings;
-use NotORM_Result;
+use Nette\Http\Url;
 use Schmutzka;
 use Schmutzka\Utils\Arrays;
 use Schmutzka\Utils\Name;
 
-class PairsRoute extends \Nette\Application\Routers\Route
+
+/**
+ * @use: $frontRouter[] = new PairsRoute("predmet/<id>", "Subject:detail", NULL, $this->subjectModel, $this->cache, array("id", "url"));
+ */
+class PairsRoute extends Nette\Application\Routers\Route
 {
-	/** @var NotORM\Result */
-	private $table;
+	/** @var Schmutzka\Models\Base */
+	private $model;
 
 	/** @var array */
 	private $columns;
@@ -50,11 +49,11 @@ class PairsRoute extends \Nette\Application\Routers\Route
 	 * @param Nette\Caching\Cache
 	 * @param array
 	 */
-	public function __construct($mask, $metadata = array(), $flags = 0, Schmutzka\Models\Base $table, Nette\Caching\Cache $cache, $columns = array("id", "name"))
+	public function __construct($mask, $metadata = array(), $flags = 0, Schmutzka\Models\Base $model, Nette\Caching\Cache $cache, $columns = array("id", "name"))
 	{
 		$this->mask = $mask;
 		$this->metadata = $metadata;
-		$this->table = $table;
+		$this->model = $model;
 		$this->cache = $cache;
 		list($this->primaryKey, $this->secondaryKey) = $columns;
 
@@ -93,9 +92,11 @@ class PairsRoute extends \Nette\Application\Routers\Route
 
 	/**
 	 * Constructs absolute URL from Request object.
+	 * @param  Request
+	 * @param  Url
 	 * @return string|NULL
 	 */
-	public function constructUrl(Request $appRequest, Nette\Http\Url $refUrl)
+	public function constructUrl(Request $appRequest, Url $refUrl)
 	{
 		if (isset($appRequest->parameters[$this->primaryKey])) {
 
@@ -128,20 +129,21 @@ class PairsRoute extends \Nette\Application\Routers\Route
 
 	/**
 	 * Get cached list
-	 * @returns array
+	 * @return array
  	 */
 	private function getPairList()
 	{
-		$key = $this->cacheTag;
-		if (!$pairList = $this->cache->load($key . "as")) {
-			$pairList = $this->table->fetchPairs($this->primaryKey, $this->secondaryKey);
+		$pairList = $this->cache->load($this->cacheTag);
+
+		if ($pairList == NULL) {
+			$pairList = $this->model->fetchPairs($this->primaryKey, $this->secondaryKey);
 			foreach ($pairList as $key => $value) {
 				$pairList[$key] = Strings::webalize($value);
 			}
 
-			$this->cache->save($key, $pairList, array(
+			$this->cache->save($this->cacheTag, $pairList, array(
 				"tag" => $this->cacheTag,
-				"expire" => "+30 mins"
+				"expire" => "30 mins"
 			));
 		}
 
@@ -151,19 +153,18 @@ class PairsRoute extends \Nette\Application\Routers\Route
 
 	/**
 	 * Get cached list flipped
+	 * @return  array
 	 */
 	private function getPairListFlipped()
 	{
 		$pairList = $this->getPairList();
-		$pairList = array_flip($pairList);
-
-		return $pairList;
+		return array_flip($pairList);
 	}
 
 
 	/**
-	 * Get by key
-	 * @param int
+	 * @param  int
+	 * @return  string|NULL
 	 */
 	private function getByKey($key)
 	{
@@ -172,19 +173,17 @@ class PairsRoute extends \Nette\Application\Routers\Route
 			return $pairList[$key];
 		}
 
-
 		return NULL;
 	}
 
 
 	/**
-	 * Get by value
-	 * @param string|mixed
+	 * @param  string
+	 * @return  srting|NULL
 	 */
 	private function getByValue($value)
 	{
 		$pairListFlipped = $this->getPairListFlipped();
-
 		if (isset($pairListFlipped[$value])) {
 			return $pairListFlipped[$value];
 		}
