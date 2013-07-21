@@ -56,6 +56,7 @@ nette:
 		email: tomas.vot@gmail.com
 		strictMode: TRUE
 		showLocation: TRUE
+		strLen: 4000
 		bar:
 			- @callbackPanel
 			- @dumpMailPanel
@@ -80,7 +81,7 @@ services:
 			- setLatte(@nette.latte)
 
 	- lessc
-	- Schmutzka\Config\ParamService(@container::getParameters())
+	- Schmutzka\ParamService(@container::getParameters())
 	- Schmutzka\Templates\Helpers
 	#- Services\SessionStorage
 
