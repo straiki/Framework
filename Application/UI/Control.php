@@ -16,22 +16,24 @@ abstract class Control extends Nette\Application\UI\Control
 
 
 	/**
-	 * Automatic view setup
+	 * Rendering view
 	 * @param  string
 	 * @param  array
 	 * @todo simulate as presenter render!
 	 */
 	public function __call($name, $args)
 	{
-		if ( ! method_exists($this, $name) && Strings::startsWith($name, "render")) {
-			$view = lcfirst(substr($name, 6));
+		if (Strings::startsWith($name, 'render')) {
+			$view = $this->getViewFromMethod($name);
 
-			// before
-			$this->useTemplate($view);
+			// setup template file
+			$class = $this->getReflection();
+			$dir = dirname($class->getFileName());
+			$this->template->setFile($dir . '/templates/' . $view . '.latte');
 
-			// call if exists
+			// calls $this->render<View>()
+			$this->tryCall($this->formatRenderMethod($view), $args);
 
-			// after
 			$this->template->render();
 		}
 	}
@@ -45,40 +47,10 @@ abstract class Control extends Nette\Application\UI\Control
 	 */
 	public function createTemplate($class = NULL)
 	{
-		if ($this->templateService === NULL) {
-			throw new \Exception("TemplateService is not available. Add component to config.");
-		}
-
 		$template = parent::createTemplate($class);
 		$this->templateService->configure($template);
 
-		if (! $template->getFile() && file_exists($this->getTemplateFilePath())) {
-			$template->setFile($this->getTemplateFilePath());
-		}
-
 		return $template;
-	}
-
-
-	/**
-	 * Sets up template
-	 * @param string
-	 */
-	public function useTemplate($name = NULL)
-	{
-		$this->template->setFile($this->getTemplateFilePath($name));
-	}
-
-
-	/**
-	 * Derives template path from class name
-	 * @param string
-	 * @return string
-	 */
-	protected function getTemplateFilePath($name = "")
-	{
-		$class = $this->getReflection();
-		return dirname($class->getFileName()) . "/" . $class->getShortName() . ucfirst($name) . ".latte";
 	}
 
 
@@ -88,12 +60,41 @@ abstract class Control extends Nette\Application\UI\Control
 	 */
 	protected function createComponent($name)
 	{
-		if ($component = parent::createComponent($name)) {
-			return $component;
+		$component = parent::createComponent($name);
+		if ($component == NULL) {
+			$component = $this->presenter->createComponent($name);
+		}
+
+		return $component;
+	}
+
+
+	/********************** render helpers **********************/
+
+
+	/**
+	 * @param  string
+	 * @return string
+	 */
+	private function getViewFromMethod($method)
+	{
+		if (strlen($method) == 6) {
+			return 'default';
 
 		} else {
-			return $this->presenter->createComponent($name);
+			return lcfirst(substr($method, 6));
 		}
+	}
+
+
+	/**
+	 * Formats render view method name.
+	 * @param  string
+	 * @return string
+	 */
+	private function formatRenderMethod($view)
+	{
+		return 'render' . $view;
 	}
 
 }

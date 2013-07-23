@@ -6,13 +6,12 @@ use Nette;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Control;
 
+
 /**
  * @method setForgotLink(string)
  * @method getForgotLink()
  * @method setLoginColumn(string)
  * @method getLoginColumn()
- * @method setPermalogin(bool)
- * @method getPermalogin()
  */
 class LoginControl extends Control
 {
@@ -38,10 +37,7 @@ class LoginControl extends Control
 	private $forgotLink = NULL;
 
 	/** @var string */
-	private $loginColumn = "email";
-
-	/** @var bool */
-	private $permalogin = FALSE;
+	private $loginColumn = 'email';
 
 
 	public function attached($presenter)
@@ -58,23 +54,18 @@ class LoginControl extends Control
 		$formLabels = $this->paramService->form;
 		$customLabels = $formLabels->{$this->loginColumn};
 
-		$form->addText("login", $customLabels->label)
+		$form->addText('login', $customLabels->label)
 			->addRule(Form::FILLED, $customLabels->ruleFilled);
 
-		if ($this->loginColumn == "email") {
-			$form["login"]->addRule(Form::EMAIL, $customLabels->ruleFormat);
+		if ($this->loginColumn == 'email') {
+			$form['login']->addRule(Form::EMAIL, $customLabels->ruleFormat);
 		}
 
-		$form->addPassword("password", $formLabels->password->label)
+		$form->addPassword('password', $formLabels->password->label)
 			->addRule(Form::FILLED, $formLabels->password->ruleFilled);
 
-		if ($this->permalogin) {
-			$form->addCheckbox("permalogin", $formLabels->permalogin->label)
-				->setDefaultValue(TRUE);
-		}
-
-		$form->addSubmit("send", $formLabels->send->login)
-			->setAttribute("class", "btn btn-primary");
+		$form->addSubmit('send', $formLabels->send->login)
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
@@ -84,52 +75,35 @@ class LoginControl extends Control
 	{
 		try {
 			$values = $form->values;
-
-			if ($this->permalogin && $values["permalogin"]) {
-				$this->user->setExpiration("+ 14 days", FALSE);
-
-			} else {
-				$this->user->setExpiration("+ 6 hours", TRUE);
-			}
-
-			$this->user->login($values["login"], $values["password"]);
+			$this->user->setExpiration('+ 14 days', FALSE);
+			$this->user->login($values['login'], $values['password']);
 
 			if ($this->onLoginSuccess) {
 				$this->onLoginSuccess($this->user);
 			}
 
 			if ($this->paramService->flashes->onLogin) {
-				$this->presenter->flashMessage($this->paramService->flashes->onLogin, "success");
+				$this->presenter->flashMessage($this->paramService->flashes->onLogin, 'success');
 			}
 
 			$this->presenter->restoreRequest($this->backlink);
-			$this->presenter->redirect("Homepage:default");
+			$this->presenter->redirect('Homepage:default');
 
 		} catch (Nette\Security\AuthenticationException $e) {
 			if ($this->onLoginError) {
 				$this->onLoginError($values);
 			}
 
-			$this->presenter->flashMessage($e->getMessage(), "error");
+			$this->presenter->flashMessage($e->getMessage(), 'error');
 		}
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
-		parent::useTemplate();
 		if ($this->forgotLink) {
 			$this->template->forgotLink = $this->forgotLink;
 		}
-
-		$this->template->render();
-	}
-
-
-	public function renderAdmin()
-	{
-		parent::useTemplate("admin");
-		$this->template->render();
 	}
 
 }

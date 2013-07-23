@@ -7,7 +7,7 @@ use Nette;
 class DateTime extends Nette\DateTime
 {
 	/** @var array */
-	private static $holidays = array("12-24", "12-25", "12-26", "01-01", "05-01", "05-08", "07-05", "07-06", "09-28", "10-28", "11-17");
+	private static $holidays = array('12-24', '12-25', '12-26', '01-01', '05-01', '05-08', '07-05', '07-06', '09-28', '10-28', '11-17');
 
 
 	/**
@@ -25,7 +25,6 @@ class DateTime extends Nette\DateTime
 
 		return $self;
 	}
-
 
 
 	/**
@@ -52,8 +51,8 @@ class DateTime extends Nette\DateTime
 	 */
 	public function daysInMonth()
 	{
-		$month = $this->format("m");
-		$year = $this->format("Y");
+		$month = $this->format('m');
+		$year = $this->format('Y');
 		return cal_days_in_month(CAL_GREGORIAN, $month, $year);
 	}
 
@@ -63,20 +62,21 @@ class DateTime extends Nette\DateTime
 	 */
 	public function weekStartEnd()
 	{
-		$year = $this->format("Y");
-		$week = $this->format("m") - 1; // - intentionally
+		$year = $this->format('Y');
+		$week = $this->format('m') - 1; // - intentionally
 
-		$time = strtotime("1 January $year", time());
-		$day = date("w", $time);
+		$time = strtotime('1 January $year', time());
+		$day = date('w', $time);
 		$time += ((7 * $week) + 1 - $day) * 24 * 3600; // @todo check, move to DateTime if possible
 
 		$result = array(
-			"start" => new self($time),
-			"end" => get($time)->modify("+6 days"),
+			'start' => new self($time),
+			'end' => self::get($time)->modify('+6 days'),
 		);
 
 		return $result;
 	}
+
 
 	/********************** change position **********************/
 
@@ -88,7 +88,7 @@ class DateTime extends Nette\DateTime
 	public function minus($dateTime)
 	{
 		$time1 = strtotime($this);
-		$time2 = strtotime($dateTime . ":00");
+		$time2 = strtotime($dateTime . ':00');
 
 		return $time2 - $time1;
 	}
@@ -101,9 +101,9 @@ class DateTime extends Nette\DateTime
 	public function addWorkday($amount = 1)
 	{
 		for ($i = 0; $i < $amount; $i++) {
-			$this->modify("+1 day");
+			$this->modify('+1 day');
 			while (!$this->isWorkingDay()) {
-				$this->modify("+1 day");
+				$this->modify('+1 day');
 			}
 		}
 
@@ -121,10 +121,10 @@ class DateTime extends Nette\DateTime
 	 */
 	public function getNextNearestDay($day)
 	{
-		$currentDay = $this->format("N");
+		$currentDay = $this->format('N');
 		$dayShift = ((7 + $day - $currentDay) % 7) ?: 7;
 
-		$this->modify("+$dayShift days");
+		$this->modify('+$dayShift days');
 		return $this;
 	}
 
@@ -136,12 +136,12 @@ class DateTime extends Nette\DateTime
 	 */
 	public function getNextNearestTime($time)
 	{
-		$currentTime = $this->format("H:i");
+		$currentTime = $this->format('H:i');
 		if (strtotime($time) <= strtotime($currentTime)) {
-			$this->modify("+1 day");
+			$this->modify('+1 day');
 		}
 
-		list($hours, $mins) = explode(":", $time);
+		list($hours, $mins) = explode(':', $time);
 		$this->setTime($hours, $mins);
 		return $this;
 	}
@@ -154,7 +154,7 @@ class DateTime extends Nette\DateTime
 	public function getNearestWorkday()
 	{
 		while (!$this->isWorkingDay()) {
-			$this->modify("+1 day");
+			$this->modify('+1 day');
 		}
 
 		return $this;
@@ -165,7 +165,7 @@ class DateTime extends Nette\DateTime
 	 * Get distance from now (in days by default)
 	 * @param string
 	 */
-	public function getFromNow($type = "d")
+	public function getFromNow($type = 'd')
 	{
 		$today = new self;
 		$diff = self::diff($today);
@@ -184,7 +184,7 @@ class DateTime extends Nette\DateTime
 	 */
 	public function getAge()
 	{
-		return floor((date("Ymd") - date("Ymd", $this)) / 10000);
+		return floor((date('Ymd') - date('Ymd', $this)) / 10000);
 	}
 
 
@@ -197,12 +197,12 @@ class DateTime extends Nette\DateTime
 	 * @param bool
 	 * @return string
 	 */
-	public function dayLocalized($lang = "cs", $type = "short", $ucfirst = TRUE)
+	public function dayLocalized($lang = 'cs', $type = 'short', $ucfirst = TRUE)
 	{
 		$nameList = array(
-			"cs" => array(
-				"short" => array(1 => 'Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'),
-				"long" => array(1 => "pondělí", "úterý", "středa", "čtvtek", "pátek", "sobota", "neděle")
+			'cs' => array(
+				'short' => array(1 => 'Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'),
+				'long' => array(1 => 'pondělí', 'úterý', 'středa', 'čtvtek', 'pátek', 'sobota', 'neděle')
 			)
 		);
 
@@ -222,19 +222,19 @@ class DateTime extends Nette\DateTime
 	 * @param string
 	 * @param bool
 	 */
-	public function monthLocalized($lang = "cs", $ucfirst = FALSE)
+	public function monthLocalized($lang = 'cs', $ucfirst = FALSE)
 	{
 		$nameList = array(
-			"cs" => array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec")
+			'cs' => array(1 => 'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec')
 		);
-		$month = $this->format("n");
+		$month = $this->format('n');
 
 		if (isset($nameList[$lang][$month])) {
 			$return = $nameList[$lang][$month];
 			return ($ucfirst ? ucfirst($return) : $return);
 		}
 
-		return $this->format("F");
+		return $this->format('F');
 	}
 
 
@@ -242,7 +242,7 @@ class DateTime extends Nette\DateTime
 	 * Format
 	 * @param string
 	 */
-	public function format($mask = "Y-m-d H:i:s")
+	public function format($mask = 'Y-m-d H:i:s')
 	{
 		return parent::format($mask);
 	}
@@ -257,7 +257,7 @@ class DateTime extends Nette\DateTime
 	 */
 	public function isToday()
 	{
-		if ($this->format("Y-m-d") == self::from(NULL)->format("Y-m-d")) {
+		if ($this->format('Y-m-d') == self::from(NULL)->format('Y-m-d')) {
 			return TRUE;
 		}
 
@@ -271,7 +271,7 @@ class DateTime extends Nette\DateTime
 	 */
 	public function isWorkingDay()
 	{
-		if ($this->format("N") >= 6) {
+		if ($this->format('N') >= 6) {
 			return FALSE;
 		}
 
@@ -287,9 +287,9 @@ class DateTime extends Nette\DateTime
 	 * Is weekend
 	 * @return bool
 	 */
-	public static function isWeekend()
+	public function isWeekend()
 	{
-		return ($this->format("N") >= 6);
+		return ($this->format('N') >= 6);
 	}
 
 
@@ -299,11 +299,11 @@ class DateTime extends Nette\DateTime
 	 */
 	public function isHoliday()
 	{
-		if (in_array($this->format("m-d"), self::$holidays)) {
+		if (in_array($this->format('m-d'), self::$holidays)) {
 			return TRUE;
 		}
 
-		if ($this->format("m-d") == strftime("%m-%d", easter_date($this->format("Y")))) { // easter
+		if ($this->format('m-d') == strftime('%m-%d', easter_date($this->format('Y')))) { // easter
 			return TRUE;
 		}
 
@@ -331,7 +331,7 @@ class DateTime extends Nette\DateTime
 	 */
 	public function isFuture()
 	{
-		return !isPast();
+		return ! isPast();
 	}
 
 }

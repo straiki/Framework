@@ -28,7 +28,7 @@ class Helpers extends Nette\Object
 	 * @param string
 	 * @return string
 	 */
-	public static function numberF($number, $decimals = 0, $dec_point = ",", $thousand_sep = " ")
+	public static function number($number, $decimals = 0, $dec_point = ',', $thousand_sep = ' ')
 	{
 		return number_format($number, $decimals, $dec_point, $thousand_sep);
 	}
@@ -46,13 +46,13 @@ class Helpers extends Nette\Object
 
 
 	/**
-	 * Display link without "http://"
+	 * Display link without 'http://'
 	 * @param string
 	 * @return string
 	 */
 	public static function displayUrl($url)
 	{
-		return ltrim($url, "http://");
+		return ltrim($url, 'http://');
 	}
 
 
@@ -62,11 +62,9 @@ class Helpers extends Nette\Object
 	 */
 	public static function suffix($file)
 	{
-		$temp = explode(".", $file);
+		$temp = explode('.', $file);
 		return array_pop($temp);
 	}
-
-
 
 
 	/**
@@ -79,14 +77,13 @@ class Helpers extends Nette\Object
 	}
 
 
-
 	/**
 	 * @param mixed
 	 * @param string
 	 * @param string
 	 * @param mixed
 	 */
-	public static function ternal($value, $one = "ano", $two = "ne", $cond = 1)
+	public static function ternal($value, $one = 'ano', $two = 'ne', $cond = 1)
 	{
 		return ($value == $cond) ? $one : $two;
 	}
@@ -98,13 +95,13 @@ class Helpers extends Nette\Object
 	 * @param string
 	 * @return string
 	 */
-	public function isEmpty($value, $emptyReturn = "-", $notEmptyReturn = NULL)
+	public function isEmpty($value, $emptyReturn = '-', $notEmptyReturn = NULL)
 	{
 		if ((!isset($value)) || (!$value && !is_numeric($value)) || is_null($value)) {
 			return $emptyReturn;
 
 		} else {
-			return trim($value." ".$notEmptyReturn);
+			return trim($value . ' ' . $notEmptyReturn);
 		}
 	}
 
@@ -114,7 +111,7 @@ class Helpers extends Nette\Object
 	  * @param mixed
 	  * @param string
 	  */
-	public function inArray($value, $array, $return = "-")
+	public function inArray($value, $array, $return = '-')
 	{
 		if (isset($array[$value])) {
 			return $array[$value];
@@ -150,7 +147,7 @@ class Helpers extends Nette\Object
 			$date = (int) $date;
 
 		} elseif ($date instanceof DateTime) {
-			$date = $date->format("U");
+			$date = $date->format('U');
 
 		} else {
 			$date = strtotime($date);
@@ -161,22 +158,22 @@ class Helpers extends Nette\Object
 
 		if ($delta < 0) {
 			$delta = abs($delta);
-			if ($delta == 0) return "ještì dnes";
-			if ($delta == 1) return "zítra";
-			if ($delta < 30) return "za " . $delta . " " . self::plural($delta, "den", "dny", "dní");
-			if ($delta < 60) return "za mìsíc";
-			if ($delta < 365) return "za " . round($delta / 30) . " " . self::plural(round($delta / 30), "mìsíc", "mìsíce", "mìsícù");
-			if ($delta < 730) return "za rok";
-			return "za " . round($delta / 365) . " " . self::plural(round($delta / 365), "rok", "roky", "let");
+			if ($delta == 0) return 'ještì dnes';
+			if ($delta == 1) return 'zítra';
+			if ($delta < 30) return 'za ' . $delta . ' ' . self::plural($delta, 'den', 'dny', 'dní');
+			if ($delta < 60) return 'za mìsíc';
+			if ($delta < 365) return 'za ' . round($delta / 30) . ' ' . self::plural(round($delta / 30), 'mìsíc', 'mìsíce', 'mìsícù');
+			if ($delta < 730) return 'za rok';
+			return 'za ' . round($delta / 365) . ' ' . self::plural(round($delta / 365), 'rok', 'roky', 'let');
 		}
 
-		if ($delta == 0) return "dnes";
-		if ($delta == 1) return "vèera";
-		if ($delta < 30) return "pøed " . $delta . " dny";
-		if ($delta < 60) return "pøed mìsícem";
-		if ($delta < 365) return "pøed " . round($delta / 30) . " mìsíci";
-		if ($delta < 730) return "pøed rokem";
-		return "pøed " . round($delta / 365) . " lety";
+		if ($delta == 0) return 'dnes';
+		if ($delta == 1) return 'vèera';
+		if ($delta < 30) return 'pøed ' . $delta . ' dny';
+		if ($delta < 60) return 'pøed mìsícem';
+		if ($delta < 365) return 'pøed ' . round($delta / 30) . ' mìsíci';
+		if ($delta < 730) return 'pøed rokem';
+		return 'pøed ' . round($delta / 365) . ' lety';
 	}
 
 
@@ -195,7 +192,7 @@ class Helpers extends Nette\Object
 			$time = (int) $time;
 
 		} elseif ($time instanceof DateTime) {
-			$time = $time->format("U");
+			$time = $time->format('U');
 
 		} else {
 			$time = strtotime($time);
@@ -205,31 +202,31 @@ class Helpers extends Nette\Object
 
 		if ($delta < 0) {
 			$delta = round(abs($delta) / 60);
-			if ($delta == 0) return "za okamžik";
-			if ($delta == 1) return "za minutu";
-			if ($delta < 45) return "za " . $delta . " " . self::plural($delta, "minuta", "minuty", "minut");
-			if ($delta < 90) return "za hodinu";
-			if ($delta < 1440) return "za " . round($delta / 60) . " " . self::plural(round($delta / 60), "hodina", "hodiny", "hodin");
-			if ($delta < 2880) return "zítra";
-			if ($delta < 43200) return "za " . round($delta / 1440) . " " . self::plural(round($delta / 1440), "den", "dny", "dní");
-			if ($delta < 86400) return "za mìsíc";
-			if ($delta < 525960) return "za " . round($delta / 43200) . " " . self::plural(round($delta / 43200), "mìsíc", "mìsíce", "mìsícù");
-			if ($delta < 1051920) return "za rok";
-			return "za " . round($delta / 525960) . " " . self::plural(round($delta / 525960), "rok", "roky", "let");
+			if ($delta == 0) return 'za okamžik';
+			if ($delta == 1) return 'za minutu';
+			if ($delta < 45) return 'za ' . $delta . ' ' . self::plural($delta, 'minuta', 'minuty', 'minut');
+			if ($delta < 90) return 'za hodinu';
+			if ($delta < 1440) return 'za ' . round($delta / 60) . ' ' . self::plural(round($delta / 60), 'hodina', 'hodiny', 'hodin');
+			if ($delta < 2880) return 'zítra';
+			if ($delta < 43200) return 'za ' . round($delta / 1440) . ' ' . self::plural(round($delta / 1440), 'den', 'dny', 'dní');
+			if ($delta < 86400) return 'za mìsíc';
+			if ($delta < 525960) return 'za ' . round($delta / 43200) . ' ' . self::plural(round($delta / 43200), 'mìsíc', 'mìsíce', 'mìsícù');
+			if ($delta < 1051920) return 'za rok';
+			return 'za ' . round($delta / 525960) . ' ' . self::plural(round($delta / 525960), 'rok', 'roky', 'let');
 		}
 
 		$delta = round($delta / 60);
-		if ($delta == 0) return "pøed okamžikem";
-		if ($delta == 1) return "pøed minutou";
-		if ($delta < 45) return "pøed $delta minutami";
-		if ($delta < 90) return "pøed hodinou";
-		if ($delta < 1440) return "pøed " . round($delta / 60) . " hodinami";
-		if ($delta < 2880) return "vèera";
-		if ($delta < 43200) return "pøed " . round($delta / 1440) . " dny";
-		if ($delta < 86400) return "pøed mìsícem";
-		if ($delta < 525960) return "pøed " . round($delta / 43200) . " mìsíci";
-		if ($delta < 1051920) return "pøed rokem";
-		return "pøed " . round($delta / 525960) . " lety";
+		if ($delta == 0) return 'pøed okamžikem';
+		if ($delta == 1) return 'pøed minutou';
+		if ($delta < 45) return 'pøed $delta minutami';
+		if ($delta < 90) return 'pøed hodinou';
+		if ($delta < 1440) return 'pøed ' . round($delta / 60) . ' hodinami';
+		if ($delta < 2880) return 'vèera';
+		if ($delta < 43200) return 'pøed ' . round($delta / 1440) . ' dny';
+		if ($delta < 86400) return 'pøed mìsícem';
+		if ($delta < 525960) return 'pøed ' . round($delta / 43200) . ' mìsíci';
+		if ($delta < 1051920) return 'pøed rokem';
+		return 'pøed ' . round($delta / 525960) . ' lety';
 	}
 
 
@@ -250,9 +247,9 @@ class Helpers extends Nette\Object
 	 */
 	public static function duration($s)
 	{
-		if ($s < 60) return "$s\xC2\xA0s";
-		if ($s < 3600) return ((int)($s / 60)) . "\xC2\xA0min";
-		return ((int)($s / 3600)) . "\xC2\xA0h";
+		if ($s < 60) return '$s\xC2\xA0s';
+		if ($s < 3600) return ((int)($s / 60)) . '\xC2\xA0min';
+		return ((int)($s / 3600)) . '\xC2\xA0h';
 	}
 
 
@@ -268,12 +265,12 @@ class Helpers extends Nette\Object
 	{
 		$return = NULL;
 		for($i=0,$j=strlen($email);$i<$j; $i++) {
-			$return .= "&#0".ord($email[$i]).";";
+			$return .= '&#0'.ord($email[$i]).';';
 		}
 
 		if ($clickable) {
 			$node = $node ? $node : $return;
-			return "<a " . ($class ? "class='" . $class . "' " : NULL)."href='mailto:$return'>$node</a>";
+			return '<a ' . ($class ? 'class="' . $class . '" ' : NULL) . 'href="mailto:$return">$node</a>';
 
 		} else {
 			return $return;
@@ -286,7 +283,7 @@ class Helpers extends Nette\Object
 	 * @param string
 	 * @param string
 	 */
-	public static function date($date, $format = "j. n. Y H:i")
+	public static function date($date, $format = 'j. n. Y H:i')
 	{
 		return Nette\Templating\Helpers::date($date, $format);
 	}

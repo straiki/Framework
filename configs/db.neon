@@ -12,7 +12,6 @@ factories:
 	loginControl: Components\LoginControl
 	registrationControl: Components\RegistrationControl
 	remindPasswordControl: Components\RemindPasswordControl
-	userControl: UserModule\Components\UserControl
 
 extensions:
 	notorm: NotORMExtension\DI\Extension

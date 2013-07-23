@@ -1,21 +1,18 @@
 <?php
 
-/**
- * 2DO - onclick style switch - quick :)
- */
-
 namespace Components;
 
 use Nette\Utils\Html;
 use Schmutzka;
 
+
 class FavourControl extends Schmutzka\Application\UI\Control
 {
 	/** @var string */
-	public $favoriteClass = "favourite";
+	public $favoriteClass = 'favourite';
 
 	/** @var string */
-	public $nonFavoriteClass = "nonFavourite";
+	public $nonFavoriteClass = 'nonFavourite';
 
 	/** @var bool */
 	public $useAjax = TRUE;
@@ -97,7 +94,7 @@ class FavourControl extends Schmutzka\Application\UI\Control
 	/**
 	 * @param int
 	 */
-	public function render($id)
+	public function renderDefault($id)
 	{
 		$item = $this->getItemKey($id);
 
@@ -108,22 +105,20 @@ class FavourControl extends Schmutzka\Application\UI\Control
 		$this->template->nonFavoriteClass = $this->nonFavoriteClass;
 		$this->template->useAjax = $this->useAjax;
 		$this->template->useTooltip = $this->useTooltip;
-	
-		$this->template->render();
 	}
 
 
 	/********************* helpers *********************/
 
 
-	/** 
+	/**
 	 * Get item key
 	 * @param int
 	 */
 	private function getItemKey($id)
 	{
 		return array(
-			"user_id" => $this->userId,
+			'user_id' => $this->userId,
 			$this->tableKey => $id
 		);
 	}

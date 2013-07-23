@@ -109,8 +109,8 @@ class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 
 
 	/**
-	 * Create hashed password and salt and update for specific user
-	 * (this is update helper)
+	 * Create hashed password and salt and update for specific user.
+	 * (Note: this is an update helper.)
 	 *
 	 * @param array $cond
 	 * @param string $password

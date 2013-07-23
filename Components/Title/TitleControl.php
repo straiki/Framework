@@ -4,6 +4,7 @@ namespace Components;
 
 use Schmutzka;
 
+
 /**
  * @method setSep(string)
  * @method getSep()
@@ -17,10 +18,10 @@ use Schmutzka;
 class TitleControl extends Schmutzka\Application\UI\Control
 {
 	/** @var string */
-	private $sep = " | ";
+	private $sep = ' | ';
 
 	/** @var string */
-	private $mainTitleSep = " | ";
+	private $mainTitleSep = ' | ';
 
 	/** @var string */
 	private $alwaysShowMainTitle = FALSE;
@@ -32,17 +33,14 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	private $titles = array();
 
 
-	public function render()
+	public function renderDefault()
 	{
-		parent::useTemplate();
-
 		$title = implode($this->sep, $this->titles);
 		if ($this->alwaysShowMainTitle) {
 			$title .= ($title ? $this->mainTitleSep : NULL) . $this->mainTitle;
 		}
 
 		$this->template->title = $title;
-		$this->template->render();
 	}
 
 
@@ -65,7 +63,7 @@ class TitleControl extends Schmutzka\Application\UI\Control
 		$name = $this->presenter->name;
 		$action = $this->presenter->action;
 
-		return ($action == "default" && in_array($name, array("Front:Homepage", "Homepage")));
+		return ($action == 'default' && in_array($name, array('Front:Homepage', 'Homepage')));
 	}
 
 }

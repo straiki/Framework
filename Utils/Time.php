@@ -6,64 +6,17 @@ use Nette;
 use Nette\Utils\Strings;
 use Schmutzka\Utils\Validators;
 
-/**
- * todo move to common/DateTime.php, or Time.php if possible
- * @todo convert - autodetection by preg_match? but hh:mm vs mm:ss?
- */
+
 
 class Time extends Nette\Object
 {
 
 	/**
-	 * Is date between limts
-	 * @param Nette\DateTime|string
-	 * @param Nette\DateTime|string
-	 * @param Nette\DateTime|string
-	 * @return bool
-	 */
-	public static function isBetween($date, $from, $to)
-	{	
-		$date = Nette\DateTime::from($date);
-		$from = Nette\DateTime::from($from);
-		$to = Nette\DateTime::from($to);
-
-		return ($date >= $from && $date <= $to);
-	}
-
-	/**
-	 * Find week borders
-	 * @param date
-	 * @param int
-	 * @param string
-	 */
-	public static function weekStartEnd($year, $week, $type = NULL)
-	{
-		$year = date("Y", strtotime($year));
-		--$week; // why? :/
-
-		$time = strtotime("1 January $year", time());
-		$day = date("w", $time);
-		$time += ((7 * $week) + 1 - $day) * 24 * 3600;
-		$return[0] = date("Y-m-d", $time);
-		$time += 6 * 24 * 3600;
-		$return[1]= date("Y-m-d", $time);
-
-		if ($type == "start") {
-			return $return[0];
-
-		} elseif ($type == "end") {
-			return $return[1];
-		}
-
-		return $return;
-	}
-
-
-	/**
 	 * Conver one number to another
 	 * @param int
-	 * @param string {[ d, h, m, s ]}
-	 * @param string {[ d, h, m, s ]}
+	 * @param string { [ d, h, m, s ] }
+	 * @param string { [ d, h, m, s ] }
+	 * @return  int|string
 	 */
 	public static function convert($time, $from, $to)
 	{
@@ -85,7 +38,7 @@ class Time extends Nette\Object
 		} elseif ($from == "h:m") {
 			list ($h, $m) = explode(":", $time);
 			switch ($to) {
-				case "s" : 
+				case "s" :
 					return $h * 60 * 60 + $m * 60;
 
 				case "h" :
@@ -101,7 +54,7 @@ class Time extends Nette\Object
 		} elseif ($from == "m:s") {
 			list ($m, $s) = explode(":", $time);
 			switch ($to) {
-				case "s" : 
+				case "s" :
 					return $m * 60 + $s;
 			}
 
@@ -118,10 +71,10 @@ class Time extends Nette\Object
 
 				case "h:m hod/min" :
 					if ($h) {
-						return $h . ":" . Strings::padLeft($m, 2, 0) . " hod.";			
+						return $h . ":" . Strings::padLeft($m, 2, 0) . " hod.";
 
 					} else {
-						return $m . " min.";			
+						return $m . " min.";
 					}
 			}
 
@@ -170,7 +123,7 @@ class Time extends Nette\Object
 	public static function startEndMean($result,$dateStart = NULL,$dateEnd = NULL, $id = NULL)
 	{
 
-		// kurnik ale !!!!		
+		// kurnik ale !!!!
 
 		$increase = FALSE;
 		if (count($result)) { // máme výsledky
@@ -181,32 +134,32 @@ class Time extends Nette\Object
 				// spánek začíná po 18 hodině a zároveň končí před 18 hodinou = po půlnoci - odečteme 24 hodin pro zachování točení výsledku kolem půlnoci (ještě třeba empirikovat)
 				/*
 				if(self::minutesFromTimeStamp($row["start"]) > 1*60 AND self::minutesFromTimeStamp($row["end"]) < 0 * 60) { // nikdy nebude víc jak 24 * 60, že :)
-					$start -= 24*60;       
-				}	
+					$start -= 24*60;
+				}
 				*/
 
 
-			
+
 				/* méně jak 12:00, přidáme 24 * 60 minut */
 				$startInMins = self::minutesFromTimeStamp($row["start"]);
 
 				$break = 18;
 
 				if($startInMins < $break *60) {
-					$startInMins += self::$dayMins;       
+					$startInMins += self::$dayMins;
 					$increase = TRUE; // @test
-				}	
+				}
 
 				$endInMins = self::minutesFromTimeStamp($row["end"]);
 				if($endInMins < $break *60 OR $increase) {
-					$endInMins += self::$dayMins;   
-					$increase = TRUE; // @test    
-				}	
+					$endInMins += self::$dayMins;
+					$increase = TRUE; // @test
+				}
 
 				$start += $startInMins;
 				$end += $endInMins+1; // hh:m9 fix
 			}
-  
+
 			if($start<0) {$start *= -1;}
 
 			$startMean = $start/$result->count("*");
@@ -229,13 +182,13 @@ class Time extends Nette\Object
 	}
 
 
-	/** 
+	/**
 	 * @unfinished
 	 * Average sleep time (midnights/noon oscialation = biday oscilation)
 	 * @param array
 	 * @return string
 	 */
-	public static function getAverage(array $data) 
+	public static function getAverage(array $data)
 	{
 		if (!count($data) OR !is_array($data)) { // žádná/chybná data
 			return NULL;
@@ -287,34 +240,7 @@ class Time extends Nette\Object
 			$timeMean -= 1440;
 		}
 
-		return self::im($timeMean); 
+		return self::im($timeMean);
 	}
 
-
-
-	/**
-	 * Get number of days in month
-	 * @param date
-	 */
-	public static function daysInMonth($date)
-	{
-		$month = date("m", strtotime($date));
-		$year = date("Y", strtotime($date));
-
-		return cal_days_in_month(CAL_GREGORIAN, $month, $year); 
-	}
-
-
-	/**
-	 * Get age from birthdate
-	 * @param date format/time()
-	 */
-	public static function age($birthDate)
-	{  
-		if (!is_int($birthDate)) {
-			$birthDate = strtotime($birthDate);
-		}
-
-		return floor((date("Ymd") - date("Ymd", $birthDate)) / 10000);
-	}
 }

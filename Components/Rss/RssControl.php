@@ -7,6 +7,7 @@ use Nette;
 use Schmutzka\Application\UI\Control;
 use Schmutzka\Utils\Arrays;
 
+
 /**
  * @method setTitle(string)
  * @method getTitle()
@@ -39,19 +40,17 @@ class RssControl extends Control
 
 	/** @var array */
 	private $itemKeys = array(
-		"title" => "title",
-		"link" => "link",
-		"description" => "description",
-		"pubDate" => "pubDate"
+		'title' => 'title',
+		'link' => 'link',
+		'description' => 'description',
+		'pubDate' => 'pubDate'
 	);
 
 
-	public function render()
+	public function renderDefault()
 	{
-		parent::useTemplate();
-
 		if ($this->link == NULL) {
-			$this->link = $this->presenter->link("//Homepage:default");
+			$this->link = $this->presenter->link('//Homepage:default');
 		}
 
 		$this->template->title = $this->title;
@@ -59,7 +58,6 @@ class RssControl extends Control
 		$this->template->description = $this->description;
 		$this->template->language = $this->language;
 		$this->template->items = $this->sourcesToItems($this->sources);
-		$this->template->render();
 	}
 
 
@@ -73,9 +71,9 @@ class RssControl extends Control
 	public function addSource($result, $recode = array(), Closure $linkBuilder = NULL)
 	{
 		$this->sources[] = array(
-			"result" => $result,
-			"recode" => $recode,
-			"linkBuilder" => $linkBuilder
+			'result' => $result,
+			'recode' => $recode,
+			'linkBuilder' => $linkBuilder
 		);
 	}
 
@@ -97,15 +95,15 @@ class RssControl extends Control
 
 		$items = array();
 		foreach ($sources as $source) {
-			$itemKeys = array_merge($this->itemKeys, $source["recode"]);
+			$itemKeys = array_merge($this->itemKeys, $source['recode']);
 
-			foreach ($source["result"] as $row) {
+			foreach ($source['result'] as $row) {
 				$item = array();
 				foreach ($itemKeys as $key => $sourceKey) {
 					$value = $row[$sourceKey];
 
-					if ($key == "link" && $source["linkBuilder"]) {
-						$value = $source["linkBuilder"]($row);
+					if ($key == 'link' && $source['linkBuilder']) {
+						$value = $source['linkBuilder']($row);
 					}
 
 					$item[$key] = $value;
@@ -116,18 +114,18 @@ class RssControl extends Control
 		}
 
 		// newest items first
-		Arrays::sortBySubKeyReverse($items, "pubDate");
+		Arrays::sortBySubKeyReverse($items, 'pubDate');
 
 		foreach ($items as $key => $item) {
-			if ($item["pubDate"]) {
-				$value = strtotime((string) $item["pubDate"]);
-				$item["pubDate"] = gmdate('D, d M Y H:i:s', $value) . " GMT";
+			if ($item['pubDate']) {
+				$value = strtotime((string) $item['pubDate']);
+				$item['pubDate'] = gmdate('D, d M Y H:i:s', $value) . ' GMT';
 				$items[$key] = $item;
 			}
 		}
 
 		$this->cache->save($cacheKey, $items, array(
-			"expire" => "1 day"
+			'expire' => '1 day'
 		));
 
 		return $items;

@@ -4,6 +4,7 @@ namespace Components;
 
 use Schmutzka;
 
+
 class FlashMessageControl extends Schmutzka\Application\UI\Control
 {
 
@@ -21,7 +22,6 @@ class FlashMessageControl extends Schmutzka\Application\UI\Control
 		}
 
 		$this->template->flashes = $flashes;
-		$this->template->render();
 	}
 
 }

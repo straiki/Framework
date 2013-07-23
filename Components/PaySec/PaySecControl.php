@@ -13,7 +13,7 @@ class PaySecControl extends Control
 	public $message;
 
 	/** @var string */
-	public $awayRedirect = "Homepage:default";
+	public $awayRedirect = 'Homepage:default';
 
 	/** @var callback to external action */
 	protected $onSuccessTransaction;
@@ -34,51 +34,42 @@ class PaySecControl extends Control
 	 */
 	function inject(Schmutzka\ParamService $paramService, Schmutzka\Shop\Basket $basket)
 	{
-		$settings = $paramService->params["paysec"];
-		$this->settings = $settings[$settings["use"]];
+		$settings = $paramService->params['paysec'];
+		$this->settings = $settings[$settings['use']];
 		$this->basket = $basket;
 	}
 
 
-	public function render()
-	{
-		parent::useTemplate();
-		$this->template->render();
-	}
-
-
-	/**
-	 * Pay form
-	 */
-	protected function createComponentPayForm(/*$name*/) // @intentionaly: required for custom action
+	protected function createComponentForm(/*$name*/) // @intentionaly: required for custom action
 	{
 		$paymentId = $this->basket->paySecId;
 
 		// test!
-		$backUrl = $this->link("//process", array(
-			"id" => $paymentId
-		)) . "&result={0}";  // {0} will be replaced by result state
-		$cancelUrl = $this->link("//cancel", array(
-			"id" => $paymentId
+		$backUrl = $this->link('//process', array(
+			'id' => $paymentId
+		)) . '&result={0}';  // {0} will be replaced by result state
+
+		$cancelUrl = $this->link('//cancel', array(
+			'id' => $paymentId
 		));
 
 		$form = new Form/*($this, $name)*/; // @intentionaly: required for custom action
-		// $form->setAction($this->settings["gateway"]);
+		// $form->setAction($this->settings['gateway']);
 
-		$form->addHidden("MicroaccountNumber", $this->settings["accountNumber"]);
-		$form->addHidden("Amount", $this->basket->priceTotal);
-		$form->addHidden("MerchantOrderId", $paymentId);
-		$form->addHidden("MessageForTarget", $this->message);
-		$form->addHidden("BackURL", $backUrl);
-		$form->addHidden("CancelURL", $cancelUrl);
+		$form->addHidden('MicroaccountNumber', $this->settings['accountNumber']);
+		$form->addHidden('Amount', $this->basket->priceTotal);
+		$form->addHidden('MerchantOrderId', $paymentId);
+		$form->addHidden('MessageForTarget', $this->message);
+		$form->addHidden('BackURL', $backUrl);
+		$form->addHidden('CancelURL', $cancelUrl);
 
-		$form->addSubmit("pay", "Zaplatit")
-			->setAttribute("class","btn btn-large btn-success")
-			->onClick[] = callback($this, "processConfirm");
+		$form->addSubmit('pay', 'Zaplatit')
+			->setAttribute('class', 'btn btn-large btn-success')
+			->onClick[] = callback($this, 'processConfirm');
 
-		$form->addSubmit("cancel", "Zrušit objednávku")
-			->setAttribute("class","btn btn-large")
-			->onClick[] = callback($this, "processCancel");
+		$form->addSubmit('cancel', 'Zrušit objednávku')
+			->setAttribute('class', 'btn btn-large')
+			->onClick[] = callback($this, 'processCancel');
 
 		return $form;
 	}
@@ -92,7 +83,7 @@ class PaySecControl extends Control
 	{
 		$values = $button->form->values;
 
-		$url = $this->settings["gateway"] . "?" . http_build_query($values);
+		$url = $this->settings['gateway'] . '?' . http_build_query($values);
 		$this->presenter->redirectUrl($url);
 	}
 
@@ -117,24 +108,24 @@ class PaySecControl extends Control
 	 */
 	public function handleProcess($id, $result)
 	{
-		$userName = $this->settings["userName"];
-		$password = $this->settings["password"];
+		$userName = $this->settings['userName'];
+		$password = $this->settings['password'];
 
 		$this->orderModel->update(array(
-			"result" => $result
+			'result' => $result
 		), $id);
 
 		if ($orderRow = $this->orderModel->item($id)) { // hm?
-			$paysecMapi = new SoapClient($this->settings["soap"]);
-			$resultCode = $paysecMapi->VerifyTransactionIsPaid($this->settings["userName"], $this->settings["password"], $id, $orderRow["price"]);
+			$paysecMapi = new SoapClient($this->settings['soap']);
+			$resultCode = $paysecMapi->VerifyTransactionIsPaid($this->settings['userName'], $this->settings['password'], $id, $orderRow['price']);
 
 			switch ($resultCode) {
 
 				case 0:
-					$this->orderModel->update(array("paid" => 1), $id);
+					$this->orderModel->update(array('paid' => 1), $id);
 
 					$this->basket->emptyBasket();
-					$this->presenter->flashMessage("Platba prostřednictvím systému PaySec proběhla úspěšně. Děkujeme za Vaši objednávku a zájem o festival Jeden svět. Kód vstupenky najdete ve Vaší emalové schránce.", "success");
+					$this->presenter->flashMessage('Platba prostřednictvím systému PaySec proběhla úspěšně. Děkujeme za Vaši objednávku a zájem o festival Jeden svět. Kód vstupenky najdete ve Vaší emalové schránce.', 'success');
 
 					if ($this->onSuccessTransaction && is_callable($this->onSuccessTransaction)) {
 						$values = call_user_func($this->onSuccessTransaction, $values);
@@ -145,35 +136,35 @@ class PaySecControl extends Control
 					break;
 
 				case 1:
-					$this->presenter->flashMessage("Platbu se nepodařilo zrealizovat.<br>Váš pokyn k zamítnutí platby byl proveden úspěšně.", "success");
+					$this->presenter->flashMessage('Platbu se nepodařilo zrealizovat.<br>Váš pokyn k zamítnutí platby byl proveden úspěšně.', 'success');
 					break;
 
 				case 2:
-					$this->presenter->flashMessage("Stav platby se nepodařilo ověřit. Pracujeme na nápravě.2", "error");
+					$this->presenter->flashMessage('Stav platby se nepodařilo ověřit. Pracujeme na nápravě.2', 'error');
 					break;
 
 				case 3:
-					$this->presenter->flashMessage("Stav platby se nepodařilo ověřit. Pracujeme na nápravě.3", "error");
+					$this->presenter->flashMessage('Stav platby se nepodařilo ověřit. Pracujeme na nápravě.3', 'error');
 					break;
 
 				case 4:
-					$this->presenter->flashMessage("Stav platby se nepodařilo ověřit. Pracujeme na nápravě.4", "error");
+					$this->presenter->flashMessage('Stav platby se nepodařilo ověřit. Pracujeme na nápravě.4', 'error');
 					break;
 
 				case 5:
-					$this->presenter->flashMessage("Platbu se nepodařilo zrealizovat.", "error");
+					$this->presenter->flashMessage('Platbu se nepodařilo zrealizovat.', 'error');
 					break;
 
 				case 6:
-					$this->presenter->flashMessage("Stav platby se nepodařilo ověřit. Pracujeme na nápravě.6", "error");
+					$this->presenter->flashMessage('Stav platby se nepodařilo ověřit. Pracujeme na nápravě.6', 'error');
 					break;
 
 				case 7:
-					$this->presenter->flashMessage("");
+					$this->presenter->flashMessage('');
 					break;
 
 				default:
-					$this->presenter->flashMessage("Stav platby se nepodařilo ověřit. Pracujeme na nápravě.", "error");
+					$this->presenter->flashMessage('Stav platby se nepodařilo ověřit. Pracujeme na nápravě.', 'error');
 					break;
 				}
 		}
@@ -200,7 +191,7 @@ class PaySecControl extends Control
 	private function cancelOrder($id)
 	{
 		$this->orderModel->cancelOrder($id);
-		$this->presenter->flashMessage("Váš pokyn k zamítnutí platby byl proveden úspěšně. Pokud budete chtít objednat vstupenky, vložte je znovu do košíku.", "success");
+		$this->presenter->flashMessage('Váš pokyn k zamítnutí platby byl proveden úspěšně. Pokud budete chtít objednat vstupenky, vložte je znovu do košíku.', 'success');
 		$this->basket->emptyBasket();
 		$this->presenter->redirect($this->awayRedirect);
 	}

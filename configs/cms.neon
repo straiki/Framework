@@ -163,6 +163,7 @@ factories:
 	textSnippetGrid: TextSnippetModule\Components\TextSnippetGrid
 
 	# UserModule
+	userControl: UserModule\Components\UserControl
 	userGrid: UserModule\Components\UserGrid
 
 

@@ -18,16 +18,16 @@ class ChangePasswordControl extends Control
 	protected function createComponentForm()
 	{
 		$form = new Form;
-		$form->addPassword("oldPassword", "Staré heslo:")
-			->addRule(Form::FILLED, "Zadejte staré heslo");
-		$form->addPassword("password", "Nové heslo:")
-			->addRule(Form::FILLED, "Zadejte nové heslo")
-			->addRule(Form::MIN_LENGTH, "Heslo musí mít aspoň %d znaků", 5);
-		$form->addPassword('passwordCheck', "Znovu nové heslo:")
-			->addRule(Form::FILLED, "Zadejte heslo k ověření")
-			->addRule(Form::EQUAL, "Hesla musejí být shodná", $form["password"]);
-		$form->addSubmit("send", "Změnit heslo")
-			->setAttribute("class", "btn btn-primary");
+		$form->addPassword('oldPassword', 'Staré heslo:')
+			->addRule(Form::FILLED, 'Zadejte staré heslo');
+		$form->addPassword('password', 'Nové heslo:')
+			->addRule(Form::FILLED, 'Zadejte nové heslo')
+			->addRule(Form::MIN_LENGTH, 'Heslo musí mít aspoň %d znaků', 5);
+		$form->addPassword('passwordCheck', 'Znovu nové heslo:')
+			->addRule(Form::FILLED, 'Zadejte heslo k ověření')
+			->addRule(Form::EQUAL, 'Hesla musejí být shodná', $form['password']);
+		$form->addSubmit('send', 'Změnit heslo')
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
@@ -37,25 +37,18 @@ class ChangePasswordControl extends Control
 	{
 		$values = $form->values;
 		$userData = $this->userModel->item($this->user->id);
-		$oldPass = UserManager::calculateHash($values["oldPassword"], $userData["salt"]);
+		$oldPass = UserManager::calculateHash($values['oldPassword'], $userData['salt']);
 
-		if ($oldPass != $userData["password"]) {
-			$this->presenter->flashMessage("Zadali jste chybně staré heslo.", "error");
+		if ($oldPass != $userData['password']) {
+			$this->presenter->flashMessage('Zadali jste chybně staré heslo.', 'error');
 
 		} else {
-			$data["password"] = UserManager::calculateHash($values["password"], $userData["salt"]);
+			$data['password'] = UserManager::calculateHash($values['password'], $userData['salt']);
 			$this->userModel->update($data, $this->user->id);
-			$this->presenter->flashMessage("Heslo bylo úspěšně změněno.", "success");
+			$this->presenter->flashMessage('Heslo bylo úspěšně změněno.', 'success');
 		}
 
-		$this->presenter->redirect("this");
-	}
-
-
-	public function render()
-	{
-		parent::useTemplate();
-		$this->template->render();
+		$this->presenter->redirect('this');
 	}
 
 }

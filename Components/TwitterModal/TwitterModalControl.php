@@ -3,7 +3,7 @@
 namespace Schmutzka\Components;
 
 use Schmutzka;
-use Schmutzka\Utils\Name;
+
 
 class TwitterModalControl extends Schmutzka\Application\UI\Control
 {
@@ -14,7 +14,7 @@ class TwitterModalControl extends Schmutzka\Application\UI\Control
 	 */
 	public function useParentTemplate()
 	{
-		return $this->createTemplate()->setFile(__DIR__ . "/TwitterModalControl.latte");
+		return $this->createTemplate()->setFile(__DIR__ . '/templates/default.latte');
 	}
 
 }

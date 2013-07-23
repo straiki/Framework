@@ -7,6 +7,7 @@ use Nette\Mail\Message;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Control;
 
+
 /**
  * @method setSubjectText(bool)
  * @method getSubjectText()
@@ -33,7 +34,7 @@ class ContactControl extends Control
 	public $mailer;
 
 	/** @var array */
-	private $logSender = array("login");
+	private $logSender = array('login');
 
 	/** @var string|array */
 	private $mailTo;
@@ -45,7 +46,7 @@ class ContactControl extends Control
 	private $showEmail = TRUE;
 
 	/** @var string */
-	private $subjectText = "Kontaktní formulář";
+	private $subjectText = 'Kontaktní formulář';
 
 	/** @var bool */
 	private $includeParams = FALSE;
@@ -56,17 +57,17 @@ class ContactControl extends Control
 		$form = new Form;
 
 		if ($this->showEmail) {
-			$form->addText("email", "Váš email:")
-				->addRule(Form::FILLED, "Zadejte Váš email")
-				->addRule(Form::EMAIL, "Email nemá správný formát");
+			$form->addText('email', 'Váš email:')
+				->addRule(Form::FILLED, 'Zadejte Váš email')
+				->addRule(Form::EMAIL, 'Email nemá správný formát');
 		}
 
-		$form->addTextarea("text", "Zpráva:")
-			->addRule(Form::FILLED, "Napište Váš dotaz");
+		$form->addTextarea('text', 'Zpráva:')
+			->addRule(Form::FILLED, 'Napište Váš dotaz');
 
 		$form->addAntispam();
-		$form->addSubmit("send", "Odeslat")
-			->setAttribute("class", "btn btn-primary");
+		$form->addSubmit('send', 'Odeslat')
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
@@ -77,54 +78,54 @@ class ContactControl extends Control
 		$values = $form->values;
 		$domain = $this->httpRequest->url->host;
 
-		$text = "Dobrý den,\n\nze stránky " .
+		$text = 'Dobrý den,\n\nze stránky ' .
 			$domain .
-			" Vám byla zaslána následující zpráva:\n\n" .
-			$values["text"];
+			' Vám byla zaslána následující zpráva:\n\n' .
+			$values['text'];
 
 		if ($this->includeParams) {
-			$text .= "\n\nVeškeré parametry:\n";
+			$text .= '\n\nVeškeré parametry:\n';
 			foreach ($form->components as $key => $component) {
-				if ($key != "submit") {
-					$text .= $component->caption . " " . $component->value . "\n";
+				if ($key != 'submit') {
+					$text .= $component->caption . ' ' . $component->value . '\n';
 				}
 			}
 		}
 
 		/*
-		if (!isset($values["email"])) {
-			$values["email"] = "no-reply@" . $domain;
+		if (!isset($values['email'])) {
+			$values['email'] = 'no-reply@' . $domain;
 		}
 		*/
 
 		$message = new Message;
-		$message->setFrom($values["email"])
-			->setSubject(rtrim($domain . " - " . $this->subjectText, " - "));
+		$message->setFrom($values['email'])
+			->setSubject(rtrim($domain . ' - ' . $this->subjectText, ' - '));
 
-		$from = "";
+		$from = '';
 		if ($this->logSender) {
 			if ($this->user->loggedIn) {
-				$name = "";
+				$name = '';
 				foreach ($this->logSender as $key) {
 					if (isset($this->user->identity->{$key})) {
-						$name .= $this->user->identity->{$key} . " ";
+						$name .= $this->user->identity->{$key} . ' ';
 					}
 				}
 
 				$message->setFrom($this->user->email, trim($name));
-				$from = "Od: " . trim($name) . ", ". $this->user->email . "\n\n";
+				$from = 'Od: ' . trim($name) . ', '. $this->user->email . '\n\n';
 
 			} else {
 				$key = array_shift($this->logSender);
 				$email = $values[$key];
-				$from = "Od: " . $email;
+				$from = 'Od: ' . $email;
 
 				if ($key = array_shift($this->logSender)) {
 					$name = trim($values[$key]);
-					$from .= ", " . $name;
+					$from .= ', ' . $name;
 				}
 
-				$from .= "\n\n";
+				$from .= '\n\n';
 				$message->setFrom($email ?: $this->mailFrom, $name);
 			}
 		}
@@ -141,15 +142,8 @@ class ContactControl extends Control
 		$message->setBody($from . $text);
 		$this->mailer->send($message);
 
-		$this->presenter->flashMessage("Zpráva byla úspěšně odeslána.", "success");
-		$this->presenter->redirect("this");
-	}
-
-
-	public function render()
-	{
-		parent::useTemplate();
-		$this->template->render();
+		$this->presenter->flashMessage('Zpráva byla úspěšně odeslána.', 'success');
+		$this->presenter->redirect('this');
 	}
 
 }

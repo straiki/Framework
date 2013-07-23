@@ -7,10 +7,11 @@ use Schmutzka\Application\UI\Form;
 use Nette\Mail\Message;
 use Nette\Utils\Strings;
 
+
 class RemindPasswordControl extends Control
 {
 	/** @var string */
-	public $from = "no-reply@ourCompany.com";
+	public $from = 'no-reply@ourCompany.com';
 
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
@@ -25,12 +26,12 @@ class RemindPasswordControl extends Control
 	protected function createComponentForm()
 	{
 		$form = new Form;
-		$form->addText("email", "Váš email:")
-			->addRule(Form::FILLED, "Zadejte email")
-			->addRule(Form::EMAIL, "Opravte formát emailu");
+		$form->addText('email', 'Váš email:')
+			->addRule(Form::FILLED, 'Zadejte email')
+			->addRule(Form::EMAIL, 'Opravte formát emailu');
 
-		$form->addSubmit("send", "Zaslat nové heslo")
-			->setAttribute("class", "btn btn-primary");
+		$form->addSubmit('send', 'Zaslat nové heslo')
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
@@ -40,41 +41,27 @@ class RemindPasswordControl extends Control
 	{
 		$values = $form->values;
 
-		if ($record = $this->userModel->item(array("email" => $values["email"]))) {
+		if ($record = $this->userModel->item(array('email' => $values['email']))) {
 			$message = new Message;
 			$message->setFrom($this->from)
-				->addTo($values["email"]);
+				->addTo($values['email']);
 
-			$values["new_password"] = $password = Strings::random(10);
-			$this->userManager->updatePasswordForUser(array("email" => $values["email"]), $password);
+			$values['new_password'] = $password = Strings::random(10);
+			$this->userManager->updatePasswordForUser(array('email' => $values['email']), $password);
 
-			$template = $this->mailer->getCustomTemplate("REMIND_PASSWORD", $values, TRUE);
+			$template = $this->mailer->getCustomTemplate('REMIND_PASSWORD', $values, TRUE);
 
-			$message->setSubject($template["subject"]);
-			$message->setHtmlBody($template["body"]);
+			$message->setSubject($template['subject']);
+			$message->setHtmlBody($template['body']);
 			$this->mailer->send($message);
 
-			$this->presenter->flashMessage("Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.", "success");
+			$this->presenter->flashMessage('Nové heslo bylo nastaveno. Zkontrolujte Vaši emailovou schránku.', 'success');
 
 		} else {
-			$this->presenter->flashMessage("Tento uživatel neexistuje.", "error");
+			$this->presenter->flashMessage('Tento uživatel neexistuje.', 'error');
 		}
 
-		$this->presenter->redirect("this");
-	}
-
-
-	public function render()
-	{
-		parent::useTemplate();
-		$this->template->render();
-	}
-
-
-	public function renderAdmin()
-	{
-		parent::useTemplate("admin");
-		$this->template->render();
+		$this->presenter->redirect('this');
 	}
 
 }

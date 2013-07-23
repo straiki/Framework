@@ -2,10 +2,8 @@
 	~ icos @see: .ico move to assets? rename: icoEmailMe... to prevent mix names
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-
 table tr td.manage {
 	a {text-decoration:none}
-
 }
 
 .showCombo {
@@ -88,13 +86,36 @@ sub {top: .5ex;}
 
 .btn {cursor: piointer}
 
-.fright {float:right}
-.frightLine {float:right; margin-bottom:-20px;}
-.fleft {float:left}
+.fleft {
+	float:left;
+}
 
-.right {text-align:right}
-table td.center, td.center, .center {text-align:center;}
-.tooltip {position:static}
+.fright {
+	float:right;
+}
+
+.left {
+	text-align: left;
+}
+
+.right {
+	text-align:right;
+}
+
+
+/* rotujeme */
+.rotate(@deg: 135deg) {
+	-webkit-transform: rotate(@deg);
+    -moz-transform: rotate(@deg);
+    -o-transform: rotate(@deg);
+}
+
+
+
+table td.center, td.center, .center {
+	text-align:center;
+}
+
 table.manage {.pm0;margin:auto;
 	td {.pm0;border:none;
 		.pm0;
@@ -104,14 +125,11 @@ table.manage {.pm0;margin:auto;
 	.results {.ico('results');}
 }
 
-/* date-picker debug */
-#ui-datepicker-div {float:left;z-index:20;display:none;font-size:1em}
-#ui-helper-clearfix {margin-left:18em}
 
-.gradientBar(@primaryColor, @secondaryColor) {
-   .vertical(@primaryColor, @secondaryColor);
+.gradient(@from, @to) {
+   .vertical(@from, @to);
 //  text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-  border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
+  border-color: @to @to darken(@to, 15%);
   border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
 }
 
@@ -189,5 +207,22 @@ textarea, select, input {
 
 form {
 	.description {color:#999;padding-left:5px}
+}
+
+
+.responsiveBackground(@url) {
+	background: url(@url)  no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+.responsiveBackgroundNotfixed(@url) {
+	background: url(@url)  no-repeat center center;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
 }
 
