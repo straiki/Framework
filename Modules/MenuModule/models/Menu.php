@@ -14,8 +14,8 @@ class Menu extends BaseTree
 	public function updateParentRank($parent, $rank, $id)
 	{
 		$data = array(
-			"parent_id" => $parent,
-			"rank" => $rank
+			'parent_id' => $parent,
+			'rank' => $rank
 		);
 
 		$this->update($data, $id);
@@ -28,7 +28,7 @@ class Menu extends BaseTree
 	public function fetchFront()
 	{
 		return $this->fetchStructure(array(
-			"active" => 1
+			'active' => 1
 		));
 	}
 
@@ -40,8 +40,8 @@ class Menu extends BaseTree
 	public function fetchData($cond = array())
 	{
 		return $this->fetchAll($cond)
-			->order("rank")
-			->select("menu.*, page.title pageTitle");
+			->order('rank')
+			->select('menu.*, page.title pageTitle');
 	}
 
 }

@@ -17,15 +17,15 @@ class HomepagePresenter extends Presenter
 	public function handleDelete($id)
 	{
 		$this->menuModel->update(array(
-			"parent_id" => NULL
+			'parent_id' => NULL
 		), array(
-			"parent_id" => $id
+			'parent_id' => $id
 		));
 
 		$this->menuModel->delete($id);
 
-		$this->redirect("this", array(
-			"id" => NULL
+		$this->redirect('this', array(
+			'id' => NULL
 		));
 	}
 
@@ -37,11 +37,11 @@ class HomepagePresenter extends Presenter
 	public function handleSetActive($id, $to)
 	{
 		$this->menuModel->update(array(
-			"active" => $to
+			'active' => $to
 		), $id);
 
-		$this->redirect("this", array(
-			"id" => NULL
+		$this->redirect('this', array(
+			'id' => NULL
 		));
 	}
 

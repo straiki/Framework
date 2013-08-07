@@ -1,0 +1,11 @@
+{extends MODULES_DIR.'/templates/moduleGrid.latte'}
+
+
+{define body-cell-title}
+	<td>{$value}</td>
+{/}
+
+
+{define body-cell-edited}
+	<td>{$value|date: "j. n. Y"}</td>
+{/}

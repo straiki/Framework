@@ -9,13 +9,13 @@
 
 .nette-inner.dumpmail
 
-	<table n:foreach="$data as $mail" width="100%" {sep}style="margin-bottom:6px"{/sep}>
+	<table n:foreach='$data as $mail' width='100%' {sep}style='margin-bottom:6px'{/sep}>
 
-		%tr [n:if => $mail["subject"]]
+		%tr [n:if => $mail['subject']]
 			%th [width => 30%] Subject
-			%td {$mail["subject"]}
+			%td {$mail['subject']}
 
-		%tr [n:if => $mail["from"]]
+		%tr [n:if => $mail['from']]
 			%th From
 			%td {include #emails, emailList => $mail['from']}
 
@@ -24,29 +24,29 @@
 			%td {include #emails, emailList => $mail['to']}
 
 		{*
-			%tr [n:ifset => $mail["bcc"]]
+			%tr [n:ifset => $mail['bcc']]
 			%th Bcc
 			%td {include #emails, emailList => $mail['bcc']}
 		*}
 
 
-		{if $mail["html"]}
+		{if $mail['html']}
 			%tr
 				%th [colspan => 2] Html version
 			%tr
 				%td [colspan => 2]
-					{!$mail["html"]}
+					{!$mail['html']}
 			%tr
 				%th [colspan => 2] Raw html
 			%tr
 				%td [colspan => 2]
-					{$mail["html"]}
+					{$mail['html']}
 		{else}
 			%tr
 				%th [colspan => 2] Text version
 			%tr
 				%td [colspan => 2]
-					{$mail["body"]}
+					{$mail['body']}
 		{/}
 
 	</table>
@@ -54,7 +54,7 @@
 
 {define #emails}
 	{foreach $emailList as $key => $value}
-		<a href="mailto:{$key}">
+		<a href='mailto:{$key}'>
 			{if isset($value)}{$value}{else}{$key}{/}
 		</a>{sep}, {/sep}
 	{/foreach}

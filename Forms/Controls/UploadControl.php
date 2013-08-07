@@ -35,25 +35,25 @@ class UploadControl extends \Nette\Forms\Controls\UploadControl
 		$control = parent::getControl();
 
 		if ($this->imagePath) {
-			$wrapper = Html::el("p");
-			$image = Html::el("img")->setSrc($this->basePath . $this->imagePath);			
+			$wrapper = Html::el('p');
+			$image = Html::el('img')->setSrc($this->basePath . $this->imagePath);
 
 			$wrapper->add($control);
-			$wrapper->add(Html::el("br"));
-			$wrapper->add(Html::el("br"));
+			$wrapper->add(Html::el('br'));
+			$wrapper->add(Html::el('br'));
 			$wrapper->add($image);
 			return $wrapper;
 
 		} elseif ($this->filePath) {
-			$wrapper = Html::el("p");
+			$wrapper = Html::el('p');
 			$wrapper->add($control);
-			$wrapper->add(Html::el("br"));
-			$wrapper->add(Html::el("br"));
+			$wrapper->add(Html::el('br'));
+			$wrapper->add(Html::el('br'));
 
 			$filePath = $this->basePath . $this->filePath;
 
 			if (file_exists(WWW_DIR . $filePath)) {
-				$file = Html::el("a")->href($this->basePath . $this->filePath)->setText($this->filePath)->setTarget("blank");
+				$file = Html::el('a')->href($this->basePath . $this->filePath)->setText($this->filePath)->setTarget('blank');
 				$wrapper->add($file);
 			}
 

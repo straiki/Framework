@@ -22,28 +22,28 @@ class AntispamControl extends TextInput
 	 */
 	public static function register()
 	{
-		Form::extensionMethod("addAntispam", function(Form $form, $name = "spam", $label = "Toto pole vymažte", $msg = "Byl detekován pokus o spam."){
-			// "All filled" protection
+		Form::extensionMethod('addAntispam', function(Form $form, $name = 'spam', $label = 'Toto pole vymažte', $msg = 'Byl detekován pokus o spam.'){
+			// 'All filled' protection
 			$form[$name] = new AntispamControl($label, NULL, NULL, $msg);
 
-			// "Send delay" protection
-			$form->addHidden("form_created", strtr(time(), "0123456789", "jihgfedcba"))
+			// 'Send delay' protection
+			$form->addHidden('form_created', strtr(time(), '0123456789', 'jihgfedcba'))
 				->addRule(
 					function($item){
-						if (AntispamControl::$minDelay <= 0) return TRUE;  // turn off "Send delay protection"
-					
-						$value = (int) strtr($item->value, "jihgfedcba", "0123456789");
+						if (AntispamControl::$minDelay <= 0) return TRUE;  // turn off 'Send delay protection'
+
+						$value = (int) strtr($item->value, 'jihgfedcba', '0123456789');
 
 						$timeDiff = time() - $value;
 						$check = $timeDiff >= AntispamControl::$minDelay;
-	
+
 						// loging
 						if (!$check) {
-							file_put_contents(WWW_DIR . "/antispam.log", "Fill time: " . $timeDiff . " s \n", FILE_APPEND);
+							file_put_contents(WWW_DIR . '/antispam.log', 'Fill time: ' . $timeDiff . ' s \n', FILE_APPEND);
                         }
 
 						return $check;
-					}, 
+					},
 					$msg
 				);
 
@@ -58,11 +58,11 @@ class AntispamControl extends TextInput
 	 * @param int
 	 * @param string
 	 */
-	public function __construct($label = "", $cols = NULL, $maxLength = NULL, $msg = "")
+	public function __construct($label = '', $cols = NULL, $maxLength = NULL, $msg = '')
 	{
 		parent::__construct($label, $cols, $maxLength);
 
-		$this->setDefaultValue("http://");
+		$this->setDefaultValue('http://');
 		$this->addRule(~Form::FILLED, $msg);
 	}
 
@@ -85,12 +85,12 @@ class AntispamControl extends TextInput
 	 */
 	protected function addAntispamScript(Html $control)
 	{
-		$control = Html::el("")->add($control);
-		$control->add( Html::el("script", array("type" => "text/javascript"))->setHtml("
+		$control = Html::el('')->add($control);
+		$control->add( Html::el('script', array('type' => 'text/javascript'))->setHtml('
 				// Clear input value
-				var input = document.getElementById('" . $control[0]->id . "');
-				input.value = '';				
-				
+				var input = document.getElementById('' . $control[0]->id . '');
+				input.value = '';
+
 				// Hide input and label
 				if (input.parentNode.parentNode.nodeName == 'TR') {
 					// DefaultFormRenderer
@@ -100,12 +100,12 @@ class AntispamControl extends TextInput
 					input.style.display = 'none';
 					var labels = input.parentNode.getElementsByTagName('label');
 					for (var i = 0; i < labels.length; i++) {  // find and hide label
-						if (labels[i].getAttribute('for') == '" . $control[0]->id . "') {
+						if (labels[i].getAttribute('for') == '' . $control[0]->id . '') {
 							labels[i].style.display = 'none';
 						}
 					}
 				}
-			") 
+			')
 		);
 
 		return $control;

@@ -4,6 +4,7 @@ namespace Schmutzka\Application\UI\Module;
 
 use Schmutzka;
 
+
 class Control extends Schmutzka\Application\UI\Control
 {
 	/** @persistent @var int */
@@ -22,25 +23,25 @@ class Control extends Schmutzka\Application\UI\Control
 	public function attached($presenter)
 	{
 		parent::attached($presenter);
-		if (($this->id || (property_exists($presenter, "id") && $this->id = $presenter->id)) && isset($this["form"])) {
-			$this["form"]["send"]->caption = "Uložit";
-			$this["form"]["send"]
-				->setAttribute("class", "btn btn-primary");
+		if (($this->id || (property_exists($presenter, 'id') && $this->id = $presenter->id)) && isset($this['form'])) {
+			$this['form']['send']->caption = 'Uložit';
+			$this['form']['send']
+				->setAttribute('class', 'btn btn-primary');
 
-			$this["form"]->addSubmit("cancel", "Zrušit")
+			$this['form']->addSubmit('cancel', 'Zrušit')
 				->setValidationScope(FALSE);
 
 			$defaults = $this->model->item($this->id);
 			$defaults = $this->preProcessDefaults($defaults);
-			$this["form"]->setDefaults($defaults);
+			$this['form']->setDefaults($defaults);
 		}
 	}
 
 
 	public function processForm($form)
 	{
-		if ($this->id && $form["cancel"]->isSubmittedBy()) {
-			$this->presenter->redirect("default", array("id" => NULL));
+		if ($this->id && $form['cancel']->isSubmittedBy()) {
+			$this->presenter->redirect('default', array('id' => NULL));
 		}
 
 		$values = $form->values;
@@ -65,24 +66,18 @@ class Control extends Schmutzka\Application\UI\Control
 
 		$this->postProcessValues($values, $this->id);
 
-		$this->presenter->flashMessage("Uloženo.", "success");
+		$this->presenter->flashMessage('Uloženo.', 'success');
 
 		if ($this->onProcessRedirect) {
 			$this->presenter->redirect($this->onProcessRedirect);
 
 		} else {
-			$this->presenter->redirect("edit", array(
-				"id" => $this->id
+			$this->presenter->redirect('edit', array(
+				'id' => $this->id
 			));
 		}
 	}
 
-
-	public function render()
-	{
-		parent::useTemplate();
-		$this->template->render();
-	}
 
 
 	/********************** helpers **********************/
@@ -98,13 +93,13 @@ class Control extends Schmutzka\Application\UI\Control
 
 
 	/**
-	 * @return  *\Model\*
+	 * @return  Schmutzka\Models\Base
 	 */
 	public function getModel()
 	{
 		$className = $this->getReflection()->getName();
-		$classNameParts = explode("\\", $className);
-		$modelName = lcfirst(substr(array_pop($classNameParts), 0, -7)) . "Model";
+		$classNameParts = explode('\\', $className);
+		$modelName = lcfirst(substr(array_pop($classNameParts), 0, -7)) . 'Model';
 
 		return $this->{$modelName};
 	}

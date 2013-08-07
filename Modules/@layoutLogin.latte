@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 %html
 	%head
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-		<meta name="author" content="FreexIT.eu">
-		<link rel="shortcut icon" href="{$basePath}/favicon.png">
+		<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'>
+		<meta name='author' content='FreexIT.eu'>
+		<link rel='shortcut icon' href='{$basePath}/favicon.png'>
 
-		{control adminLoginCss}
-		{control adminLoginJs}
+		{control adminLoginCssControl}
+		{control adminLoginJsControl}
 
 		%title {include #title}
 
 	%body
 		#adminLogin
-			#title [n:inner-block => "title"]
-				{$adminTitle|isEmpty: "CMS Inutitivo"} - Přihlášení
+			#title [n:inner-block => 'title']
+				{$adminTitle|isEmpty: 'CMS Inutitivo'} - Přihlášení
 
 			{control flashMessageControl}
 

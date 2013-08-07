@@ -3,6 +3,7 @@
 namespace Schmutzka;
 
 use Nette;
+use Schmutzka\Utils\Neon;
 
 
 class Configurator extends Nette\Configurator
@@ -16,27 +17,34 @@ class Configurator extends Nette\Configurator
 	{
 		parent::__construct();
 
+		$this->parameters = $this->getParameters();
+
+		// debugger
 		if ($debug) {
 			$this->setDebugMode($debug);
 		}
-		$this->enableDebugger($this->dir . "/../log");
+		$this->enableDebugger($this->parameters['appDir'] . '/../log');
 
-		$this->setTempDirectory($this->dir . "/../temp");
+		// robot loader
+		$this->setTempDirectory($this->parameters['appDir'] . '/../temp');
 		$this->createRobotLoader()
-			->addDirectory($this->dir)
-			->addDirectory($this->dir . "/../libs/")
+			->addDirectory($this->parameters['appDir'])
+			->addDirectory($this->parameters['libsDir'])
 			->register();
 
-		$this->addConfig($this->dir . "/../libs/Schmutzka/configs/default.neon", FALSE);
-
+		// configs
+		$this->addConfig($this->parameters['libsDir'] . '/Schmutzka/configs/default.neon');
 		if ($autoloadConfig) {
-			if ($this->defaultParameters["environment"] == "development") {
-				$this->addConfig($this->dir . "/config/config.local.neon", FALSE);
+			if ($this->parameters['environment'] == 'development') {
+				$this->addConfig($this->parameters['appDir'] . '/config/config.local.neon');
 
 			} else {
-				$this->addConfig($this->dir . "/config/config.prod.neon", FALSE);
+				$this->addConfig($this->parameters['appDir'] . '/config/config.prod.neon');
 			}
 		}
+
+		// modules
+		$this->registerModules();
 	}
 
 
@@ -48,32 +56,53 @@ class Configurator extends Nette\Configurator
 	{
 		foreach ($hostConfigs as $key => $config) {
 			if ($key == $host) {
-				$this->addConfig($this->dir . "/config/" . $config, FALSE);
+				$this->addConfig($this->parameters['appDir'] . '/config/' . $config, FALSE);
 			}
 		}
 	}
 
 
+	/********************** helpers **********************/
+
+
 	/**
+	 * Include paths to directories
 	 * @return array
 	 */
-	public function getDefaultParameters()
+	private function getParameters()
 	{
-		$defaultParameters = parent::getDefaultParameters();
-		$defaultParameters["appDir"] = $this->dir;
+		$parameters = parent::getDefaultParameters();
 
+		$rootDir = realpath(__DIR__ . '/../../../');
+		$parameters['appDir'] = $rootDir . '/app/';
+		$parameters['libsDir'] =  $rootDir . '/libs/';
+		$parameters['wwwDir'] =  $rootDir . '/www/';
+		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/modules/';
 
-
-		return $defaultParameters;
+		return $parameters;
 	}
 
 
 	/**
-	 * @return string
+	 * Add configs of active modules
 	 */
-	public function getDir()
+	private function registerModules()
 	{
-		return APP_DIR;
+		$parameters = Neon::fromFile($this->parameters['appDir'] . '/config/config.neon', 'parameters');
+
+		if (isset($parameters['modules'])) {
+			$this->addConfig($this->parameters['modulesDir'] . 'AdminModule/config.neon');
+			foreach ($parameters['modules'] as $module) {
+				$moduleDirConfig = ucfirst($module) . 'Module/config.neon';
+				if (file_exists($config = $this->parameters['modulesDir'] . $moduleDirConfig)) {
+					$this->addConfig($config);
+				}
+
+				if (file_exists($config = $this->parameters['appDir'] . $moduleDirConfig)) {
+					$this->addConfig($config);
+				}
+			}
+		}
 	}
 
 }

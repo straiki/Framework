@@ -6,24 +6,32 @@ use Nette;
 use Nette\Utils\Strings;
 use Schmutzka;
 
+
 abstract class Control extends Nette\Application\UI\Control
 {
-	/** @inject @var Nette\Localization\ITranslator */
-	public $translator;
-
 	/** @inject @var Schmutzka\Templates\TemplateService */
 	public $templateService;
+
+	/** @var Nette\Localization\ITranslator */
+	protected $translator;
+
+
+	public function injectTranslator(Nette\Localization\ITranslator $translator = NULL)
+	{
+		$this->translator = $translator;
+	}
 
 
 	/**
 	 * Rendering view
 	 * @param  string
 	 * @param  array
-	 * @todo simulate as presenter render!
 	 */
 	public function __call($name, $args)
 	{
 		if (Strings::startsWith($name, 'render')) {
+
+			// @todo fix calling others then defaults renders
 			$view = $this->getViewFromMethod($name);
 
 			// setup template file
@@ -32,7 +40,10 @@ abstract class Control extends Nette\Application\UI\Control
 			$this->template->setFile($dir . '/templates/' . $view . '.latte');
 
 			// calls $this->render<View>()
-			$this->tryCall($this->formatRenderMethod($view), $args);
+			$renderMethod = 'render' . ucfirst($view);
+			if (method_exists($this, $renderMethod)) {
+				call_user_func_array(array($this, $renderMethod), $args);
+			}
 
 			$this->template->render();
 		}
@@ -69,7 +80,7 @@ abstract class Control extends Nette\Application\UI\Control
 	}
 
 
-	/********************** render helpers **********************/
+	/********************** helpers **********************/
 
 
 	/**
@@ -78,23 +89,12 @@ abstract class Control extends Nette\Application\UI\Control
 	 */
 	private function getViewFromMethod($method)
 	{
-		if (strlen($method) == 6) {
+		if ($method === 'render') {
 			return 'default';
 
 		} else {
 			return lcfirst(substr($method, 6));
 		}
-	}
-
-
-	/**
-	 * Formats render view method name.
-	 * @param  string
-	 * @return string
-	 */
-	private function formatRenderMethod($view)
-	{
-		return 'render' . $view;
 	}
 
 }

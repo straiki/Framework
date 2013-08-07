@@ -18,13 +18,13 @@ class InsertUpdateJointForm extends  Form
 	public $columnName;
 
 	/** @var string */
-	public $flashText = "Záznam byl úspěšně uložen.";
+	public $flashText = 'Záznam byl úspěšně uložen.';
 
 	/** @var string */
-	public $redirect = "this";
+	public $redirect = 'this';
 
 	/** @var string */
-	public $updateCaption = "Uložit";
+	public $updateCaption = 'Uložit';
 
 	/** @var bool */
 	public $nullId = TRUE;
@@ -50,16 +50,16 @@ class InsertUpdateJointForm extends  Form
 	public function build()
 	{
 		parent::build();
-		$this->addSubmit("send");
+		$this->addSubmit('send');
 
 		if ($this->id) {
-			$this["send"]->caption = $this->updateCaption;
+			$this['send']->caption = $this->updateCaption;
 
 			$defaults = $this->model->fetchPairs($this->columnName, $this->columnName, $this->id);
 			$this[$this->columnName]->setDefaultValue($defaults);
 
 		} else {
-			$this["send"]->caption = $this->insertCaption;
+			$this['send']->caption = $this->insertCaption;
 		}
 	}
 
@@ -77,7 +77,7 @@ class InsertUpdateJointForm extends  Form
 			$this->model->insert($array);
 		}
 
-		$this->flashMessage($this->flashText, "success");
+		$this->flashMessage($this->flashText, 'success');
 		$this->redirect($this->redirect);
 	}
 

@@ -55,7 +55,7 @@ class JSMin {
 	 * @param string $input Javascript to be minified
 	 */
 	public function __construct($input) {
-		$this->input = str_replace("\r\n", "\n", $input);
+		$this->input = str_replace('\r\n', '\n', $input);
 		$this->inputLength = strlen($this->input);
 	}
 
@@ -86,7 +86,7 @@ class JSMin {
 			case self::ACTION_DELETE_A:
 				$this->a = $this->b;
 
-				if ($this->a === "'" || $this->a === '"') {
+				if ($this->a === ''' || $this->a === ''') {
 					for (;;) {
 						$this->output .= $this->a;
 						$this->a			 = $this->get();
@@ -114,7 +114,7 @@ class JSMin {
 						$this->a === ':' || $this->a === '[' || $this->a === '!' ||
 						$this->a === '&' || $this->a === '|' || $this->a === '?' ||
 						$this->a === '{' || $this->a === '}' || $this->a === ';' ||
-						$this->a === "\n" )) {
+						$this->a === '\n' )) {
 
 					$this->output .= $this->a . $this->b;
 
@@ -174,11 +174,11 @@ class JSMin {
 			}
 		}
 
-		if ($c === "\r") {
-			return "\n";
+		if ($c === '\r') {
+			return '\n';
 		}
 
-		if ($c === null || $c === "\n" || ord($c) >= self::ORD_SPACE) {
+		if ($c === null || $c === '\n' || ord($c) >= self::ORD_SPACE) {
 			return $c;
 		}
 
@@ -204,13 +204,13 @@ class JSMin {
 	 * @return string
 	 */
 	protected function min() {
-		if (0 == strncmp($this->peek(), "\xef", 1)) {
+		if (0 == strncmp($this->peek(), '\xef', 1)) {
 				$this->get();
 				$this->get();
 				$this->get();
-		} 
+		}
 
-		$this->a = "\n";
+		$this->a = '\n';
 		$this->action(self::ACTION_DELETE_A_B);
 
 		while ($this->a !== null) {
@@ -223,7 +223,7 @@ class JSMin {
 					}
 					break;
 
-				case "\n":
+				case '\n':
 					switch ($this->b) {
 						case '{':
 						case '[':
@@ -260,15 +260,15 @@ class JSMin {
 							$this->action(self::ACTION_DELETE_A_B);
 							break;
 
-						case "\n":
+						case '\n':
 							switch ($this->a) {
 								case '}':
 								case ']':
 								case ')':
 								case '+':
 								case '-':
-								case '"':
-								case "'":
+								case ''':
+								case ''':
 									$this->action(self::ACTION_KEEP_A);
 									break;
 

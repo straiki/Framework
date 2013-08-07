@@ -35,9 +35,9 @@ class SuggestControl extends \Nette\Forms\Controls\TextBase
 			$temp[] = $row;
 		}
 		$suggestList = $temp;
-	
+
 		$suggestList = json_encode($suggestList);
-		$suggestList = strtr($suggestList, array("{" => "[", "}" => "]"));
+		$suggestList = strtr($suggestList, array('{' => '[', '}' => ']'));
 
 		$this->dataSource = $suggestList;
 	}
@@ -49,9 +49,9 @@ class SuggestControl extends \Nette\Forms\Controls\TextBase
 	public function getControl()
 	{
 		$control = parent::getControl();
-		$control->attrs["autocomplete"] = "off";
-		$control->attrs["data-provide"] = "typeahead";
-		$control->attrs["data-source"] = $this->dataSource;
+		$control->attrs['autocomplete'] = 'off';
+		$control->attrs['data-provide'] = 'typeahead';
+		$control->attrs['data-source'] = $this->dataSource;
 
 		return $control;
 	}

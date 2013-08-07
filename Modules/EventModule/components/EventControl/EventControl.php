@@ -9,6 +9,7 @@ use Schmutzka\Appliaction\UI\Form;
 use Schmutzka\Application\UI\Module\Control;
 use Schmutzka\Utils\Filer;
 
+
 class EventControl extends Control
 {
 	/** @inject @var Schmutzka\Models\Event */
@@ -21,57 +22,57 @@ class EventControl extends Control
 	public $galleryModel;
 
 	/** @var filepath */
-	private $folder = "upload/event/";
+	private $folder = 'upload/event/';
 
 
 	protected function createComponentForm()
 	{
 		$form = new Form;
-		$form->addText("title","Název akce:")
-			->addRule(Form::FILLED, "Povinné");
+		$form->addText('title','Název akce:')
+			->addRule(Form::FILLED, 'Povinné');
 
 		if ($categoryList = $this->eventCategoryModel->fetchList()) {
-			$form->addSelect("event_category_id","Kategorie:", $categoryList)
-				->setPrompt("Vyberte")
-				->addRule(Form::FILLED, "Povinné");
+			$form->addSelect('event_category_id','Kategorie:', $categoryList)
+				->setPrompt('Vyberte')
+				->addRule(Form::FILLED, 'Povinné');
 		}
 
-		$form->addDatepicker("date","Datum akce:")
-			->addRule(Form::FILLED, "Povinné")
-			->addRule(Form::DATE, "Čas nemá správný formát");
+		$form->addDatepicker('date','Datum akce:')
+			->addRule(Form::FILLED, 'Povinné')
+			->addRule(Form::DATE, 'Čas nemá správný formát');
 
-		$form->addText("time","Čas akce:")
+		$form->addText('time','Čas akce:')
 			->addCondition(Form::FILLED)
-				->addRule(Form::TIME, "Čas nemá správný formát");
+				->addRule(Form::TIME, 'Čas nemá správný formát');
 
-		$form->addUpload("image", "Obrázek:");
+		$form->addUpload('image', 'Obrázek:');
 
-		$form->addTextarea("content","Obsah:")
-			->addRule(Form::FILLED, "Povinné")
-			->setAttribute("class","tinymce");
+		$form->addTextarea('content','Obsah:')
+			->addRule(Form::FILLED, 'Povinné')
+			->setAttribute('class','tinymce');
 
-		if ($this->moduleParams->galleryLink && $galleryList = $this->galleryModel->fetchPairs("id", "name")) {
-			$form->addSelect("gallery_id", "Propojit s galerií:", $galleryList)
-				->setPrompt("Bez galerie");
+		if ($this->moduleParams->galleryLink && $galleryList = $this->galleryModel->fetchPairs('id', 'name')) {
+			$form->addSelect('gallery_id', 'Propojit s galerií:', $galleryList)
+				->setPrompt('Bez galerie');
 		}
 
 		if ($this->moduleParams->calendar) {
-			$form->addCheckbox("display_in_calendar", "Zobrazit v kalendáři")
+			$form->addCheckbox('display_in_calendar', 'Zobrazit v kalendáři')
 			->setDefaultValue(1);
 		}
 
 		if ($this->moduleParams->news) {
-			$form->addCheckbox("is_news", "Je aktualita");
+			$form->addCheckbox('is_news', 'Je aktualita');
 		}
 
 		if ($this->moduleParams->link) {
-			$form->addText("link", "Odkaz (více):")
+			$form->addText('link', 'Odkaz (více):')
 			->addCondition(Form::FILLED)
-				->addRule(Form::URL, "Adresa nemá správný formát");
+				->addRule(Form::URL, 'Adresa nemá správný formát');
 		}
 
-		$form->addSubmit("send", "Uložit")
-			->setAttribute("class", "btn btn-primary");
+		$form->addSubmit('send', 'Uložit')
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
@@ -79,42 +80,42 @@ class EventControl extends Control
 
 	public function processForm( $form)
 	{
-		if ($this->id && $form["cancel"]->isSubmittedBy()) {
-			$this->redirect("default", array("id" => NULL));
+		if ($this->id && $form['cancel']->isSubmittedBy()) {
+			$this->redirect('default', array('id' => NULL));
 		}
 
 		$values = $form->values;
 
-		if (!$values["time"]) {
-			$values["time"] = NULL;
+		if (!$values['time']) {
+			$values['time'] = NULL;
 		}
 
-		$values["edited"] = new Nette\DateTime;
-		$values["user_id"] = $this->user->id;
+		$values['edited'] = new Nette\DateTime;
+		$values['user_id'] = $this->user->id;
 
-		$file = $values["image"];
+		$file = $values['image'];
 		if ($file && $suffix = Filer::checkImage($file)) {
 
 			$image = $file->toImage();
 			$image->resize(110, 110, Nette\Image::EXACT);
 
-			$values["image"] = $this->folder . Strings::webalize($file->getName()) . "." . $suffix;
-			$image->save(WWW_DIR . "/" . $values["image"]);
+			$values['image'] = $this->folder . Strings::webalize($file->getName()) . '.' . $suffix;
+			$image->save(WWW_DIR . '/' . $values['image']);
 
 		} else {
-			unset($values["image"]);
+			unset($values['image']);
 		}
 
 		if ($this->id) {
 			$this->eventModel->update($values, $this->id);
 
 		} else {
-			$values["created"] = $values["edited"];
+			$values['created'] = $values['edited'];
 			$this->eventModel->insert($values);
 		}
 
-		$this->flashMessage("Uloženo.", "success");
-		$this->redirect("default", array("id" => NULL));
+		$this->flashMessage('Uloženo.', 'success');
+		$this->redirect('default', array('id' => NULL));
 	}
 
 }

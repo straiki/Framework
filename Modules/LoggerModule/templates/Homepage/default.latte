@@ -9,11 +9,11 @@
 
 		{foreach $result as $row}
 			%tr
-				%td [width => "15%"]
-					{$row["created"]|date}
-				%td <a n:href="detail, file => $row['fullname']">{$row["name"]}</a>
-				%td.center [width => "3%"]
-					<a n:href="delete!, file => $row['fullname']" class="del"></a>
+				%td [width => '15%']
+					{$row['created']|date}
+				%td <a n:href="detail, file => $row['fullname']">{$row['name']}</a>
+				%td.center [width => '3%']
+					<a n:href="delete!, file => $row['fullname']" class='del'></a>
 		{/}
 
 {else}

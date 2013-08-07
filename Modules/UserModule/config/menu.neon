@@ -1,6 +1,0 @@
-baseIcon: icon-user
-items:
-	"Přehled uživatelů":
-		path: Homepage:default
-		icon: icon-th-list
-		addPath: Homepage:add

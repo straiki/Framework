@@ -1,0 +1,14 @@
+parameters:
+	title: Číselník
+	menu:
+		baseIcon: icon-file
+		items:
+			'Přehled čísledníků':
+				path: Homepage:default
+				icon: icon-th-list
+
+services:
+	- Schmutzka\Models\Codebook
+
+factories:
+	codebookControl: CodebookModule\Components\CodebookControl

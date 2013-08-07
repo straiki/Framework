@@ -123,7 +123,7 @@ class DatePicker extends Forms\Controls\BaseControl
 				$yyyy = isset($matches['yyyy']) ? $matches['yyyy'] : date('Y');
 
 				if (checkdate($mm, $dd, $yyyy)) {
-					$value = "$yyyy-$mm-$dd";
+					$value = '$yyyy-$mm-$dd';
 				} else {
 					$value = NULL;
 				}

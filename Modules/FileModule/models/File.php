@@ -12,11 +12,11 @@ class File extends Base
 	 * @param string
 	 * @return NotORM_Result
 	 */
-	public function fetchByType($type, $keyId, $sort = "name")
+	public function fetchByType($type, $keyId, $sort = 'name')
 	{
-		return $this->table()->where($type . "_id", $keyId)
+		return $this->table()->where($type . '_id', $keyId)
 			->order($sort)
-			->fetchPairs("id");
+			->fetchPairs('id');
 	}
 
 }

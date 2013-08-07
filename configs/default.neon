@@ -7,40 +7,42 @@ php:
 parameters:
 	libsDir: %appDir%/../libs
 	assetsDir: %libsDir%/Schmutzka/assets
-	jQuery: "jquery-1.10.1.min.js"
+	jQuery: 'jquery-1.10.1.min.js'
+	gaLink:
+	logUserActivity: FALSE
 
 	flashes:
 		onLogin: Byli jste úspěšně přihlášeni
 		onLogout: Byli jste úspěšně odhlášeni
-		onDeleteSuccess: "Záznam byl úspěšně smazán."
-		onDeleteError: "Tento záznam neexistuje."
+		onDeleteSuccess: 'Záznam byl úspěšně smazán.'
+		onDeleteError: 'Tento záznam neexistuje.'
 
 	form:
 		login:
-			label: "Přihlašovací jméno:"
-			ruleFilled: "Zadejte přihlašovací jméno"
-			ruleFormat: "Login nemá správný formát"
-			alreadyExists: "Zadaný login již existuje."
+			label: 'Přihlašovací jméno:'
+			ruleFilled: 'Zadejte přihlašovací jméno'
+			ruleFormat: 'Login nemá správný formát'
+			alreadyExists: 'Zadaný login již existuje.'
 		email:
-			label: "Přihlašovací email:"
-			ruleFilled: "Zadejte přihlašovací email"
-			ruleFormat: "Email nemá správný formát"
-			alreadyExists: "Zadaný email již existuje."
+			label: 'Přihlašovací email:'
+			ruleFilled: 'Zadejte přihlašovací email'
+			ruleFormat: 'Email nemá správný formát'
+			alreadyExists: 'Zadaný email již existuje.'
 		password:
-			label: "Heslo:"
-			ruleFilled: "Zadejte heslo"
-			length: "Heslo musí mít aspoň %d znaků."
+			label: 'Heslo:'
+			ruleFilled: 'Zadejte heslo'
+			length: 'Heslo musí mít aspoň %d znaků.'
 		permalogin:
-			label: "Zapamatovat"
+			label: 'Zapamatovat'
 		send:
-			login: "Přihlásit se"
-			register: "Registrovat"
+			login: 'Přihlásit se'
+			register: 'Registrovat'
 
 	registration:
-		onSuccess: "Registrace proběhla úspěšně."
-		onSuccessAndLogin: "Byli jste úspěšně registrováni a přihlášeni."
-		onAuthSuccess: "Váš účet byl aktivován. Nyní se můžete přihlásit."
-		onAuthError: "Tento odkaz již není platný."
+		onSuccess: 'Registrace proběhla úspěšně.'
+		onSuccessAndLogin: 'Byli jste úspěšně registrováni a přihlášeni.'
+		onAuthSuccess: 'Váš účet byl aktivován. Nyní se můžete přihlásit.'
+		onAuthError: 'Tento odkaz již není platný.'
 
 
 nette:
@@ -58,7 +60,7 @@ nette:
 		showLocation: TRUE
 		strLen: 4000
 		bar:
-			- @callbackPanel
+			- @cleanerPanel
 			- @dumpMailPanel
 
 	security:
@@ -70,7 +72,7 @@ nette:
 
 
 services:
-	cache: Schmutzka\Caching\Cache(@cacheStorage, "dataCache")
+	cache: Schmutzka\Caching\Cache(@cacheStorage, 'dataCache')
 	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
 	pathFilter: Schmutzka\Components\WebLoader\Filter\PathFilter
 	routerFactory: RouterFactory
@@ -79,7 +81,6 @@ services:
 		class: Schmutzka\Templates\TemplateService
 		setup:
 			- setLatte(@nette.latte)
-
 	- lessc
 	- Schmutzka\ParamService(@container::getParameters())
 	- Schmutzka\Templates\Helpers
@@ -87,7 +88,8 @@ services:
 
 
 factories:
-	callbackPanel: Schmutzka\Diagnostics\Panels\CallbackPanel
+	cleanerPanel: Schmutzka\Diagnostics\Panels\CleanerPanel
+	contactControl: Components\ContactControl
 	dumpMailPanel: Schmutzka\Diagnostics\Panels\DumpMail
 	flashMessageControl: Components\FlashMessageControl
 	gaControl: Components\GaControl
@@ -98,7 +100,6 @@ factories:
 
 extensions:
 	bootstrapRenderer: Kdyby\BootstrapFormRenderer\DI\RendererExtension
-	gpspicker: VojtechDobes\NetteForms\GpsPickerExtension
 	replicator: Kdyby\Replicator\DI\ReplicatorExtension
 	webloader: WebLoader\Nette\Extension
 

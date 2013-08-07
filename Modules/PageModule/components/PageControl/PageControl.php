@@ -2,11 +2,10 @@
 
 namespace PageModule\Components;
 
-use Nette;
-use Nette\Utils\Html;
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Module\TextControl;
+
 
 class PageControl extends TextControl
 {
@@ -17,7 +16,7 @@ class PageControl extends TextControl
 	public $pageContentModel;
 
 	/** @var string */
-	protected $type = "page";
+	protected $type = 'page';
 
 
 	/**
@@ -27,43 +26,36 @@ class PageControl extends TextControl
 	 */
 	public function renderDisplay($uid, $displayTitle = TRUE)
 	{
-		parent::useTemplate("display");
-		$this->template->page = $this->pageModel->item(array("uid" => $uid));
+		$this->template->page = $this->pageModel->fetchByUid($uid);
 		$this->template->displayTitle = $displayTitle;
-		$this->template->render();
 	}
-
-
-	/********************** add/edit **********************/
 
 
 	public function createComponentForm()
 	{
 		$form = new Form;
-		$form->addGroup("");
-		$form->addText("title", "Název stránky:")
-			->addRule(Form::FILLED, "Zadejte název stránky")
-			->setAttribute("class", "span6");
+		$form->addGroup('');
+		$form->addText('title', 'Název stránky:')
+			->addRule(Form::FILLED, 'Zadejte název stránky')
+			->setAttribute('class', 'span6');
 
-		$form->addGroup("Obsah");
+		$form->addGroup('Obsah');
 		$this->addFormPerexShort($form);
 		$this->addFormPerexLong($form);
 		$this->addFormContent($form);
 
 		$this->addFormAttachments($form);
 
-		$form->addSubmit("send", "Uložit")
-			->setAttribute("class", "btn btn-primary");
+		$form->addSubmit('send', 'Uložit')
+			->setAttribute('class', 'btn btn-primary');
 
 		return $form;
 	}
 
 
-	public function render()
+	public function renderDefault()
 	{
-		parent::useTemplate();
 		$this->loadTemplateValues();
-		$this->template->render();
 	}
 
 }

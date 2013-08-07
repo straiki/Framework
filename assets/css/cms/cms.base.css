@@ -116,6 +116,24 @@ form {
 
 @blue: #0088CC;
 
+#content {
+	margin-top: -25px;
+
+	table {
+		th, td {
+			.btn {
+				margin: -5px 0;
+			}
+		}
+	}
+
+	.newButton {
+		margin-bottom: 15px;
+		.clearfix;
+		float: right;
+	}
+}
+
 #content-header {
 	border-bottom: 3px solid #EEE;
 	.ish;

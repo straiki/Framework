@@ -20,12 +20,12 @@ class GalleryGrid extends Grid
 		$this->setDataSource($source);
 		$this->setModel($this->galleryModel);
 
-		$this->addColumn("name", "Název");
+		$this->addColumn('name', 'Název');
 
 		if ($presenter->moduleParams->description) {
-			$this->addColumn("description", "Popisek");
+			$this->addColumn('description', 'Popisek');
 		}
-		$this->addColumn("created", "Vytvořeno")->setDateRenderer();
+		$this->addColumn('created', 'Vytvořeno')->setDateRenderer();
 
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton();

@@ -27,29 +27,29 @@ class CmsHelpers extends Nette\Object
 	{
 		preg_match_all('#(\[[^\[\]\n]++\])#U', $string, $matches);
 
-		$pageList = $this->pageModel->fetchPairs("id", "url");
-		$articleList = $this->articleModel->fetchPairs("id", "url");
+		$pageList = $this->pageModel->fetchPairs('id', 'url');
+		$articleList = $this->articleModel->fetchPairs('id', 'url');
 		$from = $to = $replaceList = array();
 
 		foreach ($matches as $row) {
 			if ($row) {
 				$item = $row[0];
-				$item = trim($item, "[]");
+				$item = trim($item, '[]');
 
-				$itemParts = explode(":", $item);
+				$itemParts = explode(':', $item);
 				if (count($itemParts) != 3) {
 					continue;
 				}
 				list($type, $id, $node) = $itemParts;
-				$node = trim($node, "\"");
+				$node = trim($node, '\'');
 
-				if ($type == "page") {
+				if ($type == 'page') {
 					$from[] = $row[0];
-					$to[] = "<a href='../stranka/" . $pageList[$id] . "'>" . $node . "</a>";  // move to appliaction, link!, base path +
+					$to[] = '<a href='../stranka/' . $pageList[$id] . ''>' . $node . '</a>';  // move to appliaction, link!, base path +
 
-				} elseif ($type = "article") {
+				} elseif ($type = 'article') {
 					$from[] = $row[0];
-					$to[] = "<a href='../clanek/" . $pageList[$id] . "'>" . $node . "</a>";
+					$to[] = '<a href='../clanek/' . $pageList[$id] . ''>' . $node . '</a>';
 				}
 
 			}

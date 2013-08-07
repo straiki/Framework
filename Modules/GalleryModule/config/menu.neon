@@ -1,6 +1,0 @@
-baseIcon: icon-picture
-items:
-	"Přehled":
-		path: Homepage:default
-		icon: icon-th-list
-		addPath: Homepage:add

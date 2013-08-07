@@ -1,5 +1,7 @@
 // see: http://trentrichardson.com/examples/timepicker/
 
+
+/*
 $(document).ready(function() {
 
 	$.datetimeLocalToDate = function (str) {
@@ -43,3 +45,4 @@ $(document).ready(function() {
 	});
 
 });
+*/

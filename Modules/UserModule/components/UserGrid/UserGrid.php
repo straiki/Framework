@@ -2,35 +2,29 @@
 
 namespace UserModule\Components;
 
-use NiftyGrid;
-use Schmutzka;
+use Schmutzka\Application\UI\Module\Grid;
 
-class UserGrid extends NiftyGrid\Grid
+
+class UserGrid extends Grid
 {
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
 
-	/**
-	 * @param presenter
-	 */
-	protected function configure($presenter)
+	public function build()
 	{
-		$params = $presenter->paramService->getModuleParams("user");
+		$params = $this->getModuleParams();
+		$this->template->roles = $params->roles;
 
-		$source = new NiftyGrid\DataSource($this->userModel->fetchAll()); // ->where("role != ?", "admin"));
-		$this->setDataSource($source);
-		$this->setModel($this->userModel);
+		$this->setPrimaryKey('id');
+		$this->addColumn('email', 'Email');
+		$this->addColumn('login', 'Jméno', '20%');
+		$this->addColumn('created', 'Registrován', '10%');
+		$this->addColumn('last_active', 'Aktivita', '10%');
+		$this->addColumn('role', 'Role', '12%');
 
-		// grid structure
-		$this->addColumn("email", "Email");
-		$this->addColumn("login", "Jméno", "20%");
-		$this->addColumn("created", "Registrován", "10%")->setDateRenderer("j. n. Y");
-		$this->addColumn("last_active", "Aktivita", "10%")->setDateRenderer("j. n. Y");
-		$this->addColumn("role", "Role", "12%")->setListRenderer((array) $params->roles);
-
-		$this->addEditButton(NULL, TRUE);
-		$this->addDeleteButton(NULL, TRUE);
+		$this->addEditRowAction();
+		$this->addDeleteRowAction();
 	}
 
 }

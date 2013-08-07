@@ -1,0 +1,12 @@
+parameters:
+	textSnippetModule:
+		title: Textíky
+		menu:
+			baseIcon: icon-align-left
+
+services:
+	- Schmutzka\Models\TextSnippet
+
+factories:
+	textSnippetControl: TextSnippetModule\Components\TextSnippetControl
+	textSnippetGrid: TextSnippetModule\Components\TextSnippetGrid

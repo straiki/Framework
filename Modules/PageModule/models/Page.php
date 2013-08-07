@@ -2,13 +2,22 @@
 
 namespace Schmutzka\Models;
 
+use Schmutzka;
+
+
 class Page extends Base
 {
 	/** @inject @var Schmutzka\ParamService */
 	public $paramService;
 
-	/** @inject @var Schmutzka\Models\GalleryFile */
-	public $galleryFileModel;
+	/** @var Schmutzka\Models\GalleryFile */
+	private $galleryFileModel;
+
+
+	public function injectModels(Schmutzka\Models\GalleryFile $galleryFileModel = NULL)
+	{
+		$this->galleryFileModel = $galleryFileModel;
+	}
 
 
 	/**
@@ -18,11 +27,11 @@ class Page extends Base
 	 */
 	public function fetchItem($id)
 	{
-		$moduleParams = $this->paramService->getModuleParams("page");
+		$moduleParams = $this->paramService->getModuleParams('page');
 
 		$item = parent::item($id);
-		if ($moduleParams->attachmentGallery && $item["gallery_id"]) {
-			$item["gallery_files"] = $this->galleryFileModel->fetchOrderedListByGallery($page["gallery_id"]);
+		if ($moduleParams->attachmentGallery && $item['gallery_id']) {
+			$item['gallery_files'] = $this->galleryFileModel->fetchOrderedListByGallery($page['gallery_id']);
 		}
 
 		return $item;

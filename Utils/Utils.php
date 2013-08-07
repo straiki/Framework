@@ -46,12 +46,12 @@ class Utils extends Nette\Object
 	 */
 	public static function getEmailServer($email, $url = FALSE)
 	{
-		list($name, $domain) = explode("@", $email);
-		$emailList = array("gmail.com", "centrum.cz", "centrum.sk",  "seznam.cz", "zoznam.sk", "post.cz",  "email.cz", "atlas.cz", "atlas.sk", "hotmail.com", "azet.sk", "yahoo.com", "live.com", "mail.com");
+		list($name, $domain) = explode('@', $email);
+		$emailList = array('gmail.com', 'centrum.cz', 'centrum.sk',  'seznam.cz', 'zoznam.sk', 'post.cz',  'email.cz', 'atlas.cz', 'atlas.sk', 'hotmail.com', 'azet.sk', 'yahoo.com', 'live.com', 'mail.com');
 
 		if (in_array($domain, $emailList)) {
 			if ($url) {
-				return "http://www. " . $domain;
+				return 'http://www. ' . $domain;
 			}
 
 			return $domain;

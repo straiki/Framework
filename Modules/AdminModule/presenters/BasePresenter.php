@@ -37,7 +37,7 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 		}
 
 		if (!$this->user->loggedIn) {
-			$this->layout = "layoutLogin";
+			$this->layout = 'layoutLogin';
 		}
 	}
 
@@ -45,18 +45,18 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 	/**
 	 * @return WebLoader\Nette\CssLoader
 	 */
-	protected function createComponentAdminLoginCss()
+	protected function createComponentAdminLoginCssControl()
 	{
-		return new WebLoader\Nette\CssLoader($this->context->{"webloader.cssAdminLoginCompiler"}, $this->template->basePath . "/webtemp/");
+		return new WebLoader\Nette\CssLoader($this->context->{'webloader.cssAdminLoginCompiler'}, $this->template->basePath . '/webtemp/');
 	}
 
 
 	/**
 	 * @return WebLoader\Nette\JavaScriptLoader
 	 */
-	protected function createComponentAdminLoginJs()
+	protected function createComponentAdminLoginJsControl()
 	{
-		return new WebLoader\Nette\JavaScriptLoader($this->context->{"webloader.jsAdminLoginCompiler"}, $this->template->basePath . "/webtemp/");
+		return new WebLoader\Nette\JavaScriptLoader($this->context->{'webloader.jsAdminLoginCompiler'}, $this->template->basePath . '/webtemp/');
 	}
 
 }

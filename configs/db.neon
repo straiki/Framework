@@ -8,7 +8,6 @@ services:
 
 factories:
 	changePasswordControl: Components\ChangePasswordControl
-	contactControl: Components\ContactControl
 	loginControl: Components\LoginControl
 	registrationControl: Components\RegistrationControl
 	remindPasswordControl: Components\RemindPasswordControl

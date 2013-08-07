@@ -4,15 +4,12 @@ namespace FileModule\Components;
 
 use Schmutzka;
 use Schmutzka\Application\UI\Form;
-use Schmutzka\Application\UI\Control;
+use Schmutzka\Application\UI\Module\Control;
 use Schmutzka\Utils\Filer;
-use Nette;
+
 
 class FileControl extends Control
 {
-	/** @persistent */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
@@ -23,19 +20,19 @@ class FileControl extends Control
 	public function createComponentSingleForm()
 	{
 		$form = new Form;
-		$form->addText("name", "Jméno:")
-			->addRule(Form::FILLED, "Zadejte jméno");
-		$form->addUpload("file", "Soubor:");
+		$form->addText('name', 'Jméno:')
+			->addRule(Form::FILLED, 'Zadejte jméno');
+		$form->addUpload('file', 'Soubor:');
 
 		if ($this->moduleParams->attachToUser) {
-			$this->addSelect("user_id", "Patří k uživateli:", $this->userModel->fetchPairs("id", "name", array("role" => "user")))
-				->setPrompt("Vyberte")
-				->addRule(Form::FILLED, "Vyberte uživatele");
+			$this->addSelect('user_id', 'Patří k uživateli:', $this->userModel->fetchPairs('id', 'name', array('role' => 'user')))
+				->setPrompt('Vyberte')
+				->addRule(Form::FILLED, 'Vyberte uživatele');
 		}
 
-		$this->addTextarea("note", "Poznámka:");
-		$this->addTextarea("last_report_included", "Poslední zahrnuté hlášení:");
-		$this->addSubmit("send", "Uložit");
+		$this->addTextarea('note', 'Poznámka:');
+		$this->addTextarea('last_report_included', 'Poslední zahrnuté hlášení:');
+		$this->addSubmit('send', 'Uložit');
 	}
 
 
@@ -44,10 +41,10 @@ class FileControl extends Control
 		parent::attached($presenter);
 		if ($this->id = $presenter->id) {
 			$defaults = $this->fileModel->item($this->id);
-			$this["form"]->setDefaults($defaults);
+			$this['form']->setDefaults($defaults);
 
 		} else {
-			$this["form"]->addRule(Form::FILLED, "Vyberte soubor");
+			$this['form']->addRule(Form::FILLED, 'Vyberte soubor');
 		}
 	}
 
@@ -55,14 +52,14 @@ class FileControl extends Control
 	public function processSingleForm($form)
 	{
 		$values = $form->values;
-		$file = $values["file"];
+		$file = $values['file'];
 
 		if ($file->isOk()) {
-			$values["orig_name"] = $file->getName();
-			$values["local_name"] = Filer::moveFile($file, "/data/upload_files/", TRUE, FALSE, FALSE, TRUE);
-			$values["created"] = new Nette\DateTime;
+			$values['orig_name'] = $file->getName();
+			$values['local_name'] = Filer::moveFile($file, '/data/upload_files/', TRUE, FALSE, FALSE, TRUE);
+			$values['created'] = new Nette\DateTime;
 		}
-		unset($values["file"]);
+		unset($values['file']);
 
 		if ($this->id) {
 			$this->fileModel->update($values, $this->id);
@@ -71,15 +68,8 @@ class FileControl extends Control
 			$this->fileModel->insert($values);
 		}
 
-		$this->presenter->flashMessage("Uloženo", "success");
-		$this->presenter->redirect("this");
-	}
-
-
-	public function renderSingle()
-	{
-		parent::useTemplate("single");
-		$this->template->render();
+		$this->presenter->flashMessage('Uloženo', 'success');
+		$this->presenter->redirect('this');
 	}
 
 }

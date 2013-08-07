@@ -16,19 +16,19 @@ class HomepagePresenter extends Presenter
 	public function handleDelete($id)
 	{
 		if ($user = $this->userModel->item($id)) {
-			if ($user["role"] == "admin") {
-				$this->flashMessage("Administrátorský účet nelze smazat.", "error");
+			if ($user['role'] == 'admin') {
+				$this->flashMessage('Administrátorský účet nelze smazat.', 'error');
 
 			} else {
 				$this->userModel->delete($id);
-				$this->flashMessage("Záznam byl úspěšně smazán.", "success");
+				$this->flashMessage('Záznam byl úspěšně smazán.', 'success');
 			}
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.",  "error");
+			$this->flashMessage('Tento záznam neexistuje.',  'error');
 		}
 
-		$this->redirect("this");
+		$this->redirect('this');
 	}
 
 }

@@ -23,7 +23,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
 
     public  function read($id) {
         if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException("The connection to database for session storage is not open!");
+            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
         };
 
         $query = '
@@ -46,7 +46,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
 
     public  function write($id, $data) {
         if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException("The connection to database for session storage is not open!");
+            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
         };
 
         $this->conn->begin();
@@ -57,7 +57,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
 
     public  function destroy($id) {
         if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException("The connection to database for session storage is not open!");
+            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
         };
 
         $this->conn->query('DELETE FROM [session] WHERE [id] = %s', $id);
@@ -65,7 +65,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
 
     public  function clean($max) {
         if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException("The connection to database for session storage is not open!");
+            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
         };
 
         $old = (time() - $max);

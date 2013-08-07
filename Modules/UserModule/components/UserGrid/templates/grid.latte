@@ -1,0 +1,7 @@
+{extends MODULES_DIR.'/templates/moduleGrid.latte'}
+
+
+{define body-cell-role}
+	%td.numeric.center
+		{$value|inArray: $roles}
+{/}

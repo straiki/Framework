@@ -1,0 +1,29 @@
+<style>
+#cleanerPanel .bigger {
+	padding: 5px;
+	font-size: 1.2em;
+	line-height: 2em;
+}
+</style>
+
+<h1>Cleaner</h1>
+
+<div class='nette-inner' id='cleanerPanel'>
+	<table style='width: 100%'>
+		<tr>
+			<td>
+				<a href='?do=runCleaner&amp;type=cache' class='bigger'>Cache</a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href='?do=runCleaner&amp;type=webtemp' class='bigger'>Web temp</a>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<a href='?do=runCleaner&amp;type=session' class='bigger'>Session</a>
+			</td>
+		</tr>
+	</table>
+</div>

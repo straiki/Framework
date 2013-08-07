@@ -14,9 +14,9 @@ class Gallery extends Base
 	public function getItem($id)
 	{
 		$item = parent::item($id);
-		$item["files"] = $this->galleryFileModel->fetchAll("gallery_id", $id);
-		$firstImage = $item["files"]->fetchRow();
-		$item["first_image"] = $firstImage["name"];
+		$item['files'] = $this->galleryFileModel->fetchAll('gallery_id', $id);
+		$firstImage = $item['files']->fetchRow();
+		$item['first_image'] = $firstImage['name'];
 
 		return $item;
 	}
@@ -29,9 +29,9 @@ class Gallery extends Base
 	{
 		$result = parent::all();
 		foreach ($result as $id => $row) {
-			$row["files"] = $this->db->gallery_file("gallery_id", $id);
-			$firstImage = $row["files"]->fetchRow();
-			$row["first_image"] = $firstImage["name"];
+			$row['files'] = $this->db->gallery_file('gallery_id', $id);
+			$firstImage = $row['files']->fetchRow();
+			$row['first_image'] = $firstImage['name'];
 		}
 
 		return $result;
@@ -46,7 +46,7 @@ class Gallery extends Base
 	 */
 	public function getModuleParams()
 	{
-		return $this->paramService->getModuleParams("gallery");
+		return $this->paramService->getModuleParams('gallery');
 	}
 
 
@@ -58,9 +58,9 @@ class Gallery extends Base
 	{
 		$item =
 
-		$item["files"] = $this->db->gallery_file("gallery_id", $id);
-		$firstImage = $item["files"]->fetchRow();
-		$item["first_image"] = $firstImage["name"];
+		$item['files'] = $this->db->gallery_file('gallery_id', $id);
+		$firstImage = $item['files']->fetchRow();
+		$item['first_image'] = $firstImage['name'];
 
 		return $result;
 	}

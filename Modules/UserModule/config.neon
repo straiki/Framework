@@ -1,0 +1,16 @@
+parameters:
+	userModule:
+		title: Uživatelé
+		roles:
+			user: Uživatel
+			admin: Administrátor
+		add: FALSE
+		passwordMinLength: 6
+		resendPassword: FALSE
+		logLastActive: TRUE
+		menu:
+			baseIcon: icon-user
+
+factories:
+	userControl: UserModule\Components\UserControl
+	userGrid: UserModule\Components\UserGrid

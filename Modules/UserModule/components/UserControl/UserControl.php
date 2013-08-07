@@ -20,31 +20,31 @@ class UserControl extends Control
 	protected function createComponentForm()
 	{
 		$form = new Form;
-		$form->addGroup("");
-		$form->addText("login", "Celé jméno:")
-			->addRule(Form::FILLED, "Zadejte Vaše jméno")
-			->setAttribute("autocomplete", "off");
+		$form->addGroup('');
+		$form->addText('login', 'Celé jméno:')
+			->addRule(Form::FILLED, 'Zadejte Vaše jméno')
+			->setAttribute('autocomplete', 'off');
 
-		$form->addText("email", "Email:")
-			->addRule(Form::FILLED, "Zadejte email")
-			->setAttribute("autocomplete", "off");
+		$form->addText('email', 'Email:')
+			->addRule(Form::FILLED, 'Zadejte email')
+			->setAttribute('autocomplete', 'off');
 
-		$form->addSelect("role", "Role:", (array) $this->moduleParams->roles)
-			->addRule(Form::FILLED, "Vyberte roli")
-			->setDefaultValue("user");
+		$form->addSelect('role', 'Role:', (array) $this->moduleParams->roles)
+			->addRule(Form::FILLED, 'Vyberte roli')
+			->setDefaultValue('user');
 
-		$form->addPassword("password", $this->paramService->form->password->label);
+		$form->addPassword('password', $this->paramService->form->password->label);
 		if ($this->id == NULL) {
-			$form["password"]->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled)
+			$form['password']->addRule(Form::FILLED, $this->paramService->form->password->ruleFilled)
 				->addRule(Form::MIN_LENGTH, $this->paramService->form->password->length, 5);
 
 		} else {
-			$form["password"]->setOption("description", "Zadejte nové heslo pro jeho změnu.");
+			$form['password']->setOption('description', 'Zadejte nové heslo pro jeho změnu.');
 		}
 
-		$form->addGroup("");
-		$form->addSubmit("send", "Přidat")
-			->setAttribute("class", "btn btn-success");
+		$form->addGroup('');
+		$form->addSubmit('send', 'Přidat')
+			->setAttribute('class', 'btn btn-success');
 
 		return $form;
 	}
@@ -59,12 +59,12 @@ class UserControl extends Control
 
 		} else {
 			$user = $this->userManager->register($values);
-			$this->id = $user["id"];
+			$this->id = $user['id'];
 		}
 
-		$this->presenter->flashMessage("Uloženo.", "success");
-		$this->presenter->redirect("edit", array(
-			"id" => $this->id
+		$this->presenter->flashMessage('Uloženo.', 'success');
+		$this->presenter->redirect('edit', array(
+			'id' => $this->id
 		));
 	}
 

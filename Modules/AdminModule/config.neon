@@ -1,0 +1,68 @@
+parameters:
+	menu:
+		items:
+			'Vítejte v administraci':
+				path: Homepage:default
+			'Nastavení':
+				path: Homepage:settings
+
+services:
+	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
+
+factories:
+	adminMenuControl: Components\AdminMenuControl
+
+webloader:
+	css:
+		admin:
+			files:
+				- %assetsDir%/css/bootstrap/bootstrap.min.css
+				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/jquery/jquery-ui.css
+				- %assetsDir%/css/jquery/chosen/chosen.css
+				- %assetsDir%/css/unicorn/unicorn.main.css
+				- %assetsDir%/css/unicorn/unicorn.grey.css
+				- %assetsDir%/css/cms/cms.base.css
+				- %assetsDir%/css/jquery/jquery.nestable.css
+
+			filters:
+				- @lessFilter
+				- @cmsPathFilter
+
+		adminLogin:
+			files:
+				- %assetsDir%/css/bootstrap/bootstrap.min.css
+				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/unicorn/unicorn.login.css
+				- %assetsDir%/css/cms/cms.login.css
+
+			remoteFiles:
+				- 'http://fonts.googleapis.com/css?family=Roboto:400,100&subset=latin,latin-ext'
+
+			filters:
+				- @lessFilter
+				- @cmsPathFilter
+
+	js:
+		admin:
+			files:
+				- %assetsDir%/js/jquery/%jQuery%
+				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
+				- %assetsDir%/js/bootstrap/bootstrap.min.js
+				- %assetsDir%/js/nette/netteForms.js
+				- %assetsDir%/js/nette/nette.rules.js
+				- %assetsDir%/js/nette/nette.ajax.js
+				- %assetsDir%/js/datepicker.js
+				- %assetsDir%/js/cms/base.js
+				- %assetsDir%/js/unicorn/unicorn.js
+				- %assetsDir%/js/DateTimePicker/jquery-ui-sliderAccess.js
+				- %assetsDir%/js/DateTimePicker/jquery-ui-timepicker-addon.js
+				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
+				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
+				- %assetsDir%/js/jquery/chosen/chosen.jquery.min.js
+				- %assetsDir%/js/jquery/jquery.nestable.js
+
+		adminLogin:
+			files:
+				- %assetsDir%/js/jquery/%jQuery%
+				- %assetsDir%/js/unicorn/unicorn.login.js

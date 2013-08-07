@@ -1,29 +1,31 @@
 {#content}
 
+.newButton <a n:href="add" class="btn btn-success pull-right">Nový kód</a>
+
 {if count($qrList)}
 	%table.table.table-bordered.table-condensed.table-striped
 		%tr
-			%th [width => "20%"] {_"Vytvořeno"}
-			%th [width => "20%"] {_"Připojená stránka"}
-			%th [width => "30%"] {_"Alias"}
-			%th {_"QR kód"}
-			%th [width => "30px"] {_"Správa"}
+			%th [width => '20%'] {_'Vytvořeno'}
+			%th [width => '20%'] {_'Připojená stránka'}
+			%th [width => '30%'] {_'Alias'}
+			%th {_'QR kód'}
+			%th [width => '30px'] {_'Správa'}
 
 		{foreach $qrList as $key => $row}
 			%tr
-				%td {$row["created"]|date:"j. n. Y H:i"}
+				%td {$row['created']|date:'j. n. Y H:i'}
 				%td
-					{if $row["article_id"]}
-						{$row["article_id"]}
+					{if $row['article_id']}
+						{$row['article_id']}
 					{else}
 						-
 					{/}
-				%td {$row["alias"]}
-				%td <img src="{$basePath}{$row['filename']}">
+				%td {$row['alias']}
+				%td <img src='{$basePath}{$row['filename']}'>
 				%td.center
-					<a n:href="delete!, id => $key" class="del confirm"></a>
+					<a n:href='delete!, id => $key' class='del confirm'></a>
 		{/foreach}
 
 {else}
-	%p {_"Zatím zde nemáte žádné QR kódy."}
+	%p {_'Zatím zde nemáte žádné QR kódy.'}
 {/}

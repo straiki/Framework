@@ -40,6 +40,13 @@
 
 		#sidebar
 			%ul
+				<li n:class="$presenter->isLinkCurrent(':Admin:Homepage:default') ? active">
+					<a n:href=":Admin:Homepage:default">
+						%i.icon.icon-home
+						Domů
+					</a>
+				</li>
+
 				{if $user->loggedIn}
 					{foreach $activeModules as $module => $title}
 						{control adminMenuControl $module, $title}

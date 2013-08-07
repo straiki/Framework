@@ -20,9 +20,9 @@ class CustomEmailGrid extends Grid
         $this->setDataSource($source);
         $this->setModel($this->customEmailModel);
 
-		$this->addColumn("name", "Název");
-		$this->addColumn("uid", "Systémové UID", "30%");
-		$this->addColumn("subject", "Předmět", "30%", 300);
+		$this->addColumn('name', 'Název');
+		$this->addColumn('uid', 'Systémové UID', '30%');
+		$this->addColumn('subject', 'Předmět', '30%', 300);
 		$this->addEditButton(NULL, TRUE);
 		$this->addDeleteButton();
     }

@@ -1,6 +1,0 @@
-baseIcon: icon-qrcode
-items:
-	"Přehled kódů":
-		path: Homepage:default
-		icon: icon-th-list
-		addPath: Homepage:add

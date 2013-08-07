@@ -2,13 +2,15 @@
 
 namespace Schmutzka\Application\UI\Module;
 
-use Nette;
 use AdminModule;
+use Nette;
+
 
 class Presenter extends AdminModule\BasePresenter
 {
 	/** @persistent @var int */
 	public $id;
+
 
 	/**
 	 * @param  int
@@ -33,9 +35,9 @@ class Presenter extends AdminModule\BasePresenter
 	 * @param  array
 	 * @param string
 	 */
-	public function handleSort($data, $rankKey = "rank")
+	public function handleSort($data, $rankKey = 'rank')
 	{
-		$data = explode(",", $data);
+		$data = explode(',', $data);
 		$i = 1;
 		foreach ($data as $item) {
 			$this->model->update(array($rankKey => $i), $item);
@@ -62,21 +64,21 @@ class Presenter extends AdminModule\BasePresenter
 	public function getModel()
 	{
 		$className = $this->getReflection()->getName();
-		$classNameParts = explode("\\", $className);
+		$classNameParts = explode('\\', $className);
 
 		$name = lcfirst(substr(array_pop($classNameParts), 0, -9));
-		if ($name == "homepage") {
+		if ($name == 'homepage') {
 			$name = lcfirst(substr(array_shift($classNameParts), 0, -6));
 		}
 
-		$modelName = $name . "Model";
+		$modelName = $name . 'Model';
 
 		if (!property_exists($this, $modelName)) {
 			$modelName = lcfirst($this->module) . ucfirst($modelName);
 		}
 
 		if (!property_exists($this, $modelName)) {
-			$modelName = lcfirst($this->module) . "Model";
+			$modelName = lcfirst($this->module) . 'Model';
 		}
 
 		return $this->{$modelName};

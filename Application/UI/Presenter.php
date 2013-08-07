@@ -6,8 +6,10 @@ use Nette;
 use Nette\Utils\Strings;
 use Schmutzka;
 use Schmutzka\Http\Browser;
+use Schmutzka\Utils\Filer;
 use Schmutzka\Utils\Name;
 use WebLoader;
+
 
 abstract class Presenter extends Nette\Application\UI\Presenter
 {
@@ -20,9 +22,6 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	public $module;
 
-	/** @inject @var Nette\localization\ITranslator */
-	public $translator;
-
 	/** @inject @var Nette\Caching\Cache */
 	public $cache;
 
@@ -32,15 +31,24 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	/** @inject @var Schmutzka\Templates\TemplateService */
 	public $templateService;
 
+	/** @var Nette\localization\ITranslator */
+	protected $translator;
+
 	/** @var array|callable[] */
 	protected $helpersCallbacks = array();
+
+
+	public function injectTranslator(Nette\Localization\ITranslator $translator = NULL)
+	{
+		$this->translator = $translator;
+	}
 
 
 	public function startup()
 	{
 		parent::startup();
 
-		$this->module = Name::mpv($this->presenter, "module");
+		$this->module = Name::mpv($this->presenter, 'module');
 
 		if ($this->user->loggedIn && $this->paramService->logUserActivity) {
 			$this->user->logLastActive();
@@ -52,14 +60,14 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	{
 		$this->user->logout();
 		if ($this->paramService->flashes->onLogout) {
-			$this->flashMessage($this->paramService->flashes->onLogout, "success timeout");
+			$this->flashMessage($this->paramService->flashes->onLogout, 'success timeout');
 		}
 
 		if ($this->module) {
-			$this->redirect(":Front:Homepage:default");
+			$this->redirect(':Front:Homepage:default');
 
 		} else {
-			$this->redirect("Homepage:default");
+			$this->redirect('Homepage:default');
 		}
 	}
 
@@ -86,9 +94,9 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	public function formatLayoutTemplateFiles()
 	{
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
-		$layoutTemplateFiles[] = APP_DIR . "/AdminModule/templates/@layout.latte";
-		$layoutTemplateFiles[] = LIBS_DIR . "/Schmutzka/Modules/@" . ($this->layout ?: "layout") . ".latte";
-		$layoutTemplateFiles[] = APP_DIR . "/FrontModule/templates/@" . ($this->layout ?: "layout") . ".latte";
+		$layoutTemplateFiles[] = APP_DIR . '/AdminModule/templates/@layout.latte';
+		$layoutTemplateFiles[] = LIBS_DIR . '/Schmutzka/Modules/@' . ($this->layout ?: 'layout') . '.latte';
+		$layoutTemplateFiles[] = APP_DIR . '/FrontModule/templates/@' . ($this->layout ?: 'layout') . '.latte';
 
 		return $layoutTemplateFiles;
 	}
@@ -106,7 +114,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	{
 		$component = parent::createComponent($name);
 		if ($component == NULL) {
-			$component = call_user_func(array($this->context, "createService" .  ucfirst($name)));
+			$component = call_user_func(array($this->context, 'createService' .  ucfirst($name)));
 		}
 
 		return $component;
@@ -118,7 +126,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 */
 	protected function createComponentCssControl()
 	{
-		return new WebLoader\Nette\CssLoader($this->context->{"webloader.cssDefaultCompiler"}, $this->template->basePath . "/webtemp/");
+		return new WebLoader\Nette\CssLoader($this->context->{'webloader.cssDefaultCompiler'}, $this->template->basePath . '/webtemp/');
 	}
 
 
@@ -127,7 +135,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 */
 	protected function createComponentJsControl()
 	{
-		return new WebLoader\Nette\JavaScriptLoader($this->context->{"webloader.jsDefaultCompiler"}, $this->template->basePath . "/webtemp/");
+		return new WebLoader\Nette\JavaScriptLoader($this->context->{'webloader.jsDefaultCompiler'}, $this->template->basePath . '/webtemp/');
 	}
 
 
@@ -139,22 +147,22 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 * @param int
 	 * @param string
 	 */
-	protected function deleteHelper($model, $id, $redirect = "default")
+	protected function deleteHelper($model, $id, $redirect = 'default')
 	{
 		if (!$id) {
 			return FALSE;
 		}
 
 		if ($model->delete($id)) {
-			$this->flashMessage($this->paramService->flashes->onDeleteSuccess, "success");
+			$this->flashMessage($this->paramService->flashes->onDeleteSuccess, 'success');
 
 		} else {
-			$this->flashMessage($this->paramService->flashes->onDeleteError, "error");
+			$this->flashMessage($this->paramService->flashes->onDeleteError, 'error');
 		}
 
 		if ($redirect) {
 			$this->redirect($redirect, array(
-				"id" => NULL
+				'id' => NULL
 			));
 		}
 	}
@@ -165,7 +173,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	 * @param int
 	 * @param string
 	 */
-	protected function loadItemHelper($model, $id, $redirect = "default")
+	protected function loadItemHelper($model, $id, $redirect = 'default')
 	{
 		if (!$id) {
 			return FALSE;
@@ -176,11 +184,36 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 			return $item;
 
 		} else {
-			$this->flashMessage("Tento záznam neexistuje.", "error");
+			$this->flashMessage('Tento záznam neexistuje.', 'error');
 			$this->redirect($redirect, array(
-				"id" => NULL
+				'id' => NULL
 			));
 		}
+	}
+
+
+	/**
+	 * Helper method for clear panel (@intentionally here - presenter logic)
+	 * @param  string
+	 */
+	public function handleRunCleaner($type)
+	{
+		if ($this->paramService->debugMode) {
+			if ($type == 'cache') {
+				$this->cache->clean(array(
+					Nette\Caching\Cache::ALL => TRUE
+				));
+
+			} elseif ($type == 'webtemp') {
+				Filer::emptyFolder(WWW_DIR . '/webtemp/');
+
+			} elseif ($type == 'session') {
+				$this->session->destroy();
+            	$this->session->start();
+			}
+		}
+
+		$this->redirect('this');
 	}
 
 }

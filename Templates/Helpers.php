@@ -241,16 +241,6 @@ class Helpers extends Nette\Object
 	}
 
 
-	/**
-	 * Formats duration in seconds to number with units
-	 * @param int $s
-	 */
-	public static function duration($s)
-	{
-		if ($s < 60) return '$s\xC2\xA0s';
-		if ($s < 3600) return ((int)($s / 60)) . '\xC2\xA0min';
-		return ((int)($s / 3600)) . '\xC2\xA0h';
-	}
 
 
 	/**
@@ -264,13 +254,16 @@ class Helpers extends Nette\Object
 	public function secureMail($email, $node = NULL, $clickable = TRUE, $class = NULL)
 	{
 		$return = NULL;
-		for($i=0,$j=strlen($email);$i<$j; $i++) {
-			$return .= '&#0'.ord($email[$i]).';';
+		for ($i=0, $j=strlen($email); $i < $j; $i++) {
+			$return .= '&#0' . ord($email[$i]) . ';';
 		}
 
 		if ($clickable) {
 			$node = $node ? $node : $return;
-			return '<a ' . ($class ? 'class="' . $class . '" ' : NULL) . 'href="mailto:$return">$node</a>';
+			// @todo: html object?
+			return '<a '
+				. ($class ? 'class="' . $class . '" ' : NULL)
+				. "href='mailto:$return'>$node</a>";
 
 		} else {
 			return $return;

@@ -13,7 +13,7 @@ class Pregi extends Nette\Object
 	 */
 	public static function removeLinks($string)
 	{
-		$pattern = '~(<a href="[^"]*">)([^<]*)(</a>)~';
+		$pattern = '~(<a href='[^']*'>)([^<]*)(</a>)~';
 		$string = preg_replace($pattern, '$2', $string);
 
 		return $string;
@@ -27,7 +27,7 @@ class Pregi extends Nette\Object
 	 */
 	public function number($string)
 	{
-		preg_match("/(\d+)/", $string, $matches);
+		preg_match('/(\d+)/', $string, $matches);
 		if ($matches) {
 			return $matches[0];
 		}

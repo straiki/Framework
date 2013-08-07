@@ -10,10 +10,10 @@ class BaseTree extends Base
 	public $structure;
 
 	/** @var string key column name */
-	protected $idColumn = "id";
+	protected $idColumn = 'id';
 
 	/** @var string parent key column name */
-	protected $parentColumn = "parent_id";
+	protected $parentColumn = 'parent_id';
 
 
 	/**
@@ -32,7 +32,7 @@ class BaseTree extends Base
 		}
 
 		foreach ($structure as &$row) {
-			$row["children"] = $this->getChildren($cond, $row[$this->idColumn]);
+			$row['children'] = $this->getChildren($cond, $row[$this->idColumn]);
 		}
 
 		return $structure;
@@ -46,9 +46,9 @@ class BaseTree extends Base
 	 * from: 5 => Current category
 	 * to: 5 => Main \ Subcategory \ Current category
 	 */
-	public function fullroadView($sep = " » ")
+	public function fullroadView($sep = ' » ')
 	{
-		$data = $this->fetchData()->fetchPairs("id");
+		$data = $this->fetchData()->fetchPairs('id');
 		$array = array();
 
 		foreach ($data as $key => $row) {
@@ -92,7 +92,7 @@ class BaseTree extends Base
 		}
 
 		foreach ($array as $key => $row) {
-			$row["children"] = self::getChildren($cond, $key);
+			$row['children'] = self::getChildren($cond, $key);
 		}
 
 		if (count($array)) {

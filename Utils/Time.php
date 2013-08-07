@@ -21,74 +21,74 @@ class Time extends Nette\Object
 	public static function convert($time, $from, $to)
 	{
 		$result = NULL;
-		if ($from == "s") {
+		if ($from == 's') {
 			switch ($to) {
-				case "m" :
+				case 'm' :
 					$time /= 30;
-				case "d" :
+				case 'd' :
 					$time /= 24;
-				case "h" :
+				case 'h' :
 					$time /= 60;
-				case "m" :
+				case 'm' :
 					$time /= 60;
 					break;
 			}
 			return $time;
 
-		} elseif ($from == "h:m") {
-			list ($h, $m) = explode(":", $time);
+		} elseif ($from == 'h:m') {
+			list ($h, $m) = explode(':', $time);
 			switch ($to) {
-				case "s" :
+				case 's' :
 					return $h * 60 * 60 + $m * 60;
 
-				case "h" :
+				case 'h' :
 					return $h + $m/60;
 
-				case "m" :
+				case 'm' :
 					return 60 * $h + $m;
 
-				case "h:0":
-					return $h . ":00";
+				case 'h:0':
+					return $h . ':00';
 			}
 
-		} elseif ($from == "m:s") {
-			list ($m, $s) = explode(":", $time);
+		} elseif ($from == 'm:s') {
+			list ($m, $s) = explode(':', $time);
 			switch ($to) {
-				case "s" :
+				case 's' :
 					return $m * 60 + $s;
 			}
 
-		} elseif ($from == "m") {
+		} elseif ($from == 'm') {
 			$h = floor(($time)/60);
 			$m = $time - ($h * 60);
 			switch ($to) {
-				case "h:m" :
-					return $h . ":" . $m;
+				case 'h:m' :
+					return $h . ':' . $m;
 
-				case "h:mm" :
-					return $h . ":" . Strings::padLeft($m, 2, 0);
+				case 'h:mm' :
+					return $h . ':' . Strings::padLeft($m, 2, 0);
 
 
-				case "h:m hod/min" :
+				case 'h:m hod/min' :
 					if ($h) {
-						return $h . ":" . Strings::padLeft($m, 2, 0) . " hod.";
+						return $h . ':' . Strings::padLeft($m, 2, 0) . ' hod.';
 
 					} else {
-						return $m . " min.";
+						return $m . ' min.';
 					}
 			}
 
-		} elseif ($from == "h:m:s") {
-			list ($h, $m, $s) = explode(":", $time);
+		} elseif ($from == 'h:m:s') {
+			list ($h, $m, $s) = explode(':', $time);
 			switch ($to) {
-				case "s" :
+				case 's' :
 					return $h * 60 * 60 + $m * 60 + $s;
 					break;
 			}
 
 		}
 
-		throw new \Exception("Not defined yet");
+		throw new \Exception('Not defined yet');
 	}
 
 
@@ -99,16 +99,16 @@ class Time extends Nette\Object
 	 */
 	public static function sum2Times24($time1,$time2)
 	{
-		$time1 = strtotime($time1 . ":00");
-		$time2 = strtotime($time2 . ":00");
+		$time1 = strtotime($time1 . ':00');
+		$time2 = strtotime($time2 . ':00');
 
-		$minute = date("i",$time2);
-		$hour = date("H",$time2);
+		$minute = date('i',$time2);
+		$hour = date('H',$time2);
 
-		$convert = strtotime("+$minute minutes", $time1);
-		$convert = strtotime("+$hour hours", $convert);
+		$convert = strtotime('+$minute minutes', $time1);
+		$convert = strtotime('+$hour hours', $convert);
 
-		return date("H:i", $convert);
+		return date('H:i', $convert);
 	}
 
 
@@ -133,7 +133,7 @@ class Time extends Nette\Object
 
 				// spánek začíná po 18 hodině a zároveň končí před 18 hodinou = po půlnoci - odečteme 24 hodin pro zachování točení výsledku kolem půlnoci (ještě třeba empirikovat)
 				/*
-				if(self::minutesFromTimeStamp($row["start"]) > 1*60 AND self::minutesFromTimeStamp($row["end"]) < 0 * 60) { // nikdy nebude víc jak 24 * 60, že :)
+				if(self::minutesFromTimeStamp($row['start']) > 1*60 AND self::minutesFromTimeStamp($row['end']) < 0 * 60) { // nikdy nebude víc jak 24 * 60, že :)
 					$start -= 24*60;
 				}
 				*/
@@ -141,7 +141,7 @@ class Time extends Nette\Object
 
 
 				/* méně jak 12:00, přidáme 24 * 60 minut */
-				$startInMins = self::minutesFromTimeStamp($row["start"]);
+				$startInMins = self::minutesFromTimeStamp($row['start']);
 
 				$break = 18;
 
@@ -150,7 +150,7 @@ class Time extends Nette\Object
 					$increase = TRUE; // @test
 				}
 
-				$endInMins = self::minutesFromTimeStamp($row["end"]);
+				$endInMins = self::minutesFromTimeStamp($row['end']);
 				if($endInMins < $break *60 OR $increase) {
 					$endInMins += self::$dayMins;
 					$increase = TRUE; // @test
@@ -162,12 +162,12 @@ class Time extends Nette\Object
 
 			if($start<0) {$start *= -1;}
 
-			$startMean = $start/$result->count("*");
+			$startMean = $start/$result->count('*');
 			while($startMean > self::$dayMins) { // vyrovnání překročení 24 hodin
 				$startMean -= self::$dayMins;
 			}
 
-			$endMean = $end/$result->count("*");
+			$endMean = $end/$result->count('*');
 			while($endMean > self::$dayMins) { // vyrovnání překročení 24 hodin
 				$endMean -= self::$dayMins;
 			}
@@ -176,7 +176,7 @@ class Time extends Nette\Object
 			$startMean = self::time_form(60 * $startMean,3);
 			$endMean= self::time_form(60 * $endMean,3);
 
-			return "$startMean-$endMean";
+			return '$startMean-$endMean';
 		}
 		return NULL;
 	}
@@ -216,11 +216,11 @@ class Time extends Nette\Object
 		}
 
 		// určíme typ
-		$type = ($midnighter >= $nooner) ? "midnight" : "noon";
+		$type = ($midnighter >= $nooner) ? 'midnight' : 'noon';
 
 		// spočteme průměr
 		$timeSum = 0;
-		if ($type == "noon") {
+		if ($type == 'noon') {
 			foreach($data as $value) {
 				$timeSum += self::ex($value, 2);
 			}

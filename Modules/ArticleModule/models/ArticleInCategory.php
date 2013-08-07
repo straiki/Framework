@@ -2,12 +2,13 @@
 
 namespace Schmutzka\Models;
 
+
 class ArticleInCategory extends BaseJoint
 {
 	/** @var string */
-	protected $mainKeyName = "article_id";
+	protected $mainKeyName = 'article_id';
 
 	/** @var string */
-	protected $otherKeyName = "article_category_id";
+	protected $otherKeyName = 'article_category_id';
 
 }

@@ -1,0 +1,31 @@
+parameters:
+	galleryModule:
+		title: Fotogalerie
+		accessToRoles: FALSE
+		sizeVersions:
+			natural:
+				height: 1024
+				width: 768
+			thumbnail:
+				height: 80
+				width: 80
+		description: FALSE
+
+		menu:
+			baseIcon: icon-picture
+			items:
+				'Přehled':
+					path: Homepage:default
+					icon: icon-th-list
+					addPath: Homepage:add
+
+
+services:
+	- Schmutzka\Models\Gallery
+	- Schmutzka\Models\GalleryFile
+
+factories:
+	galleryControl: GalleryModule\Components\GalleryControl
+	galleryGrid: GalleryModule\Components\GalleryGrid
+	uploadControl: GalleryModule\Components\UploadControl
+	# rename to galleryFileControl?

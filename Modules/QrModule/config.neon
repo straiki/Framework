@@ -1,0 +1,12 @@
+parameters:
+	qrModule:
+		title: QR generátor
+		menu:
+			baseIcon: icon-qrcode
+
+services:
+	- Schmutzka\Models\Qr
+	- QrModule\Services\QrGenerator
+
+factories:
+	qrControl: QrModule\Components\QrControl

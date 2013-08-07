@@ -130,10 +130,10 @@ class CheckboxList extends BaseControl
 		} elseif (!isset($this->items[$key])) {
 			return NULL;
 		}
-		
-		if ($separator == "<li></li>") {
-			$separatorOpen = "<li>";
-			$separatorClose = "</li>";
+
+		if ($separator == '<li></li>') {
+			$separatorOpen = '<li>';
+			$separatorClose = '</li>';
 		}
 
 		$control = parent::getControl();

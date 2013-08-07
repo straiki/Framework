@@ -1,0 +1,28 @@
+parameters:
+	eventModule:
+		title: Akce
+		categories: FALSE
+		showInSliderbox: FALSE
+		perex: FALSE
+		calendar: FALSE
+		expiration: FALSE
+		galleryLink: FALSE
+		news: FALSE
+		link: FALSE
+		menu:
+			baseIcon: icon-user
+			items:
+				'Přehled akcí':
+					path: Homepage:default
+					icon: icon-th-list
+				'Kategorie':
+					path: Category:default
+					icon: icon-th-list
+
+services:
+	- Schmutzka\Models\Event
+	- Schmutzka\Models\EventCategory
+
+factories:
+	eventControl: EventModule\Components\EventControl
+	eventGrid: EventModule\Components\EventGrid

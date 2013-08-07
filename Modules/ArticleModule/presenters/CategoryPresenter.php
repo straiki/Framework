@@ -2,24 +2,12 @@
 
 namespace ArticleModule;
 
-use Forms;
-use Grids;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class CategoryPresenter extends \AdminModule\BasePresenter
+
+class CategoryPresenter extends Presenter
 {
-	/** @persistent */
-	public $id;
-
 	/** @inject @var Schmutzka\Models\ArticleCategory */
 	public $articleCategoryModel;
-
-
-	/**
-	 * @param int
-	 */
-	public function renderEdit($id)
-	{
-		$this->loadItemHelper($this->articleCategoryModel, $id);
-	}
 
 }

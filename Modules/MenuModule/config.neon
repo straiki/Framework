@@ -1,0 +1,11 @@
+parameters:
+	menuModule:
+		title: Menu
+		menu:
+			baseIcon: icon-list-alt
+
+services:
+	- Schmutzka\Models\Menu
+
+factories:
+	menuControl: MenuModule\Components\MenuControl

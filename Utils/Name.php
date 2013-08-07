@@ -15,7 +15,7 @@ class Name extends Nette\Object
 	 */
 	public static function tableFromClass($class)
 	{
-		$table = explode("\\", $class);
+		$table = explode('\\', $class);
 		$table = lcfirst(array_pop($table));
 
 		return self::upperToUnderscoreLower($table);
@@ -29,7 +29,7 @@ class Name extends Nette\Object
 	 */
 	public static function upperToDashedLower($string)
 	{
-		return strtr($string, self::getReplaceAlphabetBy("-"));
+		return strtr($string, self::getReplaceAlphabetBy('-'));
 	}
 
 
@@ -40,7 +40,7 @@ class Name extends Nette\Object
 	 */
 	public static function upperToUnderscoreLower($string)
 	{
-		return strtr($string, self::getReplaceAlphabetBy("_"));
+		return strtr($string, self::getReplaceAlphabetBy('_'));
 	}
 
 
@@ -52,7 +52,7 @@ class Name extends Nette\Object
 	 */
 	public static function templateFromReflection(Nette\Application\UI\PresenterComponentReflection $reflection, $name = NULL)
 	{
-		$file = dirname($reflection->getFileName()) . "/" . $reflection->getShortName() . ucfirst($name) . ".latte";
+		$file = dirname($reflection->getFileName()) . '/' . $reflection->getShortName() . ucfirst($name) . '.latte';
 		if (file_exists($file)) {
 			return $file;
 		}
@@ -71,20 +71,20 @@ class Name extends Nette\Object
 	{
 		$module = NULL;
 		$presenter = $activePresenter->name;
-		if (strpos($presenter, ":")) {
-			list($module, $presenter) = explode(":", $presenter, 2);
+		if (strpos($presenter, ':')) {
+			list($module, $presenter) = explode(':', $presenter, 2);
 		}
 		$view = lcfirst($activePresenter->view);
 		$presenter = lcfirst($presenter);
 		$module = lcfirst($module);
 
-		if ($part == "module") {
+		if ($part == 'module') {
 			return $module;
 
-		} elseif ($part == "presenter") {
+		} elseif ($part == 'presenter') {
 			return $presenter;
 
-		} elseif ($part == "view") {
+		} elseif ($part == 'view') {
 			return $view;
 		}
 
@@ -99,7 +99,7 @@ class Name extends Nette\Object
 	 */
 	public static function moduleFromNamespace($namespace)
 	{
-		$temp = explode("\\", $namespace);
+		$temp = explode('\\', $namespace);
 		$module = substr($temp[0], 0, -6);
 		$module = lcfirst($module);
 
@@ -117,7 +117,7 @@ class Name extends Nette\Object
 	private static function getReplaceAlphabetBy($char)
 	{
 		$replace = array();
-		foreach (range("A", "Z") as $letter) {
+		foreach (range('A', 'Z') as $letter) {
 			$replace[$letter] = $char . strtolower($letter);
 		}
 

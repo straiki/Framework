@@ -11,7 +11,7 @@ class EmailLog extends Base
 	 */
 	public function getAll()
 	{
-		return $this->fetchAll()->order("datetime DESC");
+		return $this->fetchAll()->order('datetime DESC');
 	}
 
 }

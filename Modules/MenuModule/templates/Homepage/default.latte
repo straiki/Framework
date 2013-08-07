@@ -1,29 +1,31 @@
 {#content}
 
+.newButton <a n:href="add" class="btn btn-success pull-right">Nová položka</a>
+
 {if count($menuItems)}
-	<div class="dd frontMenu" data-sort-link="{link sortMenu!}">
+	<div class='dd frontMenu' data-sort-link='{link sortMenu!}'>
 		{#itemList}
 			%ol.dd-list
 				{foreach $menuItems as $id => $item}
-					<li class="dd-item dd3-item" data-id="{$id}">
+					<li class='dd-item dd3-item' data-id='{$id}'>
 						.dd-handle.dd3-handle
 							%b.icon-move
 						.dd3-content
 							{include #item, item => $item}
 
 							.manage
-								{if $item["active"]}
-									<a n:href="setActive!, id => $id, to => FALSE" class="active" n:tooltip="Skrýt" data-placement="right"></a>
+								{if $item['active']}
+									<a n:href='setActive!, id => $id, to => FALSE' class='active' n:tooltip='Skrýt' data-placement='right'></a>
 
 								{else}
-									<a n:href="setActive!, id => $id, to => TRUE" class="inactive" n:tooltip="Zobrazit" data-placement="right"></a>
+									<a n:href='setActive!, id => $id, to => TRUE' class='inactive' n:tooltip='Zobrazit' data-placement='right'></a>
 								{/}
 
-								<a n:href="edit, id => $id" class="edit"></a>
-								<a n:href="delete!, id => $id" class="del"></a>
+								<a n:href='edit, id => $id' class='edit'></a>
+								<a n:href='delete!, id => $id' class='del'></a>
 
-						{if isset($item["children"]) && count($item["children"])}
-							{include #itemList, menuItems => $item["children"]}
+						{if isset($item['children']) && count($item['children'])}
+							{include #itemList, menuItems => $item['children']}
 						{/}
 					</li>
 				{/}
@@ -37,20 +39,20 @@
 
 {define #item}
 
-	{if $item["type"] == "page"}
+	{if $item['type'] == 'page'}
 		{$item['pageTitle']}
 
-	{elseif $item["type"] == "drop"}
+	{elseif $item['type'] == 'drop'}
 		{$item['title']} (submenu)
 
-	{elseif $item["type"] == "separator"}
+	{elseif $item['type'] == 'separator'}
 		---
 
-	{elseif $item["type"] == "link_internal"}
-		{$item["title"]} (view: {$item["path"]})
+	{elseif $item['type'] == 'link_internal'}
+		{$item['title']} (view: {$item['path']})
 
-	{elseif $item["type"] == "link"}
-		{$item["title"]} (url: {$item["url"]})
+	{elseif $item['type'] == 'link'}
+		{$item['title']} (url: {$item['url']})
 	{/}
 
 {/}

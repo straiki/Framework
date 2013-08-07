@@ -4,6 +4,7 @@ namespace Schmutzka\Models;
 
 use Nette;
 
+
 class Article extends Base
 {
 	/** @inject @var Schmutzka\ParamService */
@@ -16,7 +17,7 @@ class Article extends Base
 	public $galleryFileModel;
 
 	/** @var string item select */
-	private $select = "article.*, gallery_file.name titlePhoto, user.name authorName";
+	private $select = 'article.*, gallery_file.name titlePhoto, user.name authorName';
 
 
 	/**
@@ -68,9 +69,9 @@ class Article extends Base
 			->select($this->select);
 
 		if ($this->moduleParams->categories) {
-			$result->where("article_in_category.article_category_id", $categoryId)
-				->join("gallery_file", "LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id")
-				->join("user", "LEFT JOIN user ON article.user_id = user.id");
+			$result->where('article_in_category.article_category_id', $categoryId)
+				->join('gallery_file', 'LEFT JOIN gallery_file ON article.gallery_file_id = gallery_file.id')
+				->join('user', 'LEFT JOIN user ON article.user_id = user.id');
 		}
 
 		$result = $this->completeResult($result);
@@ -86,17 +87,17 @@ class Article extends Base
 	 */
 	public function fetchItemFront($id)
 	{
-		$result = $this->table("article.id", $id)
+		$result = $this->table('article.id', $id)
 			->select($this->select);
 
 		if ($this->moduleParams->publishState) {
-			$result->where("publish_state", "public");
+			$result->where('publish_state', 'public');
 		}
 
 		if ($result) {
 			$item = $result->fetchRow();
-			if ($this->moduleParams->attachmentGallery && $item["gallery_id"]) {
-				$item["gallery_files"] = $this->galleryFileModel->fetchOrderedListByGallery($page["gallery_id"]);
+			if ($this->moduleParams->attachmentGallery && $item['gallery_id']) {
+				$item['gallery_files'] = $this->galleryFileModel->fetchOrderedListByGallery($page['gallery_id']);
 			}
 
 			return $item;
@@ -128,7 +129,7 @@ class Article extends Base
 	 */
 	public function getModuleParams()
 	{
-		return $this->paramService->getModuleParams("article");
+		return $this->paramService->getModuleParams('article');
 	}
 
 
@@ -155,7 +156,7 @@ class Article extends Base
 	private function addPublicState($result)
 	{
 		if ($this->moduleParams->publishState) {
-			$result->where("publish_state", "public");
+			$result->where('publish_state', 'public');
 		}
 
 		return $result;
@@ -170,11 +171,11 @@ class Article extends Base
 	private function addOrder($result)
 	{
 		if ($this->moduleParams->publishDatetime) {
-			$result->where("publish_datetime <= ? OR publish_datetime IS NULL", new Nette\DateTime)
-				->order("publish_datetime DESC");
+			$result->where('publish_datetime <= ? OR publish_datetime IS NULL', new Nette\DateTime)
+				->order('publish_datetime DESC');
 
 		} else {
-			$result->order("id DESC");
+			$result->order('id DESC');
 		}
 
 		return $result;
@@ -204,8 +205,8 @@ class Article extends Base
 	 */
 	private function completeItem($item)
 	{
-		$item["article_categories"] = $this->articleInCategoryModel->fetchByMain($item["id"]);
-		$item["article_categories_name"] = $this->articleInCategoryModel->fetchByMain($item["id"], "article_category.name");
+		$item['article_categories'] = $this->articleInCategoryModel->fetchByMain($item['id']);
+		$item['article_categories_name'] = $this->articleInCategoryModel->fetchByMain($item['id'], 'article_category.name');
 
 		return $item;
 	}

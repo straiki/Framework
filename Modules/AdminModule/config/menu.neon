@@ -1,5 +1,0 @@
-items:
-	"Vítejte v administraci":
-		path: Homepage:default
-	"Nastavení":
-		path: Homepage:settings

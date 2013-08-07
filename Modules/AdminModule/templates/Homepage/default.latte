@@ -1,3 +1,25 @@
 {#content}
 
 %p Začněte výběrem položky v menu
+
+{ifset $gaLink}
+	%hr
+
+	%h3 Prohlédněte si návštěvnost stránek
+
+	%ul
+		%li
+			<a href='https://www.google.com/analytics/web/?et=reset&hl=cs#report/visitors-overview/{$gaLink}' target='_blank'>
+				přehled za poslední měsíc
+			</a>
+
+		%li
+			<a href='https://www.google.com/analytics/web/?et=reset&hl=cs#report/trafficsources-all-traffic/{$gaLink}' target='_blank'>
+				odkud přicházejí
+			</a>
+
+		%li
+			<a href='https://www.google.com/analytics/web/?et=reset&hl=cs#report/content-overview/{$gaLink}' target='_blank'>
+				jaké konkrétní stránky navštěvují
+			</a>
+{/}

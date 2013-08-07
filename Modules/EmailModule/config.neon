@@ -1,0 +1,33 @@
+parameters:
+	emailModule:
+		useLogger: FALSE
+		newsletter: FALSE
+		title: Emaily
+		menu:
+			baseIcon: icon-envelope
+			items:
+				'Šablony emailů':
+					path: CustomEmail:default
+					icon: icon-th-list
+					addPath: CustomEmail:add
+				'Nastavení':
+					path: Settings:default
+					icon: icon-wrench
+				'Newsletter':
+					cond: newsletter
+					path: Newsletter:default
+					icon: icon-bullhorn
+				'Log':
+					cond: newsletter
+					path: Newslette:log
+					icon: icon-th
+
+services:
+	- Schmutzka\Models\CustomEmail
+	- Schmutzka\Models\EmailLog
+	- Schmutzka\Models\EmailSettings
+
+factories:
+	customEmailGrid: EmailModule\Components\CustomEmailGrid
+	customEmailControl: EmailModule\Components\CustomEmailControl
+	emailSettingsControl: EmailModule\Components\EmailSettingsControl

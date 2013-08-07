@@ -1,0 +1,19 @@
+parameters:
+	fileModule:
+		title: Soubory
+		type: single # multi
+		attachToUser: FALSE
+		menu:
+			baseIcon: icon-file
+			items:
+				'Přehled souborů':
+					path: Homepage:default
+					icon: icon-th-list
+					addPath: Homepage:add
+
+services:
+	- Schmutzka\Models\File
+
+factories:
+	fileControl: FileModule\Components\FileControl
+	fileGrid: FileModule\Components\FileGrid

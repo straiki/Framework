@@ -1,0 +1,29 @@
+{extends $defaultTemplate}
+
+
+{define body-cell-edited}
+	<td style="width:12%">
+		{$value|date: "j. n. Y"}
+	</td>
+{/}
+
+
+{define body-cell-user_id}
+	<td style="width:12%">
+		{$value['login']}
+	</td>
+{/}
+
+
+{define row-action-edit}
+	<a href="{$link}" class="btn btn-primary btn-small">
+		{$action->label}
+	</a>
+{/}
+
+
+{define row-action-delete}
+	<a href="{$link}" class="btn btn-danger btn-small tw-ajax confirm">
+		{$action->label}
+	</a>
+{/}

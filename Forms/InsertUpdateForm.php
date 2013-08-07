@@ -10,19 +10,19 @@ class InsertUpdateForm extends  Form
 	public $id;
 
 	/** @var string */
-	public $flashText = "Záznam byl úspěšně uložen.";
+	public $flashText = 'Záznam byl úspěšně uložen.';
 
 	/** @var string */
-	public $redirectInsert = "this";
+	public $redirectInsert = 'this';
 
 	/** @var string */
-	public $redirectUpdate = "this";
+	public $redirectUpdate = 'this';
 
 	/** @var string */
-	public $insertCaption = "Přidat";
+	public $insertCaption = 'Přidat';
 
 	/** @var string */
-	public $updateCaption = "Uložit";
+	public $updateCaption = 'Uložit';
 
 	/** @var bool */
 	public $nullId = TRUE;
@@ -47,14 +47,14 @@ class InsertUpdateForm extends  Form
 	public function build()
 	{
 		parent::build();
-		$this->addSubmit("send");
+		$this->addSubmit('send');
 
 		if ($this->id) {
-			$this["send"]->caption = $this->updateCaption;
+			$this['send']->caption = $this->updateCaption;
 			$this->setDefaults($this->model->item($this->id));
 
 		} else {
-			$this["send"]->caption = $this->insertCaption;
+			$this['send']->caption = $this->insertCaption;
 		}
 	}
 
@@ -64,21 +64,21 @@ class InsertUpdateForm extends  Form
 		$values = $form->values;
 
 		if ($this->userId) {
-			$values["user_id"] = $this->userId;
+			$values['user_id'] = $this->userId;
 		}
 
 		if ($this->id) {
 			$this->model->update($values, $this->id);
-			$this->flashMessage($this->flashText, "success");
+			$this->flashMessage($this->flashText, 'success');
 
 			if ($this->nullId) {
 				$this->id = NULL;
 			}
-			$this->redirect($this->redirectUpdate, array("id" => $this->id));
+			$this->redirect($this->redirectUpdate, array('id' => $this->id));
 
 		} else {
 			$this->model->insert($values);
-			$this->flashMessage($this->flashText, "success");
+			$this->flashMessage($this->flashText, 'success');
 			$this->redirect($this->redirectInsert);
 		}
 	}

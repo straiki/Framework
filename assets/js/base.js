@@ -12,7 +12,7 @@ $(document).ready(function() {
 
 	// 2. confirm alert
 	$(".confirm").on("click", function() {
-		if ($(this).data("message")) {
+		if ($(this).data("confirm")) {
 			return confirm($(this).data("message"));
 
 		} else {

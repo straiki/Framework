@@ -4,10 +4,10 @@
 
 	%h4 Nyní můžete nahrát jeden a více souborů
 
-	<input id="fileupload" type="file" name="files[]" data-url="{link upload!}" multiple>
+	<input id='fileupload' type='file' name='files[]' data-url='{link upload!}' multiple>
 
 	#progress
-		.bar [style => "width: 0%"]
+		.bar [style => 'width: 0%']
 
 <style>
 	\.bar {
@@ -18,21 +18,21 @@
 
 
 #galleryFileList
-	%ul#sortable [data-sort-link => {link sort!}, data-param-name => "uploadControl-data"]
+	%ul#sortable [data-sort-link => {link sort!}, data-param-name => 'uploadControl-data']
 		{foreach $galleryFiles as $id => $row}
 			%li [id => {$id}]
-				<img src="{$galleryThumbDir}{$row['name']}">
+				<img src='{$galleryThumbDir}{$row['name']}'>
 				%br
-				<a n:href="deleteFile!, fileId => $row['id']" class="del" n:tooltip="Odstranit foto" data-placement="bottom">&nbsp;</a>
+				<a n:href='deleteFile!, fileId => $row['id']' class='del' n:tooltip='Odstranit foto' data-placement='bottom'>&nbsp;</a>
 		{/foreach}
 
 
 {define #js}
-	<script src="{$basePath}/js/fileupload/vendor/jquery.ui.widget.js"></script>
-	<script src="{$basePath}/js/fileupload/jquery.iframe-transport.js"></script>
-	<script src="{$basePath}/js/fileupload/jquery.fileupload.js"></script>
+	<script src='{$basePath}/js/fileupload/vendor/jquery.ui.widget.js'></script>
+	<script src='{$basePath}/js/fileupload/jquery.iframe-transport.js'></script>
+	<script src='{$basePath}/js/fileupload/jquery.fileupload.js'></script>
 
-	<script type="text/javascript">
+	<script type='text/javascript'>
 		$(function () {
 			$('#fileupload').fileupload({
 				dataType: 'json',

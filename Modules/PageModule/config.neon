@@ -1,0 +1,18 @@
+parameters:
+	menu:
+		baseIcon: icon-file
+	title: Stránky
+	perexShort: FALSE
+	perexLong: FALSE
+	attachmentGallery: FALSE
+	attachmentFiles: FALSE
+	adminNote: FALSE
+	contentHistory: FALSE
+
+services:
+	- Schmutzka\Models\Page
+	- Schmutzka\Models\PageContent
+
+factories:
+	pageControl: PageModule\Components\PageControl
+	pageGrid: PageModule\Components\PageGrid

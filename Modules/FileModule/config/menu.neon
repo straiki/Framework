@@ -1,6 +1,0 @@
-baseIcon: icon-file
-items:
-	"Přehled souborů":
-		path: Homepage:default
-		icon: icon-th-list
-		addPath: Homepage:add

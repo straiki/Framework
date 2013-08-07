@@ -23,7 +23,7 @@ class Cache extends Nette\Caching\Cache
 			/// $data = $this->{$function}($key, $key2, $key3);
 			// $data = $this->isTeamInData($key);
 			$this->cache->save($key, $data, array(
-				"expire" => $expire
+				'expire' => $expire
 			));
 		}
 

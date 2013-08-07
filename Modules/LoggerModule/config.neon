@@ -1,0 +1,7 @@
+parameters:
+	loggerModule:
+		title: Logger
+		menu:
+			baseIcon: icon-fire
+			primaryAdminOnly: TRUE
+

@@ -2,8 +2,10 @@
 	~ icos @see: .ico move to assets? rename: icoEmailMe... to prevent mix names
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
 table tr td.manage {
 	a {text-decoration:none}
+
 }
 
 .showCombo {
@@ -115,7 +117,6 @@ sub {top: .5ex;}
 table td.center, td.center, .center {
 	text-align:center;
 }
-
 table.manage {.pm0;margin:auto;
 	td {.pm0;border:none;
 		.pm0;
@@ -124,7 +125,6 @@ table.manage {.pm0;margin:auto;
 
 	.results {.ico('results');}
 }
-
 
 .gradient(@from, @to) {
    .vertical(@from, @to);
@@ -207,8 +207,6 @@ textarea, select, input {
 
 form {
 	.description {color:#999;padding-left:5px}
-}
-
 
 .responsiveBackground(@url) {
 	background: url(@url)  no-repeat center center fixed;
@@ -224,5 +222,6 @@ form {
 	-moz-background-size: cover;
 	-o-background-size: cover;
 	background-size: cover;
+}
 }
 

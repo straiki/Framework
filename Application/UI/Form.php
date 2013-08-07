@@ -16,16 +16,16 @@ use Schmutzka\Forms\Controls;
 class Form extends Nette\Application\UI\Form
 {
 	/** validators */
-	const RC = "Schmutzka\Forms\Rules::validateRC";
-	const IC = "Schmutzka\Forms\Rules::validateIC";
-	const PHONE = "Schmutzka\Forms\Rules::validatePhone";
-	const ZIP = "Schmutzka\Forms\Rules::validateZip";
-	const DATE = "Schmutzka\Forms\Rules::validateDate";
-	const TIME = "Schmutzka\Forms\Rules::validateTime";
-	const EXTENSION = "Schmutzka\Forms\Rules::extension";
+	const RC = 'Schmutzka\Forms\Rules::validateRC';
+	const IC = 'Schmutzka\Forms\Rules::validateIC';
+	const PHONE = 'Schmutzka\Forms\Rules::validatePhone';
+	const ZIP = 'Schmutzka\Forms\Rules::validateZip';
+	const DATE = 'Schmutzka\Forms\Rules::validateDate';
+	const TIME = 'Schmutzka\Forms\Rules::validateTime';
+	const EXTENSION = 'Schmutzka\Forms\Rules::extension';
 
 	/** @var string */
-	public $csrfProtection = "Prosím odešlete formulář znovu, vypršel bezpečnostní token.";
+	public $csrfProtection = 'Prosím odešlete formulář znovu, vypršel bezpečnostní token.';
 
 	/** @var bool */
 	public $useBootstrap = TRUE;
@@ -106,7 +106,7 @@ class Form extends Nette\Application\UI\Form
 	public function addError($message)
 	{
 		$this->valid = FALSE;
-		$this->presenter->flashMessage($message, "error");
+		$this->presenter->flashMessage($message, 'error');
 	}
 
 
@@ -116,11 +116,11 @@ class Form extends Nette\Application\UI\Form
 	 */
 	public function addToggleGroup($id, $label = NULL)
 	{
-		$fieldset = Html::el("fieldset")->id($id)
-			->style("display:none");
+		$fieldset = Html::el('fieldset')->id($id)
+			->style('display:none');
 
 		$this->addGroup($label)
-			->setOption("container", $fieldset);
+			->setOption('container', $fieldset);
 	}
 
 
@@ -136,7 +136,7 @@ class Form extends Nette\Application\UI\Form
 			$this->build();
 		}
 
-		if (method_exists($this, "afterBuild")) {
+		if (method_exists($this, 'afterBuild')) {
 			$this->afterBuild();
 		}
 
@@ -148,7 +148,7 @@ class Form extends Nette\Application\UI\Form
 			$this->attachHandlers($presenter);
 		}
 
-		if ($presenter->module != "front" && $this->useBootstrap) {
+		if ($presenter->module != 'front' && $this->useBootstrap) {
 			$this->setRenderer(new BootstrapRenderer($presenter->template));
 		}
 	}
@@ -160,13 +160,13 @@ class Form extends Nette\Application\UI\Form
 	 */
 	protected function attachHandlers($presenter)
 	{
-		$formNameSent = "process" . lcfirst($this->getName());
+		$formNameSent = 'process' . lcfirst($this->getName());
 
 		$possibleMethods = array(
 			array($presenter, $formNameSent),
 			array($this->parent, $formNameSent),
-			array($this, "process"),
-			array($this->parent, "process")
+			array($this, 'process'),
+			array($this->parent, 'process')
 		);
 
 		foreach ($possibleMethods as $method) {
@@ -187,7 +187,7 @@ class Form extends Nette\Application\UI\Form
 		if ($this->processor && is_callable($this->processor)) {
 			$values = call_user_func($this->processor, $values);
 
-		} elseif (method_exists($this->parent, lcfirst($this->getName()) . "Processor") && is_callable($this->processor)) {
+		} elseif (method_exists($this->parent, lcfirst($this->getName()) . 'Processor') && is_callable($this->processor)) {
 			$values = call_user_func($this->processor, $values);
 		}
 
@@ -235,7 +235,7 @@ class Form extends Nette\Application\UI\Form
 	 * @param  string
 	 * @return Controls\AntispamControl
 	 */
-	public function addAntispam($name = "antispam", $label = "Toto pole vymažte.", $msg = "Byl detekován pokus o spam")
+	public function addAntispam($name = 'antispam', $label = 'Toto pole vymažte.', $msg = 'Byl detekován pokus o spam')
 	{
 		return $this[$name] = new Controls\AntispamControl($label, NULL, NULL, $msg);
 	}
@@ -285,11 +285,11 @@ class Form extends Nette\Application\UI\Form
 	{
 		$control = $this[$name] = new TextInput($label);
 		$control->addFilter(function ($value) {
-				return Validators::isUrl($value) ? $value : "http://$value";
+				return Validators::isUrl($value) ? $value : 'http://$value';
 			})
 			->addCondition(Form::FILLED)
-			->addCondition(~Form::EQUAL, "http://")
-				->addRule(Form::URL, "Opravte adresu odkazu");
+			->addCondition(~Form::EQUAL, 'http://')
+				->addRule(Form::URL, 'Opravte adresu odkazu');
 
 		return $control;
 	}

@@ -25,7 +25,7 @@ class Rules extends Nette\Object
 	 */
 	public static function validateTime(IControl $control)
 	{
-		return Strings::match($control->value, "~^([0-9]|0[0-9]|1[0-9]|2[0-3])(:)(0[0-9]|[1-5][0-9])$~");
+		return Strings::match($control->value, '~^([0-9]|0[0-9]|1[0-9]|2[0-3])(:)(0[0-9]|[1-5][0-9])$~');
 	}
 
 
@@ -40,14 +40,14 @@ class Rules extends Nette\Object
 			return FALSE;
 		}
 
-		$date = $control->value->format("Y-m-d");
+		$date = $control->value->format('Y-m-d');
 
-		$dateArray = explode("-", $date);
+		$dateArray = explode('-', $date);
 		if (count($dateArray) == 3) {
 			list($y, $m, $d) = $dateArray;
 
-			if (checkdate($m, $d, $y) && strtotime("$y-$m-$d") && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', "$d-$m-$y")) { 
-				return TRUE; 
+			if (checkdate($m, $d, $y) && strtotime('$y-$m-$d') && preg_match('#\b\d{2}[/-]\d{2}[/-]\d{4}\b#', '$d-$m-$y')) {
+				return TRUE;
 			}
 		}
 
@@ -61,7 +61,7 @@ class Rules extends Nette\Object
 	 */
 	public static function validateZip(IControl $control)
 	{
-		return Strings::match($control->value, "~^(\d{3}) ?\d{2}$~");
+		return Strings::match($control->value, '~^(\d{3}) ?\d{2}$~');
 	}
 
 
@@ -71,7 +71,7 @@ class Rules extends Nette\Object
 	 */
 	public static function validatePhone(IControl $control)
 	{
-		return Strings::match($control->value, "~^(\+\d{2,3})? ?\d{3} ?\d{3} ?\d{3}$~");
+		return Strings::match($control->value, '~^(\+\d{2,3})? ?\d{3} ?\d{3} ?\d{3}$~');
 	}
 
 
@@ -84,7 +84,7 @@ class Rules extends Nette\Object
 	{
 		$rc = $control->value;
 
-		// "be liberal in what you receive"
+		// 'be liberal in what you receive'
 		if (!preg_match('#^\s*(\d\d)(\d\d)(\d\d)[ /]*(\d\d\d)(\d?)\s*$#', $rc, $matches)) {
 			return FALSE;
 		}
@@ -128,7 +128,7 @@ class Rules extends Nette\Object
 	{
 		$ic = $control->value;
 
-		// "be liberal in what you receive"
+		// 'be liberal in what you receive'
 		$ic = preg_replace('#\s+#', '', $ic);
 
 		// has correct form?

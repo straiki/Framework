@@ -5,6 +5,7 @@ namespace Schmutzka\Components\WebLoader\Filter;
 use Nette;
 use WebLoader;
 
+
 class PathFilter extends Nette\Object
 {
 
@@ -18,10 +19,10 @@ class PathFilter extends Nette\Object
 		$code = strtr($code, array(
 			"url('../img" => "url('../../images",
 			'url("../img' => 'url("../../images',
-			"url(../img" => "url(../../images",
-			"url(../images" => "url(../../images",
-			"url('../images" => "url('../../images",
+			'url(../img' => 'url(../../images',
+			'url(../images' => 'url(../../images',
 			'url("../images' => 'url("../../images',
+			"url('../images" => "url('../../images",
 		));
 
 		return $code;

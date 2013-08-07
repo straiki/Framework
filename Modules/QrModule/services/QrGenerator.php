@@ -17,7 +17,7 @@ class QrGenerator extends Nette\Object
 	 */
 	public function generateImageForUrl($url, $size = 150)
 	{
-		$filename = "/images/qr/" . Strings::webalize($url) . ".png";
+		$filename = '/images/qr/' . Strings::webalize($url) . '.png';
 		$qrcode = new QRcode(utf8_encode($url), 'Q');
 		$qrcode->disableBorder();
 		$qrcode->displayPNG($size, array(255,255,255), array(0,0,0), WWW_DIR . $filename);

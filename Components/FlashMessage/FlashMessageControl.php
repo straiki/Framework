@@ -3,15 +3,16 @@
 namespace Components;
 
 use Schmutzka;
+use Schmutzka\Application\UI\Control;
 
 
-class FlashMessageControl extends Schmutzka\Application\UI\Control
+class FlashMessageControl extends Control
 {
 
-	public function render()
+	public function renderDefault()
 	{
 		$flashes = $this->parent->template->flashes;
-		if (!count($flashes)) {
+		if ( ! count($flashes)) {
 			return NULL;
 		}
 

@@ -12,7 +12,7 @@ use Schmutzka\Utils\Name;
 
 
 /**
- * @use: $frontRouter[] = new PairsRoute("predmet/<id>", "Subject:detail", NULL, $this->subjectModel, $this->cache, array("id", "url"));
+ * @use: $frontRouter[] = new PairsRoute('predmet/<id>', 'Subject:detail', NULL, $this->subjectModel, $this->cache, array('id', 'url'));
  */
 class PairsRoute extends Nette\Application\Routers\Route
 {
@@ -49,7 +49,7 @@ class PairsRoute extends Nette\Application\Routers\Route
 	 * @param Nette\Caching\Cache
 	 * @param array
 	 */
-	public function __construct($mask, $metadata = array(), $flags = 0, Schmutzka\Models\Base $model, Nette\Caching\Cache $cache, $columns = array("id", "name"))
+	public function __construct($mask, $metadata = array(), $flags = 0, Schmutzka\Models\Base $model, Nette\Caching\Cache $cache, $columns = array('id', 'name'))
 	{
 		$this->mask = $mask;
 		$this->metadata = $metadata;
@@ -57,7 +57,7 @@ class PairsRoute extends Nette\Application\Routers\Route
 		$this->cache = $cache;
 		list($this->primaryKey, $this->secondaryKey) = $columns;
 
-		$this->cacheTag = "route_" . sha1($mask);
+		$this->cacheTag = 'route_' . sha1($mask);
 
 		parent::__construct($mask, $metadata, $flags);
 	}
@@ -104,10 +104,10 @@ class PairsRoute extends Nette\Application\Routers\Route
 			$keyParam = $params[$this->primaryKey];
 
 			// check if router matches (also router presenter)
-			$mpv = explode(":", $this->metadata);
+			$mpv = explode(':', $this->metadata);
 			$action = array_pop($mpv);
 
-			if (($params["action"] == $action) && $keyParam) {
+			if (($params['action'] == $action) && $keyParam) {
 				$value = $this->getByKey($keyParam);
 
 				if ($value === NULL) {
@@ -142,8 +142,8 @@ class PairsRoute extends Nette\Application\Routers\Route
 			}
 
 			$this->cache->save($this->cacheTag, $pairList, array(
-				"tag" => $this->cacheTag,
-				"expire" => "30 mins"
+				'tag' => $this->cacheTag,
+				'expire' => '30 mins'
 			));
 		}
 

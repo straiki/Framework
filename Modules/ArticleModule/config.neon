@@ -1,0 +1,42 @@
+parameters:
+	articleModule:
+		title: Články
+		categories: FALSE
+		showInSliderbox: FALSE
+		publishDatetime: FALSE
+		publishState: FALSE
+		publishTypes:
+			concept: Koncept
+			public: Publikován
+		perexShort: FALSE
+		perexLong: FALSE
+		promoPhoto: FALSE
+		attachmentGallery: FALSE
+		attachmentFiles: FALSE
+		adminNote: FALSE
+		contentHistory: FALSE
+		accessToRoles: FALSE
+		qr: FALSE
+		customAuthorName: FALSE
+		menu:
+			baseIcon: icon-file
+			items:
+				'Články':
+					path: Homepage:default
+					icon: icon-th-list
+				'Kategorií':
+					cond: categories
+					path: Category:default
+					icon: icon-th-list
+
+services:
+	- Schmutzka\Models\Article
+	- Schmutzka\Models\ArticleInCategory
+	- Schmutzka\Models\ArticleCategory
+	- Schmutzka\Models\ArticleContent
+
+factories:
+	articleControl: ArticleModule\Components\ArticleControl
+	articleCategoryControl: ArticleModule\Components\ArticleCategoryControl
+	articleGrid: ArticleModule\Components\ArticleGrid
+	articleCategoryGrid: ArticleModule\Components\ArticleCategoryGrid

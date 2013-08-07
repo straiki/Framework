@@ -16,7 +16,7 @@ class NewsletterPresenter extends \AdminModule\BasePresenter
 	public function createComponentNewsletterForm()
 	{
 		$form = new Forms\NewsletterForm($this->models->user, $this->models->newsletterLog, $this->mailer, $this->user);
-		$form->from = "info@techambition.com";
+		$form->from = 'info@techambition.com';
 		return $form;
 	}
 

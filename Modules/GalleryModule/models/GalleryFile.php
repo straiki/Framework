@@ -11,9 +11,9 @@ class GalleryFile extends Base
 	 */
 	public function fetchOrderedListByGallery($galleryId)
 	{
-		return $this->table("gallery_id", $galleryId)
-			->order("rank")
-			->fetchPairs("id", "name");
+		return $this->table('gallery_id', $galleryId)
+			->order('rank')
+			->fetchPairs('id', 'name');
 	}
 
 }

@@ -4,6 +4,7 @@ namespace Schmutzka\Security;
 
 use Nette;
 
+
 class User extends Nette\Security\User
 {
 	/** @inject @var Schmutzka\Models\User */
@@ -16,7 +17,7 @@ class User extends Nette\Security\User
 	 */
 	public function &__get($name)
 	{
-		if ($this->getIdentity() && array_key_exists($name, $this->getIdentity()->data) && $name != "roles") {
+		if ($this->getIdentity() && array_key_exists($name, $this->getIdentity()->data) && $name != 'roles') {
 			$data = $this->getIdentity()->data;
 			return $data[$name];
 		}
@@ -56,11 +57,11 @@ class User extends Nette\Security\User
 
 	public function logLastActive()
 	{
-		$lastActive =  $this->userModel->fetchSingle("last_active", $this->id);
+		$lastActive =  $this->userModel->fetchSingle('last_active', $this->id);
 		$lastUpdate = time() - strtotime($lastActive);
 
 		if ($lastUpdate > (3 * 60)) { // log max once per 3 mins
-			$array["last_active"] = new Nette\DateTime;
+			$array['last_active'] = new Nette\DateTime;
 			$this->userModel->update($array, $this->id); // 60 ms!
 		}
 	}
@@ -72,12 +73,13 @@ class User extends Nette\Security\User
 	 */
 	public function autologin($user)
 	{
-		if (!($user instanceof User)) {
+		if ( ! ($user instanceof User)) {
 			$user = $this->userModel->item($user);
 		}
-		unset($user["password"]);
 
-		$identity = new Nette\Security\Identity($user["id"], (isset($user["role"]) ? $user["role"] : "user"), $user);
+		unset($user['password']);
+
+		$identity = new Nette\Security\Identity($user['id'], (isset($user['role']) ? $user['role'] : 'user'), $user);
 		$this->login($identity);
 	}
 

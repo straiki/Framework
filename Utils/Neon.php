@@ -18,11 +18,11 @@ class Neon extends Nette\Utils\Neon
 		$fileDecoded = Nette\Utils\Neon::decode($file);
 
 		if ($part) {
-			if (!isset($fileDecoded[$part])) {
-				return $fileDecoded[$part];	
+			if (isset($fileDecoded[$part])) {
+				return $fileDecoded[$part];
 			}
 
-			throw new \Exception("Key '$part' does not exits.");
+			throw new \Exception("Section '$part' does not exits.");
 		}
 
 		return $fileDecoded;
@@ -32,15 +32,15 @@ class Neon extends Nette\Utils\Neon
 	/**
 	 * Load config file
 	 * @param string
+	 * @return string
 	 */
 	private static function loadFile($file)
-	{	
-		$filePath = APP_DIR . "/config/" . $file;
-		if (!file_exists($filePath)) {
-			throw new \Exception("Missing 'config/$file'.");
+	{
+		if ( ! file_exists($file)) {
+			throw new \Exception('File does not exists');
 		}
 
-		return file_get_contents($filePath);
+		return file_get_contents($file);
 	}
 
 }

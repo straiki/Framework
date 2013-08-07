@@ -7,6 +7,7 @@ use Nette\Utils\Strings;
 use Schmutzka\Utils\Arrays;
 use Schmutzka\Utils\Name;
 
+
 class ParamService extends Nette\Object
 {
 	/** @var array */
@@ -28,7 +29,7 @@ class ParamService extends Nette\Object
 	 */
 	public function &__get($name)
 	{
-		if ($name != "params" && isset($this->params->{$name})) {
+		if ($name != 'params' && isset($this->params->{$name})) {
 			return $this->params->{$name};
 		}
 	}
@@ -42,7 +43,7 @@ class ParamService extends Nette\Object
 		$modules = $this->params->cmsSetup->modules;
 		$array = array();
 
-		Arrays::sortBySubkey($modules, "rank");
+		Arrays::sortBySubkey($modules, 'rank');
 
 		foreach ($modules as $key => $row) {
 			if ($row->active) {
@@ -60,8 +61,8 @@ class ParamService extends Nette\Object
 	 */
 	public function getModuleParams($key)
 	{
-		if (Strings::contains($key, "\\")) {
-			$key = Name::moduleFromNamespace($key, "module");
+		if (Strings::contains($key, '\\')) {
+			$key = Name::moduleFromNamespace($key, 'module');
 		}
 
 		$modules = $this->params->cmsSetup->modules;

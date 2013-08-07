@@ -1,12 +1,12 @@
 {contentType xml}
-<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<?xml version='1.0' encoding='utf-8'?>
+<rss version='2.0' xmlns:atom='http://www.w3.org/2005/Atom' xmlns:content='http://purl.org/rss/1.0/modules/content/'>
 	<channel>
 		<title>{$title}</title>
 		<link>{$link}</link>
 		<description>{$description}</description>
-		<language n:if="$language">{$language}</language>
-		<item n:foreach="$items as $item">
+		<language n:if='$language'>{$language}</language>
+		<item n:foreach='$items as $item'>
 			{foreach $item as $key => $property}
 			{if $property}
 			<{$key}>{$property|trim|striptags}</{$key}>

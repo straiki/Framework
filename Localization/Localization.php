@@ -4,13 +4,14 @@ namespace Schmutzka;
 
 use Nette;
 
+
 class Localization extends Nette\Object
 {
 	/** @var array  */
 	public $allowedLangs = array();
 
 	/** @var array  */
-	public $defaultLang = "en";
+	public $defaultLang = 'en';
 
 	/** @inject @var Nette\Http\Request */
 	public $httpRequest;
@@ -21,6 +22,7 @@ class Localization extends Nette\Object
 
 	/**
 	 * Detects language from cookie or request
+	 * @return  string
 	 */
 	public function detectLang()
 	{
@@ -40,28 +42,29 @@ class Localization extends Nette\Object
 
 
 	/**
-	 * Saves lang via cookie
+	 * Saves lang to cookie
 	 * @param string
 	 */
 	public function setLang($lang)
 	{
 		$cookieName = $this->getCookieName();
-		$this->httpResponse->setCookie($cookieName, $lang, "+ 100 days");
+		$this->httpResponse->setCookie($cookieName, $lang, '+ 100 days');
 	}
 
 
 	/**
 	 * Get lang cookie name
+	 * @return  string
 	 */
 	private function getCookieName()
 	{
-		return "_lang_" . $this->httpRequest->url->authority;
+		return '_lang_' . $this->httpRequest->url->authority;
 	}
 
 
 	/**
-	 * Is lang allowed?
 	 * @param string
+	 * @return  bool
 	 */
 	private function isAllowed($lang)
 	{
