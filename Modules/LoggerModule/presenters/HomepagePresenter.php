@@ -17,7 +17,7 @@ class HomepagePresenter extends Presenter
 	 */
 	public function handleDelete($file)
 	{
-		if (file_exists($file = $this->logDir . '/' . $file)) {
+		if (file_exists($file = $this->paramService->logDir . '/' . $file)) {
 			unlink($file);
 			$this->flashMessage('Smazáno.', 'success');
 			$this->redirect('default');
@@ -31,7 +31,7 @@ class HomepagePresenter extends Presenter
 	public function renderDetail($file)
 	{
 		$this->template->filename = $file;
-		if (file_exists($file = $this->logDir . '/' . $file)) {
+		if (file_exists($file = $this->paramService->logDir . '/' . $file)) {
 			$this->template->file = $file;
 
 		} else {
@@ -52,7 +52,7 @@ class HomepagePresenter extends Presenter
 
 	public function renderDefault()
 	{
-		$files = Finder::findFiles('*.html')->in($this->logDir);
+		$files = Finder::findFiles('*.html')->in($this->paramService->logDir);
 
 		$result = array();
 		foreach ($files as $key => $file) {
@@ -67,15 +67,6 @@ class HomepagePresenter extends Presenter
 		Arrays::sortBySubKeyReverse($result, 'created');
 
 		$this->template->result = $result;
-	}
-
-
-	/**
-	 * @return string
-	 */
-	public function getLogDir()
-	{
-		return LIBS_DIR . '/../log';
 	}
 
 }

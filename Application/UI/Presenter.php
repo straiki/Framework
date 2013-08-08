@@ -94,9 +94,9 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	public function formatLayoutTemplateFiles()
 	{
 		$layoutTemplateFiles = parent::formatLayoutTemplateFiles();
-		$layoutTemplateFiles[] = APP_DIR . '/AdminModule/templates/@layout.latte';
-		$layoutTemplateFiles[] = LIBS_DIR . '/Schmutzka/Modules/@' . ($this->layout ?: 'layout') . '.latte';
-		$layoutTemplateFiles[] = APP_DIR . '/FrontModule/templates/@' . ($this->layout ?: 'layout') . '.latte';
+		$layoutTemplateFiles[] = $this->paramService->appDir . '/AdminModule/templates/@layout.latte';
+		$layoutTemplateFiles[] = $this->paramService->libsDir . '/Schmutzka/Modules/@' . ($this->layout ?: 'layout') . '.latte';
+		$layoutTemplateFiles[] = $this->paramService->appDir . '/FrontModule/templates/@' . ($this->layout ?: 'layout') . '.latte';
 
 		return $layoutTemplateFiles;
 	}

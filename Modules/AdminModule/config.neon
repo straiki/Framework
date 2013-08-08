@@ -1,10 +1,12 @@
 parameters:
-	menu:
-		items:
-			'Vítejte v administraci':
-				path: Homepage:default
-			'Nastavení':
-				path: Homepage:settings
+	adminModule:
+		title: Vítejte v příjemném prostředí
+		menu:
+			items:
+				'Vítejte v administraci':
+					path: Homepage:default
+				'Nastavení':
+					path: Homepage:settings
 
 services:
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter

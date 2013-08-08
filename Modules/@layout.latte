@@ -9,7 +9,7 @@
 		{control adminJs}
 		<script type="text/javascript" src="{$basePath}/js/ckeditor/ckeditor.js"></script>
 
-		%title {$adminTitle|isEmpty: "CMS Intuitivo"}
+		%title Unicorn Admin
 
 	%body
 		#header
@@ -48,8 +48,8 @@
 				</li>
 
 				{if $user->loggedIn}
-					{foreach $activeModules as $module => $title}
-						{control adminMenuControl $module, $title}
+					{foreach $modules as $module}
+						{control adminMenuControl $module}
 					{/}
 
 				{else}

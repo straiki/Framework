@@ -7,7 +7,6 @@ use Nette\Utils\Strings;
 use Schmutzka\Utils\Validators;
 
 
-
 class Time extends Nette\Object
 {
 
@@ -221,12 +220,12 @@ class Time extends Nette\Object
 		// spočteme průměr
 		$timeSum = 0;
 		if ($type == 'noon') {
-			foreach($data as $value) {
+			foreach ($data as $value) {
 				$timeSum += self::ex($value, 2);
 			}
 
 		} else {
-			foreach($data as $value) {
+			foreach ($data as $value) {
 				$mins = self::ex($value, 2);
 				if($mins < (12*60)) { // 12 je klíčové číslo!!!!!!!!!!!
 					$timeSum += 24*60; // posuneme o den

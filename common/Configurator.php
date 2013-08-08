@@ -76,6 +76,7 @@ class Configurator extends Nette\Configurator
 		$rootDir = realpath(__DIR__ . '/../../../');
 		$parameters['appDir'] = $rootDir . '/app/';
 		$parameters['libsDir'] =  $rootDir . '/libs/';
+		$parameters['logDir'] =  $rootDir . '/log/';
 		$parameters['wwwDir'] =  $rootDir . '/www/';
 		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/modules/';
 

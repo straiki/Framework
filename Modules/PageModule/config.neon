@@ -1,13 +1,14 @@
 parameters:
-	menu:
-		baseIcon: icon-file
-	title: Stránky
-	perexShort: FALSE
-	perexLong: FALSE
-	attachmentGallery: FALSE
-	attachmentFiles: FALSE
-	adminNote: FALSE
-	contentHistory: FALSE
+	pageModule:
+		menu:
+			baseIcon: icon-file
+		title: Stránky
+		perexShort: FALSE
+		perexLong: FALSE
+		attachmentGallery: FALSE
+		attachmentFiles: FALSE
+		adminNote: FALSE
+		contentHistory: FALSE
 
 services:
 	- Schmutzka\Models\Page

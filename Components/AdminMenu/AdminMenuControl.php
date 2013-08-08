@@ -22,24 +22,25 @@ class AdminMenuControl extends Control
 
 	/**
 	 * @param string
-	 * @param string
 	 */
-	public function renderDefault($module, $title)
+	public function renderDefault($module)
 	{
-		$this->template->menu = $menu = $this->getMenu($module);
+		$moduleParams = $this->paramService->getModuleParams($module);
+
+		$this->template->menu = $moduleParams->menu;
 		if (isset($menu->primaryAdminOnly) && $this->user->id != 1) {
 			return;
 		}
 
-		$this->template->moduleParams = $this->paramService->getModuleParams($module);
 		$this->template->module = $module;
-		$this->template->title = $title;
+		$this->template->title = $moduleParams->title;
 	}
 
 
 	public function renderTitle()
 	{
 		$module = $this->presenter->module;
+		$moduleParams = $this->paramService->getModuleParams($module);
 
 		$view = $this->presenter->view;
 		$title = NULL;
@@ -72,32 +73,10 @@ class AdminMenuControl extends Control
 			}
 
 		} else {
-			$moduleParams = $this->paramService->getModuleParams($module);
 			$title = $moduleParams->title;
 		}
 
 		$this->template->title = $title;
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * Get  by module name
-	 * @param  string
-	 * @return Nette\ArrayHash
-	 */
-	public function getMenu($module)
-	{
-		if (file_exists($config = MODULES_DIR . '/' . ucfirst($module) . 'Module/config/menu.neon')) {
-			$config = Nette\Utils\Neon::decode(file_get_contents($config));
-
-		} elseif(file_exists($config = APP_DIR . '/' . ucfirst($module) . 'Module/config/menu.neon')) {
-			$config = Nette\Utils\Neon::decode(file_get_contents($config));
-		}
-
-		return Nette\ArrayHash::from((array) $config);
 	}
 
 }

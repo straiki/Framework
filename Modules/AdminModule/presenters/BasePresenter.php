@@ -2,22 +2,30 @@
 
 namespace AdminModule;
 
-use Schmutzka;
+use Schmutzka\Application\UI\AdminPresenter;
 use WebLoader;
 
-abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
+
+abstract class BasePresenter extends AdminPresenter
 {
 	/** @var array */
 	public $moduleParams;
 
-	/** @inject @var Schmutzka\Models\Page */
-	public $pageModel;
-
 	/** @inject @var Schmutzka\Models\User */
 	public $userModel;
 
-	/** @inject @var Schmutzka\Models\Gallery */
-	public $galleryModel;
+	/** @var Schmutzka\Models\Page */
+	private $pageModel;
+
+	/** @var Schmutzka\Models\Gallery */
+	private $galleryModel;
+
+
+	public function injectModels(Schmutzka\Models\Page $pageModel = NULL,Schmutzka\Models\Gallery $galleryModel = NULL)
+	{
+		$this->pageModel = $pageModel;
+		$this->galleryModel = $galleryModel;
+	}
 
 
 	public function startup()
@@ -26,19 +34,11 @@ abstract class BasePresenter extends Schmutzka\Application\UI\AdminPresenter
 
 		$this->lang = NULL;
 
-		if ($this->paramService->cms == TRUE) {
-			$this->template->adminTitle = $this->paramService->cmsSetup->title;
-			$this->template->activeModules = $activeModules = $this->paramService->getActiveModules();
-			$this->template->cmsParams = $this->paramService->cmsSetup;
-
-			if (isset($this->paramService->cmsSetup->modules->{$this->module})) {
-				$this->template->moduleParams = $this->moduleParams = $this->paramService->cmsSetup->modules->{$this->module};
-			}
-		}
-
-		if (!$this->user->loggedIn) {
+		if ( ! $this->user->loggedIn) {
 			$this->layout = 'layoutLogin';
 		}
+
+		$this->template->modules = $this->paramService->getActiveModules();
 	}
 
 
