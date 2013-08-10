@@ -36,7 +36,7 @@ class TextSnippetControl extends Control
 	/**
 	 * @param  string $uid
 	 */
-	public function renderDisplay($uid)
+	protected function renderDisplay($uid)
 	{
 		$this->template->content = $this->textSnippetModel->fetchSingle('content', array(
 			'uid' => $uid

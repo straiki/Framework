@@ -21,10 +21,10 @@ parameters:
 		menu:
 			baseIcon: icon-file
 			items:
-				'Články':
+				'Přehled článků':
 					path: Homepage:default
 					icon: icon-th-list
-				'Kategorií':
+				'Kategorie':
 					cond: categories
 					path: Category:default
 					icon: icon-th-list

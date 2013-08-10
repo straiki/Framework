@@ -1,7 +1,22 @@
-{extends MODULES_DIR.'/templates/moduleGrid.latte'}
+{extends $moduleGridTemplate}
+
+
+{define body-cell-created}
+	<td class="center">
+		{$value|date: "j. n. Y"}
+	</td>
+{/}
+
+
+{define body-cell-last_active}
+	<td class="center">
+		{$value|date: "j. n. Y"}
+	</td>
+{/}
 
 
 {define body-cell-role}
-	%td.numeric.center
-		{$value|inArray: $roles}
+	<td class="center">
+		{$roles[$value]}
+	</td>
 {/}

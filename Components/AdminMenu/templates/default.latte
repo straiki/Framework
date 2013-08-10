@@ -6,10 +6,8 @@
 		</a>
 		%ul
 			{foreach $menu->items as $label => $item}
-				{if (!isset($item->cond) || (isset($item->cond) && $moduleParams->{$item->cond}))}
-					{var $path = ":" . ucfirst($module) . ":" . $item->path}
-					{include #menuItem, path => $path, icon => $item->icon, name => $label}
-				{/}
+				{var $path = ":" . ucfirst($module) . ":" . $item->path}
+				{include #menuItem, path => $path, icon => $item->icon, name => $label}
 			{/}
 	</li>
 

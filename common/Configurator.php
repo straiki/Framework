@@ -23,7 +23,7 @@ class Configurator extends Nette\Configurator
 		if ($debug) {
 			$this->setDebugMode($debug);
 		}
-		$this->enableDebugger($this->parameters['appDir'] . '/../log');
+		$this->enableDebugger($this->parameters['logDir']);
 
 		// robot loader
 		$this->setTempDirectory($this->parameters['appDir'] . '/../temp');
@@ -78,7 +78,7 @@ class Configurator extends Nette\Configurator
 		$parameters['libsDir'] =  $rootDir . '/libs/';
 		$parameters['logDir'] =  $rootDir . '/log/';
 		$parameters['wwwDir'] =  $rootDir . '/www/';
-		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/modules/';
+		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/Modules/';
 
 		return $parameters;
 	}

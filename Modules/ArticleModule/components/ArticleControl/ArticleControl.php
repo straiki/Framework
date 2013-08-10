@@ -23,14 +23,20 @@ class ArticleControl extends TextControl
 	/** @inject @var Schmutzka\Models\ArticleContent */
 	public $articleContentModel;
 
-	/** @inject @var Schmutzka\Models\Qr */
-	public $qrModel;
-
 	/** @var string */
 	protected $type = 'article';
 
 	/** @var array */
 	private $articleCategories;
+
+	/** @var Schmutzka\Models\Qr */
+	private $qrModel;
+
+
+	public function injectQrModel(Schmutzka\Models\Qr $qrModel = NULL)
+	{
+		$this->qrModel = $qrModel;
+	}
 
 
 	public function createComponentForm()

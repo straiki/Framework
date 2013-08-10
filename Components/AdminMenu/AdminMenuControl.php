@@ -23,7 +23,7 @@ class AdminMenuControl extends Control
 	/**
 	 * @param string
 	 */
-	public function renderDefault($module)
+	protected function renderDefault($module)
 	{
 		$moduleParams = $this->paramService->getModuleParams($module);
 
@@ -37,7 +37,7 @@ class AdminMenuControl extends Control
 	}
 
 
-	public function renderTitle()
+	protected function renderTitle()
 	{
 		$module = $this->presenter->module;
 		$moduleParams = $this->paramService->getModuleParams($module);
@@ -48,7 +48,7 @@ class AdminMenuControl extends Control
 
 		if ($view == 'add') {
 			$path = substr($this->presenter->name, strlen($module) + 1);
-			foreach ($menu->items as $key => $row) {
+			foreach ($moduleParams->menu->items as $key => $row) {
 				if (Strings::contains($row->path, $path)) {
 					$title = $key;
 				}

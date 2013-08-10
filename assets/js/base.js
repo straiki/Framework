@@ -29,18 +29,6 @@ $(document).ready(function() {
 	}, 2000);
 
 
-	// 4. autoresize textaera
-	$('.autoresize.height150').autoResize({
-		minHeight: 150,
-		animate: {duration: 300},
-	});
-
-	$('.autoresize.height300').autoResize({
-		minHeight: 300,
-		animate: {duration: 300},
-	});
-
-
 	// 5. showCombo slider
 	/*
 		.showCombo

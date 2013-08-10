@@ -30,9 +30,12 @@ abstract class Control extends Nette\Application\UI\Control
 	public function __call($name, $args)
 	{
 		if (Strings::startsWith($name, 'render')) {
+			if ($name == 'render') {
+				$view = 'default';
 
-			// @todo fix calling others then defaults renders
-			$view = $this->getViewFromMethod($name);
+			} else {
+				$view = strtolower(substr($name, 6));
+			}
 
 			// setup template file
 			$class = $this->getReflection();
@@ -77,24 +80,6 @@ abstract class Control extends Nette\Application\UI\Control
 		}
 
 		return $component;
-	}
-
-
-	/********************** helpers **********************/
-
-
-	/**
-	 * @param  string
-	 * @return string
-	 */
-	private function getViewFromMethod($method)
-	{
-		if ($method === 'render') {
-			return 'default';
-
-		} else {
-			return lcfirst(substr($method, 6));
-		}
 	}
 
 }

@@ -18,8 +18,8 @@ webloader:
 	css:
 		admin:
 			files:
-				- %assetsDir%/css/bootstrap/bootstrap.min.css
-				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/cms/bootstrap.min.css
+				- %assetsDir%/css/cms/bootstrap-responsive.min.css
 				- %assetsDir%/css/jquery/jquery-ui.css
 				- %assetsDir%/css/jquery/chosen/chosen.css
 				- %assetsDir%/css/unicorn/unicorn.main.css
@@ -33,8 +33,8 @@ webloader:
 
 		adminLogin:
 			files:
-				- %assetsDir%/css/bootstrap/bootstrap.min.css
-				- %assetsDir%/css/bootstrap/bootstrap-responsive.min.css
+				- %assetsDir%/css/cms/bootstrap.min.css
+				- %assetsDir%/css/cms/bootstrap-responsive.min.css
 				- %assetsDir%/css/unicorn/unicorn.login.css
 				- %assetsDir%/css/cms/cms.login.css
 
@@ -50,7 +50,7 @@ webloader:
 			files:
 				- %assetsDir%/js/jquery/%jQuery%
 				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
-				- %assetsDir%/js/bootstrap/bootstrap.min.js
+				- %assetsDir%/js/bootstrap.min.js # new one, testing
 				- %assetsDir%/js/nette/netteForms.js
 				- %assetsDir%/js/nette/nette.rules.js
 				- %assetsDir%/js/nette/nette.ajax.js

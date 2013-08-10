@@ -13,15 +13,13 @@ class UserGrid extends Grid
 
 	public function build()
 	{
-		$params = $this->getModuleParams();
-		$this->template->roles = $params->roles;
-
 		$this->setPrimaryKey('id');
 		$this->addColumn('email', 'Email');
-		$this->addColumn('login', 'Jméno', '20%');
-		$this->addColumn('created', 'Registrován', '10%');
-		$this->addColumn('last_active', 'Aktivita', '10%');
-		$this->addColumn('role', 'Role', '12%');
+		$this->addColumn('login', 'Jméno');
+		$this->addColumn('created', 'Registrován');
+		$this->addColumn('last_active', 'Poslední aktivita');
+		$this->addColumn('role', 'Role');
+		$this->addTemplateValue('roles', (array) $this->moduleParams->roles);
 
 		$this->addEditRowAction();
 		$this->addDeleteRowAction();

@@ -16,22 +16,14 @@ abstract class Grid extends DataGrid
 
 
 	/**
-	 * @param Nette\Http\Session
-	 */
-	public function __construct(Nette\Http\Session $session)
-	{
-		parent::__construct($session);
-		$this->build();
-		$this->setDataLoader($this->dataLoader);
-
-	}
-
-
-	/**
 	 * @param  Nette\Application\UI\Presenter
 	 */
 	public function attached($presenter)
 	{
+		$this->build();
+		$this->setPrimaryKey('id');
+		$this->setDataLoader($this->dataLoader);
+
 		parent::attached($presenter);
 		$this->setTemplateFile($this->getTemplatePath());
 		$this->addTemplateValue('moduleGridTemplate', $this->paramService->modulesDir . '/templates/moduleGrid.latte');

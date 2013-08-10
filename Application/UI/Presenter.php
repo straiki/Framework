@@ -205,7 +205,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 				));
 
 			} elseif ($type == 'webtemp') {
-				Filer::emptyFolder(WWW_DIR . '/webtemp/');
+				Filer::emptyFolder($this->paramService->wwwDir . '/webtemp/');
 
 			} elseif ($type == 'session') {
 				$this->session->destroy();

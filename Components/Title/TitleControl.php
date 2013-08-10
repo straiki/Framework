@@ -33,7 +33,7 @@ class TitleControl extends Schmutzka\Application\UI\Control
 	private $titles = array();
 
 
-	public function renderDefault()
+	protected function renderDefault()
 	{
 		$title = implode($this->sep, $this->titles);
 		if ($this->alwaysShowMainTitle) {

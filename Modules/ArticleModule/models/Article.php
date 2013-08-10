@@ -3,6 +3,7 @@
 namespace Schmutzka\Models;
 
 use Nette;
+use Schmutzka;
 
 
 class Article extends Base
@@ -13,11 +14,17 @@ class Article extends Base
 	/** @inject @var Schmutzka\Models\ArticleInCategory */
 	public $articleInCategoryModel;
 
-	/** @inject @var Schmutzka\Models\GalleryFile */
-	public $galleryFileModel;
-
 	/** @var string item select */
 	private $select = 'article.*, gallery_file.name titlePhoto, user.name authorName';
+
+	/** @var Schmutzka\Models\GalleryFile */
+	private $galleryFileModel;
+
+
+	public function injectModels(Schmutzka\Models\GalleryFile $galleryFileModel = NULL)
+	{
+		$this->galleryFileModel = $galleryFileModel;
+	}
 
 
 	/**
