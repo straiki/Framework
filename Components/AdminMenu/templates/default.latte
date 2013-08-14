@@ -1,32 +1,25 @@
 {ifset $menu->items}
 	<li n:class="submenu, $presenter->module == $module ? 'active open'">
-		<a href="">
-			<i n:class="icon, $menu->baseIcon"></i>
+		<a href="#">
+			<i n:class="glyphicon, $menu->icon"></i>
 			{$title}
 		</a>
 		%ul
-			{foreach $menu->items as $label => $item}
-				{var $path = ":" . ucfirst($module) . ":" . $item->path}
-				{include #menuItem, path => $path, icon => $item->icon, name => $label}
+			{foreach $menu->items as $item}
+				{var $link = ":" . $module . ":" . $item->link}
+				<li n:class="topmenu, $presenter->isLinkCurrent($link) ? 'active'">
+					<a href="{plink $link}">
+						{$item->label}
+					</a>
+				</li>
 			{/}
-	</li>
 
 {else}
 	<li n:class="topmenu, $presenter->module == $module ? 'active'">
-		<a href="{plink :{$module}:Homepage:default}">
-			<i n:class="icon, $menu->baseIcon"></i>
+		{var $link = ":" . $module . ":Homepage:default"}
+		<a href="{plink $link}">
+			<i n:class="glyphicon, $menu->icon"></i>
 			{$title}
 		</a>
 	</li>
-{/}
-
-
-{define #menuItem}
-
-<li n:class="$presenter->isLinkCurrent($path) ? active">
-	<a n:phref="$path, id => NULL">
-		<i class="icon {$icon}"></i> &nbsp; {$name}
-	</a>
-</li>
-
 {/}

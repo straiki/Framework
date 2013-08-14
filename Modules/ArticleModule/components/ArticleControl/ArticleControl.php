@@ -44,44 +44,44 @@ class ArticleControl extends TextControl
 		$form = new Form;
 		$form->addGroup('');
 		$form->addText('title', 'Nadpis článku:')
-			->setAttribute('class', 'span6')
+			->setAttribute('class', 'form-control')
 			->addRule(Form::FILLED, 'Zadejte nadpis článku');
 
 		if ($this->moduleParams->categories) {
 			$categoryList = $this->articleCategoryModel->fetchPairs('id', 'name');
 			$form->addMultiSelect('article_categories', 'Kategorie:', $categoryList)
 				->setAttribute('data-placeholder', 'Vyberte jednu či více kategorií')
-				->setAttribute('class', 'chosen span6')
+				->setAttribute('class', 'chosen form-control')
 				->addRule(Form::FILLED, 'Vyberte aspoň jednu kategorii');
 		}
 
-		if ($this->moduleParams->showInSliderbox) {
-			$form->addCheckBox('article_show_in_sliderbox', 'Zobrazit ve SliderBoxu');
-		}
-
-		if ($this->moduleParams->customAuthorName || $this->moduleParams->publishState || $this->moduleParams->accessToRoles || $this->moduleParams->customUrl) {
+		if ($this->moduleParams->customAuthorName || $this->moduleParams->publishState || $this->moduleParams->accessToRoles) {
 			$form->addGroup('Publikování');
 			if ($this->moduleParams->customAuthorName) {
 				$form->addText('custom_author_name', 'Jméno autora:')
-					->setOption('description', 'Přepíše autora článku');
+					->setOption('description', 'Přepíše autora článku')
+					->setAttribute('class', 'form-control');
 			}
 
 			if ($this->moduleParams->publishDatetime) {
 				$form->addDateTimePicker('publish_datetime', 'Čas publikování:')
 					->setDefaultValue(new Nette\DateTime)
-					->addRule(Form::FILLED, 'Zadejte čas publikování');
+					->addRule(Form::FILLED, 'Zadejte čas publikování')
+					->setAttribute('class', 'form-control');
 			}
 
 			if ($this->moduleParams->publishState) {
 				$publishTypes = (array) $this->moduleParams->publishTypes;
-				$form->addSelect('publish_state', 'Stav publikování:', $publishTypes);
+				$form->addSelect('publish_state', 'Stav publikování:', $publishTypes)
+					->setAttribute('class', 'form-control');
 			}
 
 			if ($this->moduleParams->accessToRoles) {
 				$roles = (array) $this->paramService->cmsSetup->modules->user->roles;
 				$form->addMultiSelect('access_to_roles', 'Zobrazit pouze pro:', $roles)
 					->setAttribute('data-placeholder', 'Zde můžete omezit zobrazení pouze pro určité uživatele')
-					->setAttribute('class', 'chosen width400');
+					->setAttribute('class', 'chosen form-control');
+
 			}
 		}
 
@@ -114,7 +114,9 @@ class ArticleControl extends TextControl
 		if ($this->id = $presenter->id) {
 			$defaults = $this->articleModel->item($this->id);
 			if ($this->moduleParams->qr) {
-				$defaults['qr'] = $this->qrModel->fetchSingle('id', array('article_id' => $this->id));
+				$defaults['qr'] = $this->qrModel->fetchSingle('id', array(
+					'article_id' => $this->id
+				));
 			}
 
 			if ($this->moduleParams->accessToRoles) { // @todo separate table

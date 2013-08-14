@@ -11,25 +11,17 @@
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-#sidebar > ul ul li a.menuAddButton {float:right;text-align:center;color:#FFF; /*width:20px;*/ padding:5px; margin: 0px 0px 0px 1px; background: #333;
-	.menuAddButtonIcon {background-image: url("../img/plus.png"); background-repeat: no-repeat; background-position: 30% 50%; display:block; padding:14px; margin-top: -20px; .rc(0);
-		&:hover {background-color: #51A351;}
-	}
-	&:hover {background-color: #222;
-		.menuAddButtonIcon {background-color: #51A351;}
-	}
-
-}
-
 #sidebar .submenu .active a:not(.menuAddButton) {
 	background: darken(@blue, 5%);
-	color: #FFF; .ts(1px, 1px, 1px, #333);
+	color: #FFF;
 }
 
 #sidebar > ul > li.topmenu.active {
-	background-color: @blue;
-	background-image: none;
-	a {color: #FFF;}
+	background: @blue;
+
+	a {
+		color: #FFF;
+	}
 }
 
 
@@ -38,20 +30,12 @@
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-.tab-content {overflow:none;overflow:hidden;
-	.span12 {width:600px}
-}
+.tab-content {
+	overflow: none;
+	overflow: hidden;
 
-
-#testFormBuilder {
-	.removeButton {margin:-47px 0 0 186px;position:static;width:200px;margin-left:65px;
-		input[type=text] {width:50px;margin-right:120px}
-	}
-	.removeOptionButton {margin:-24px 0 0 146px;position:static}
-	.question {
-		label {display:none;}
-		input {margin-left:15px}
-		.controls {margin-left:0px}
+	.span12 {
+		width: 600px;
 	}
 }
 
@@ -62,16 +46,26 @@
 
 
 #exerciseControl {
-	#addOption {width: 400px; margin-top: 6px;
-		.btn {float: right;}
-	}
+	#addOption {
+		width: 400px;
+		margin-top: 6px;
 
-	.title {padding:15px;
-		.checkbox {
-			label {margin-left: -20px;}
+		.btn {
+			float: right;
 		}
 	}
-	.text td {border: none;}
+
+	.title {
+		padding:15px;
+
+		.checkbox label {
+			margin-left: -20px;
+		}
+	}
+
+	.text td {
+		border: none;
+	}
 }
 
 
@@ -79,16 +73,15 @@
 	~ Forms
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-.menuBreak {background:#333; height:7px;}
 
-textarea.wider {width:700px;height:60px}
+.menuBreak {
+	background: #333;
+	height: 7px;
+}
 
-#header h1 {line-height:1em; color:#FFF; font-size:32px; font-family: "Calibri"; text-align:center;width:180px;margin-left:1px}
-
-form {
-	.form-actions {
-		input[type=submit] {margin-left: 20px}
-	}
+textarea.wider {
+	width: 700px;
+	height: 60px;
 }
 
 
@@ -96,16 +89,26 @@ form {
 	~ MenuModule
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+
 .dd {
-	.active {.ico(active, 0, 50%);
-		&:hover {.inactive}
+	.active {
+		.ico(active, 0, 50%);
+
+		&:hover {
+			.inactive;
+		}
 	}
-	.inactive {.ico(inactive, 0, 50%);
-		&:hover {.active}
+	.inactive {
+		.ico(inactive, 0, 50%);
+
+		&:hover {
+			.active;
+		}
 	}
 
 	.active, .inactive, .edit {margin-right: 10px;}
 }
+
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ Admin
@@ -258,102 +261,3 @@ th.time, .time {.ico(time, 0%, 50%, 30px)}
 .icoCms(@image, @x: 0px, @y: 50%, @l: 20px) {
 	background:url("../../images/cms/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
 }
-
-
-
-
-.btn {cursor: piointer}
-
-.fright {float:right}
-.fleft {float:left}
-
-.right {text-align:right}
-.center {text-align:center;}
-td.center {text-align:center;}
-
-
-/* date-picker debug */
-#ui-datepicker-div {float:left;z-index:20;display:none;font-size:1em}
-#ui-helper-clearfix {margin-left:18em}
-
-.gradientBar(@primaryColor, @secondaryColor) {
-	 .vertical(@primaryColor, @secondaryColor);
-	//	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-	border-color: @secondaryColor @secondaryColor darken(@secondaryColor, 15%);
-	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
-}
-
-.vertical (@startColor: #555, @endColor: #333) {
-	background-color: @endColor;
-	background-repeat: repeat-x;
-	background-image: -khtml-gradient(linear, left top, left bottom, from(@startColor), to(@endColor)); // Konqueror
-	background-image: -moz-linear-gradient(top, @startColor, @endColor); // FF 3.6+
-	background-image: -ms-linear-gradient(top, @startColor, @endColor); // IE10
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, @startColor), color-stop(100%, @endColor)); // Safari 4+, Chrome 2+
-	background-image: -webkit-linear-gradient(top, @startColor, @endColor); // Safari 5.1+, Chrome 10+
-	background-image: -o-linear-gradient(top, @startColor, @endColor); // Opera 11.10
-	background-image: linear-gradient(top, @startColor, @endColor); // The standard
-	filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=0)",@startColor,@endColor)); // IE9 and down
-}
-
-
-.td {text-decoration:underline;}
-.tdn {text-decoration:none;}
-
-/* shadows */
-.sh(@x: 0, @y: 0, @blur: 15px, @color: #CCC) {
-	box-shadow: @x @y @blur @color;
-	-moz-box-shadow: @x @y @blur @color;
-	-webkit-box-shadow: @x @y @blur @color;
-}
-.ish(@x: 0, @y: 0, @blur: 15px, @color: #CCC) {
-	box-shadow: inset @x @y @blur @color;
-	-moz-box-shadow: inset @x @y @blur @color;
-	-webkit-box-shadow: inset @x @y @blur @color;
-}
-.ts(@x: 1px, @y: 1px, @blur: 2px, @color: #CCC) {
-	text-shadow: @color @x @y @blur ;
-}
-
-/* round corners */
-.rc (@radius: 5px) {
-	-webkit-border-radius: @radius;
-	-moz-border-radius: @radius;
-	-khtml-border-radius: @radius;
-	border-radius: @radius;
-	-webkit-background-clip: padding-box;
-}
-.rc-spec (@a: 5px, @b: 5px, @c: 5px, @d: 5px) {
-	-webkit-border-radius: @a @b @c @d;
-	-moz-border-radius: @a @b @c @d;
-	-khtml-border-radius: @a @b @c @d;
-	border-radius: @a @b @c @d;
-	-webkit-background-clip: padding-box;
-}
-
-.pm0 {padding:0;margin:0}
-
-.clearfix:after {content: ".";display: block;clear: both;visibility: hidden;line-height: 0;height: 0;}
-.clearfix {display: inline-block;}
-html[xmlns] .clearfix {display: block;}
- * html .clearfix {height: 1%;}
-
-
-.width200 {width:200px}
-.width300 {width:300px}
-.width350 {width:350px}
-.width400 {width:400px}
-.width500 {width:500px}
-.width600 {width:600px}
-
-
-select, input {
-	&.w150 {width:150px}
-	&.w200 {width:200px}
-	&.w300 {width:300px}
-	&.w350 {width:350px}
-	&.w400 {width:400px}
-	&.w500 {width:500px}
-	&.w600 {width:600px}
-}
-

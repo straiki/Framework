@@ -9,7 +9,7 @@ parameters:
 		resendPassword: FALSE
 		logLastActive: TRUE
 		menu:
-			baseIcon: icon-user
+			icon: glyphicon-user
 
 factories:
 	userControl: UserModule\Components\UserControl

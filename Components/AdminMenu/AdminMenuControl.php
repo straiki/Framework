@@ -28,7 +28,7 @@ class AdminMenuControl extends Control
 		$moduleParams = $this->paramService->getModuleParams($module);
 
 		$this->template->menu = $moduleParams->menu;
-		if (isset($menu->primaryAdminOnly) && $this->user->id != 1) {
+		if (isset($moduleParams->menu->primaryAdminOnly) && $this->user->id != 1) {
 			return;
 		}
 
@@ -43,14 +43,13 @@ class AdminMenuControl extends Control
 		$moduleParams = $this->paramService->getModuleParams($module);
 
 		$view = $this->presenter->view;
-		$title = NULL;
-		$menu = $this->getMenu($module);
+		$title = '';
 
 		if ($view == 'add') {
-			$path = substr($this->presenter->name, strlen($module) + 1);
-			foreach ($moduleParams->menu->items as $key => $row) {
-				if (Strings::contains($row->path, $path)) {
-					$title = $key;
+			$link = substr($this->presenter->name, strlen($module) + 1);
+			foreach ($moduleParams->menu->items as $item) {
+				if (Strings::contains($item->link, $link)) {
+					$title = $item->label;
 				}
 			}
 
@@ -64,11 +63,11 @@ class AdminMenuControl extends Control
 						(isset($item['login']) ? ': ' . $item['login'] :
 					NULL)));
 
-		} elseif (isset($menu->items)) {
-			$path = substr($this->presenter->name . ':' . $view, strlen($module) + 1);
-			foreach ($menu->items as $key => $row) {
-				if ($row->path == $path) {
-					$title = $key;
+		} elseif (isset($moduleParams->menu->items)) {
+			$link = substr($this->presenter->name . ':' . $view, strlen($module) + 1);
+			foreach ($moduleParams->menu->items as $item) {
+				if ($item->link == $link) {
+					$title = $item->label;
 				}
 			}
 

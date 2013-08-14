@@ -1,26 +1,21 @@
-{form form, id => 'loginform', class => 'form-vertical'}
+{form form}
 	%p.infoMessage Zadejte vaše přihlašovací údaje
-	.control-group
-		.controls
+	.input-group
+		%span.input-group-addon
+			%i.glyphicon.glyphicon-user
+		{input login}
+
+	.input-group
+		%span.input-group-addon
+			%i.glyphicon.glyphicon-lock
 			.input-prepend
-				%span.add-on
-					%i.icon-user
+		{input password}
 
-				{input login, placeholder => 'Email'}
-
-	.control-group
-		.controls
-			.input-prepend
-				%span.add-on
-					%i.icon-lock
-
-				{input password, placeholder => 'Heslo'}
+	%hr
 
 	.form-actions
-		%span.pull-left
-			<a href='#' class='flip-link' id='to-recover'>Zapomněli jste heslo?</a>
-
-		%span.pull-right
-			{input send, class => 'btn btn-success'}
-
-{/form}
+		.pull-left
+			<a href='#' class='flip-link to-recover'>Zapomněli jste heslo?</a>
+		.pull-right
+			{input send}
+{/}

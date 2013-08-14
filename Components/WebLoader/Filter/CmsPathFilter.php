@@ -19,6 +19,7 @@ class CmsPathFilter extends Nette\Object
 			'url("../img' => 'url("../../images/cms',
 			"url('../img" => "url('../../images/cms",
 			'url(../img' => 'url(../../images/cms',
+			"url('../" => "url('../../",
 			'url("chosen' => 'url("../../images/cms/chosen/chosen'
 		));
 

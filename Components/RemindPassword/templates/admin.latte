@@ -1,20 +1,16 @@
-{form form, id => 'recoverform', class => 'form-vertical'}
-	%p.infoMessage
-		Nevadí!
-		%br
-		Zadejte Vaši emailovou adresu a nechte si poslat nové.
+{form form}
+	%p Nevadí. Zadejte Vaši emailovou adresu a nechte si poslat nové.
 
-	.control-group
-		.controls
-			.input-prepend
-				%span.add-on
-					%i.icon-envelope
+	.input-group
+		%span.input-group-addon
+			%i.glyphicon.glyphicon-envelope
+		{input email}
 
-				{input email, placeholder => 'Zadejte Váš email'}
+	%hr
 
 	.form-actions
-		%span.pull-left
-			<a href='#' class='flip-link' id='to-login'>&laquo; Zpět na přihlášení</a>
-		%span.pull-right
-			{input send, class => 'btn btn-success'}
+		.pull-left
+			<a href='#' class="flip-link to-login">&laquo; Zpět na přihlášení</a>
+		.pull-right
+			{input send}
 {/}

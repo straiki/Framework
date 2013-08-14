@@ -1,11 +1,12 @@
 parameters:
 	title: Číselník
 	menu:
-		baseIcon: icon-file
+		icon: glyphicon-file
 		items:
-			'Přehled čísledníků':
-				path: Homepage:default
-				icon: icon-th-list
+			[
+				label: Přehled čísledníků
+				link: Homepage:default
+			]
 
 services:
 	- Schmutzka\Models\Codebook

@@ -64,4 +64,15 @@ class RemindPasswordControl extends Control
 		$this->presenter->redirect('this');
 	}
 
+
+	protected function renderAdmin()
+	{
+		$form = $this['form'];
+
+		$form->id = 'recoverform';
+		$form['email']->setAttribute('class', 'form-control')
+			->setAttribute('placeholder', 'Zadejte Váš email');
+		$form['send']->setAttribute('class', 'btn btn-success');
+	}
+
 }

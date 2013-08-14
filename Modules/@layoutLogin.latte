@@ -1,19 +1,18 @@
 <!DOCTYPE html>
 %html
 	%head
-		<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'>
-		<meta name='author' content='FreexIT.eu'>
-		<link rel='shortcut icon' href='{$basePath}/favicon.png'>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="author" content="FreexIT.eu">
+		<link rel="shortcut icon" href="{$basePath}/images/cms/favicon.ico">
 
 		{control adminLoginCssControl}
 		{control adminLoginJsControl}
-
-		%title {include #title}
+		{control titleControl}
 
 	%body
-		#adminLogin
-			#title [n:inner-block => 'title']
-				Unicorn Admin - Přihlášení
+		#container
+			#logo <img src="{$basePath}/images/cms/logo.png" alt="Unicorn Admin logo">
 
 			{control flashMessageControl}
 

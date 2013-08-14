@@ -2,7 +2,6 @@ parameters:
 	articleModule:
 		title: Články
 		categories: FALSE
-		showInSliderbox: FALSE
 		publishDatetime: FALSE
 		publishState: FALSE
 		publishTypes:
@@ -19,15 +18,14 @@ parameters:
 		qr: FALSE
 		customAuthorName: FALSE
 		menu:
-			baseIcon: icon-file
+			icon: glyphicon-file
 			items:
-				'Přehled článků':
-					path: Homepage:default
-					icon: icon-th-list
-				'Kategorie':
-					cond: categories
-					path: Category:default
-					icon: icon-th-list
+				1:
+					label: Přehled článků
+					link: Homepage:default
+				2:
+					label: Kategorie
+					link: Category:default
 
 services:
 	- Schmutzka\Models\Article

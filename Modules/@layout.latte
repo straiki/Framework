@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 %html
 	%head
-		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="author" content="FreexIT.eu">
-		<link rel="shortcut icon" href="{$basePath}/favicon.png">
+		<link rel="shortcut icon" href="{$basePath}/images/cms/favicon.ico">
 
 		{control adminCss}
 		{control adminJs}
+
 		<script type="text/javascript" src="{$basePath}/js/ckeditor/ckeditor.js"></script>
 
 		%title Unicorn Admin
@@ -14,26 +16,29 @@
 	%body
 		#header
 			%h1
+				<a id="menu-trigger" href="#">
+					%i.glyphicon.glyphicon-align-justify
+				</a>
 
-		#user-nav.navbar.navbar-inverse
-			%ul.nav.btn-group
+		#user-nav
+			%ul.btn-group
 				{if $user->loggedIn}
-					%li.btn.btn-inverse
+					%li.btn
 						<a n:href="logout!">
-							%i.icon.icon-share-alt
+							%i.glyphicon.glyphicon-user
 							%span.text {_"Odhlásit se"}
 						</a>
 
-					<li n:class="btn, btn-inverse, $presenter->isLinkCurrent(':Admin:Homepage:settings') ? 'active'">
+					<li n:class="btn, $presenter->isLinkCurrent(':Admin:Homepage:settings') ? 'active'">
 						<a n:href=":Admin:Homepage:settings">
-							%i.icon.icon-cog
+							%i.glyphicon.glyphicon-cog
 							%span.text {_"Nastavení"}
 						</a>
 					</li>
 
-					%li.btn.btn-inverse
+					%li.btn
 						<a n:href=":Front:Homepage:">
-							%i.icon.icon-home
+							%i.glyphicon.glyphicon-home
 							%span.text {_"Zpět na web"}
 						</a>
 				{/}
@@ -42,7 +47,7 @@
 			%ul
 				<li n:class="$presenter->isLinkCurrent(':Admin:Homepage:default') ? active">
 					<a n:href=":Admin:Homepage:default">
-						%i.icon.icon-home
+						%i.glyphicon.glyphicon-home
 						Domů
 					</a>
 				</li>
@@ -55,7 +60,7 @@
 				{else}
 					%li.active
 						<a n:href=":Admin:Homepage:default">
-							%i.icon.icon-cog
+							%i.glyphicon.glyphicon-cog
 							Přihlášení
 						</a>
 				{/}
@@ -81,6 +86,6 @@
 			{control flashMessageControl}
 
 			.container-fluid
-				.row-fluid
-					.span12
+				.row
+					.col-12.center
 						{include #content}

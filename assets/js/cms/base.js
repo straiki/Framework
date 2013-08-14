@@ -5,9 +5,7 @@ $(document).ready(function() {
 
 
 	// 2. confirm alert
-	$(".confirm").click(function() {
-		return confirm("Opravdu chcete provést tuto akci?");
-	});
+	// usa data- one!
 
 
 	// 3. hide flashes
@@ -31,12 +29,6 @@ $(document).ready(function() {
 		update: function (event, ui) {
 			var rankList = $('#sortable').sortable('toArray').toString();
 			var sortLink = $('#sortable').data("sort-link");
-
-			/*
-			var paramName = $('#sortable').data("param-name");
-			alert(paramName);
-			*/
-
 			$.post(sortLink, { data: rankList });
 		}
 	});
@@ -49,16 +41,9 @@ $(document).ready(function() {
 		update: function (event, ui) {
 			var rankList = $('.tbodySortable table tbody').sortable('toArray').toString();
 			var sortLink = $('.tbodySortable').data("sort-link");
-
-			/*
-			var paramName = $('#sortable').data("param-name");
-			alert(paramName);
-			*/
-
 			$.post(sortLink, { data: rankList });
 		}
 	});
-
 
 	// 7. sortable nested menu
 	$('.frontMenu').nestable({
@@ -85,4 +70,3 @@ jQuery(window).load(function () {
 	jQuery.nette.ext('init').formSelector = 'form.ajax';
 	jQuery.nette.init();
 });
-

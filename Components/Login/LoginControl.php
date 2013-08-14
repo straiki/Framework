@@ -99,11 +99,24 @@ class LoginControl extends Control
 	}
 
 
-	public function renderDefault()
+	protected function renderDefault()
 	{
 		if ($this->forgotLink) {
 			$this->template->forgotLink = $this->forgotLink;
 		}
+	}
+
+
+	protected function renderAdmin()
+	{
+		$form = $this['form'];
+
+		$form->id = 'loginform';
+		$form['login']->setAttribute('class', 'form-control')
+			->setAttribute('placeholder', 'Email');
+		$form['password']->setAttribute('class', 'form-control')
+			->setAttribute('placeholder', 'Password');
+		$form['send']->setAttribute('class', 'btn btn-success');
 	}
 
 }

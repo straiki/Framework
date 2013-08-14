@@ -4,12 +4,12 @@ parameters:
 		type: single # multi
 		attachToUser: FALSE
 		menu:
-			baseIcon: icon-file
+			icon: glyphicon-file
 			items:
-				'Přehled souborů':
-					path: Homepage:default
-					icon: icon-th-list
-					addPath: Homepage:add
+				[
+					label: Přehled souborů
+					link: Homepage:default
+				]
 
 services:
 	- Schmutzka\Models\File

@@ -1,7 +1,9 @@
 /**
  * Unicorn Admin Template
+ * Version 2.0
  * Diablo9983 -> diablo9983@gmail.com
 **/
+
 html, body {
     width: 100%;
     height: 100%;
@@ -15,8 +17,17 @@ body {
     background-image: -ms-linear-gradient(top, #555555 0%, #111111 100%);
     background-image: -o-linear-gradient(top, #555555 0%, #111111 100%);
     background-image: linear-gradient(top, #555555 0%, #111111 100%);
+    background-position: fixed;
     padding: 0;
     margin: 0;
+}
+
+#container {
+    top: 0;
+    position: absolute;
+    left: 50%;
+    margin-left: -200px;
+    margin-top: 50px;
 }
 
 #logo, #loginbox {
@@ -34,16 +45,16 @@ body {
     display: block;
 }
 #loginbox {
-    height: 196px;
+    height: 230px;
 	background: #ffffff;
     box-shadow: 0 0 4px #000000;
-    border-radius: 7px 7px 0 0;
+    border-radius: 7px;
     overflow: hidden !important;
     text-align: center;
-    position: relative;
+    position: relative;   
 }
 
-#loginbox form{
+#loginbox form {
 	width:100%;
 	height:100%;
 	position:absolute;
@@ -51,17 +62,21 @@ body {
 	left:0;
 }
 #loginbox p {
-    margin-top: 20px;
+    margin-top: 15px;
     padding: 0 20px;
 }
 
 #loginbox .form-actions {
 	padding: 14px 20px 15px;
+    border-radius: 0 0 30px 30px;
 }
 #loginbox .form-actions .pull-left {
-	margin-top: 2px;
+	margin-top:-1px;
+    text-align: left;
 }
-
+#loginbox .form-actions .pull-right {
+    margin-top: 2px;
+}
 #loginbox form#loginform {
 	z-index: 200;
 }
@@ -71,21 +86,43 @@ body {
 	opacity: 0;
     display:none;
 }
+#loginbox form#registerform {
+    z-index: 100;
+    opacity: 0;
+    display:none;
+}
 
+/*
 #loginbox form#recoverform .form-actions {
     margin-top: 27px;
-}
+}*/
 
 #loginbox form#recoverform .control-group {
 	margin: 23px 0;
 }
 
-.form-vertical, .form-actions {
-    margin-bottom: 0;
+.input-group {
+    padding: 0 20px 5px;
 }
 
+.row {
+    margin: 0 5px;
+}
+hr {
+    margin: 8px 0 -5px;
+}
 @media (max-width: 480px){
+    #container {
+        margin: 50px 5% 0;
+        left: auto;
+        width: 90%;
+    }
     #logo, #loginbox {
-        width: 80%;
+        width: 100%;
+    }
+    @media (max-width: 420px) {
+        body {
+            font-size: 12px;
+        }
     }
 }

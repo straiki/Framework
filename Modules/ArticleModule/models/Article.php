@@ -212,6 +212,8 @@ class Article extends Base
 	 */
 	private function completeItem($item)
 	{
+		dd($item);
+
 		$item['article_categories'] = $this->articleInCategoryModel->fetchByMain($item['id']);
 		$item['article_categories_name'] = $this->articleInCategoryModel->fetchByMain($item['id'], 'article_category.name');
 

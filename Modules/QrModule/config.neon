@@ -2,7 +2,7 @@ parameters:
 	qrModule:
 		title: QR generátor
 		menu:
-			baseIcon: icon-qrcode
+			baseIcon: glyphicon-qrcode
 
 services:
 	- Schmutzka\Models\Qr

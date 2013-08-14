@@ -16,7 +16,9 @@ class ArticleCategoryControl extends Control
 	{
 		$form = new Form;
 		$form->addText('name', 'Název kategorie:')
-			->addRule(Form::FILLED, 'Zadejte název kategorie');
+			->addRule(Form::FILLED, 'Zadejte název kategorie')
+			->setAttribute('class', 'form-control');
+
 		$form->addSubmit('send', 'Uložit')
 			->setAttribute('class', 'btn btn-primary');
 

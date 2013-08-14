@@ -2,7 +2,7 @@ parameters:
 	textSnippetModule:
 		title: Textíky
 		menu:
-			baseIcon: icon-align-left
+			icon: glyphicon-align-left
 
 services:
 	- Schmutzka\Models\TextSnippet

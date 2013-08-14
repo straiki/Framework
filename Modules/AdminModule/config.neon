@@ -1,12 +1,15 @@
 parameters:
 	adminModule:
 		title: Vítejte v příjemném prostředí
+		icon: glyphicon-home
 		menu:
 			items:
-				'Vítejte v administraci':
-					path: Homepage:default
-				'Nastavení':
-					path: Homepage:settings
+				1:
+					label: Vítejte v administraci
+					link: Homepage:default
+				2:
+					label: Nastavení
+					link: Homepage:settings
 
 services:
 	cmsPathFilter: Schmutzka\Components\WebLoader\Filter\CmsPathFilter
@@ -18,14 +21,13 @@ webloader:
 	css:
 		admin:
 			files:
-				- %assetsDir%/css/cms/bootstrap.min.css
-				- %assetsDir%/css/cms/bootstrap-responsive.min.css
+				- %assetsDir%/css/bootstrap.min.css
+				- %assetsDir%/css/bootstrap-glyphicons.css
 				- %assetsDir%/css/jquery/jquery-ui.css
 				- %assetsDir%/css/jquery/chosen/chosen.css
 				- %assetsDir%/css/unicorn/unicorn.main.css
 				- %assetsDir%/css/unicorn/unicorn.grey.css
 				- %assetsDir%/css/cms/cms.base.css
-				- %assetsDir%/css/jquery/jquery.nestable.css
 
 			filters:
 				- @lessFilter
@@ -33,13 +35,13 @@ webloader:
 
 		adminLogin:
 			files:
-				- %assetsDir%/css/cms/bootstrap.min.css
-				- %assetsDir%/css/cms/bootstrap-responsive.min.css
+				- %assetsDir%/css/bootstrap.min.css
+				- %assetsDir%/css/bootstrap-glyphicons.css
 				- %assetsDir%/css/unicorn/unicorn.login.css
 				- %assetsDir%/css/cms/cms.login.css
 
 			remoteFiles:
-				- 'http://fonts.googleapis.com/css?family=Roboto:400,100&subset=latin,latin-ext'
+				- "http://fonts.googleapis.com/css?family=Roboto:400,100&subset=latin,latin-ext"
 
 			filters:
 				- @lessFilter
@@ -50,7 +52,8 @@ webloader:
 			files:
 				- %assetsDir%/js/jquery/%jQuery%
 				- %assetsDir%/js/jquery/jquery-ui-1.10.0.min.js
-				- %assetsDir%/js/bootstrap.min.js # new one, testing
+				- %assetsDir%/js/jquery/jquery.nestable.js
+				- %assetsDir%/js/bootstrap.min.js
 				- %assetsDir%/js/nette/netteForms.js
 				- %assetsDir%/js/nette/nette.rules.js
 				- %assetsDir%/js/nette/nette.ajax.js
@@ -62,7 +65,6 @@ webloader:
 				- %assetsDir%/js/DateTimePicker/DateTimePicker.js
 				- %assetsDir%/js/DateTimePicker/localization/jquery-ui-timepicker-cs.js
 				- %assetsDir%/js/jquery/chosen/chosen.jquery.min.js
-				- %assetsDir%/js/jquery/jquery.nestable.js
 
 		adminLogin:
 			files:

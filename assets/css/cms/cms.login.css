@@ -1,15 +1,12 @@
-#adminLogin {width:400px; margin:auto; text-align: center;
+#loginbox {
+	height: 200px;
 
-	#title {font:2.2em "Calibri", "Trebuchet MS", sans-serif;color:#FFF; margin: 100px auto 0 auto; line-height:3em;}
-
-	#loginbox {height:240px;
-		.infoMessage {margin-bottom:20px}
-		.form-actions {padding:20px}
+	.infoMessage {
+		margin-bottom: 20px;
 	}
+}
 
-	#recoverform {
-		.control-group {height:60px}
-	}
-
-	.flip-link {margin-top: 3px; float:left;}
+.flip-link {
+	float: left;
+	margin-top: 10px;
 }

@@ -10,14 +10,13 @@ parameters:
 				height: 80
 				width: 80
 		description: FALSE
-
 		menu:
-			baseIcon: icon-picture
+			icon: glyphicon-picture
 			items:
-				'Přehled':
-					path: Homepage:default
-					icon: icon-th-list
-					addPath: Homepage:add
+				[
+					label: Přehled
+					link: Homepage:default
+				]
 
 
 services:

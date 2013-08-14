@@ -1,7 +1,5 @@
 parameters:
 	pageModule:
-		menu:
-			baseIcon: icon-file
 		title: Stránky
 		perexShort: FALSE
 		perexLong: FALSE
@@ -9,6 +7,8 @@ parameters:
 		attachmentFiles: FALSE
 		adminNote: FALSE
 		contentHistory: FALSE
+		menu:
+			icon: glyphicon-file
 
 services:
 	- Schmutzka\Models\Page
