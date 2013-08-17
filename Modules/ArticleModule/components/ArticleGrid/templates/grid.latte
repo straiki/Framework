@@ -1,1 +1,10 @@
 {extends $moduleGridTemplate}
+
+
+{define body-cell-id} {* categories  hack *}
+	<td class="center">
+		{foreach $record->article_in_category() as $row}
+			{$row->article_category['name']}
+		{/}
+	</td>
+{/}

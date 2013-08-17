@@ -1,11 +1,11 @@
-{ifset $menu->items}
+{if count($items) >= 2}
 	<li n:class="submenu, $presenter->module == $module ? 'active open'">
 		<a href="#">
-			<i n:class="glyphicon, $menu->icon"></i>
+			<i n:class="glyphicon, $icon"></i>
 			{$title}
 		</a>
 		%ul
-			{foreach $menu->items as $item}
+			{foreach $items as $item}
 				{var $link = ":" . $module . ":" . $item->link}
 				<li n:class="topmenu, $presenter->isLinkCurrent($link) ? 'active'">
 					<a href="{plink $link}">
@@ -18,7 +18,7 @@
 	<li n:class="topmenu, $presenter->module == $module ? 'active'">
 		{var $link = ":" . $module . ":Homepage:default"}
 		<a href="{plink $link}">
-			<i n:class="glyphicon, $menu->icon"></i>
+			<i n:class="glyphicon, $icon"></i>
 			{$title}
 		</a>
 	</li>

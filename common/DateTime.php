@@ -67,7 +67,7 @@ class DateTime extends Nette\DateTime
 
 		$time = strtotime('1 January $year', time());
 		$day = date('w', $time);
-		$time += ((7 * $week) + 1 - $day) * 24 * 3600; // @todo check, move to DateTime if possible
+		$time += ((7 * $week) + 1 - $day) * 24 * 3600;
 
 		$result = array(
 			'start' => new self($time),
@@ -95,14 +95,13 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Add x workdays
 	 * @param int
 	 */
 	public function addWorkday($amount = 1)
 	{
 		for ($i = 0; $i < $amount; $i++) {
 			$this->modify('+1 day');
-			while (!$this->isWorkingDay()) {
+			while ( ! $this->isWorkingDay()) {
 				$this->modify('+1 day');
 			}
 		}
@@ -125,38 +124,6 @@ class DateTime extends Nette\DateTime
 		$dayShift = ((7 + $day - $currentDay) % 7) ?: 7;
 
 		$this->modify('+$dayShift days');
-		return $this;
-	}
-
-
-	/**
-	 * Get nearest h:s time from now
-	 * @param string
-	 * @return DateTime
-	 */
-	public function getNextNearestTime($time)
-	{
-		$currentTime = $this->format('H:i');
-		if (strtotime($time) <= strtotime($currentTime)) {
-			$this->modify('+1 day');
-		}
-
-		list($hours, $mins) = explode(':', $time);
-		$this->setTime($hours, $mins);
-		return $this;
-	}
-
-
-	/**
-	 * Get closest working day
-	 * @return void
-	 */
-	public function getNearestWorkday()
-	{
-		while (!$this->isWorkingDay()) {
-			$this->modify('+1 day');
-		}
-
 		return $this;
 	}
 
@@ -192,7 +159,7 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Localized day in the week
+	 * @param string
 	 * @param string
 	 * @param bool
 	 * @return string
@@ -210,7 +177,7 @@ class DateTime extends Nette\DateTime
 
 		if (isset($nameList[$lang][$type][$day])) {
 			$return = $nameList[$lang][$type][$day];
-			return ($ucfirst ? ucfirst($return) : lcfirst($return));
+			return ($ucfirst ? ucfirst($return) : strtolower($return));
 		}
 
 		return $this->format('D');
@@ -218,20 +185,21 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Localized month
 	 * @param string
 	 * @param bool
+	 * @param bool
 	 */
-	public function monthLocalized($lang = 'cs', $ucfirst = FALSE)
+	public function monthLocalized($lang = 'cs', $ucfirst = TRUE)
 	{
 		$nameList = array(
 			'cs' => array(1 => 'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen', 'listopad', 'prosinec')
 		);
+
 		$month = $this->format('n');
 
 		if (isset($nameList[$lang][$month])) {
 			$return = $nameList[$lang][$month];
-			return ($ucfirst ? ucfirst($return) : $return);
+			return ($ucfirst ? ucfirst($return) : strtolower($return));
 		}
 
 		return $this->format('F');
@@ -239,8 +207,8 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Format
 	 * @param string
+	 * @return string
 	 */
 	public function format($mask = 'Y-m-d H:i:s')
 	{
@@ -252,7 +220,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is today
 	 * @return bool
 	 */
 	public function isToday()
@@ -266,16 +233,11 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is working day
 	 * @return bool
 	 */
 	public function isWorkingDay()
 	{
-		if ($this->format('N') >= 6) {
-			return FALSE;
-		}
-
-		if ($this->isHoliday()) {
+		if ($this->format('N') >= 6 || $this->isHoliday()) {
 			return FALSE;
 		}
 
@@ -284,7 +246,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is weekend
 	 * @return bool
 	 */
 	public function isWeekend()
@@ -294,7 +255,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is holiday
 	 * @return bool
 	 */
 	public function isHoliday()
@@ -312,7 +272,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is past
 	 * @return bool
 	 */
 	public function isPast()
@@ -326,7 +285,6 @@ class DateTime extends Nette\DateTime
 
 
 	/**
-	 * Is future
 	 * @return bool
 	 */
 	public function isFuture()

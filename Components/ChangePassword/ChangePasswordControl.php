@@ -2,9 +2,10 @@
 
 namespace Components;
 
-use Schmutzka\Security\UserManager;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Control;
+use Schmutzka\Security\UserManager;
+
 
 class ChangePasswordControl extends Control
 {
@@ -59,4 +60,5 @@ class ChangePasswordControl extends Control
 		$form['password']->setAttribute('class', 'form-control');
 		$form['passwordCheck']->setAttribute('class', 'form-control');
 	}
+
 }

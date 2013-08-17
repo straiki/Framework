@@ -3,8 +3,7 @@
 namespace Schmutzka\Templates;
 
 use Nette;
-use Schmutzka;
-use NetteTranslator;
+
 
 class TemplateService extends Nette\Object
 {
@@ -25,9 +24,9 @@ class TemplateService extends Nette\Object
 
 
 	/**
-	 * Configure template
 	 * @param Nette\Templating\FileTemplate
 	 * @param string
+	 * @return Nette\Templating\FileTemplate
 	 */
 	public function configure(Nette\Templating\FileTemplate $template, $lang = NULL)
 	{
@@ -43,7 +42,6 @@ class TemplateService extends Nette\Object
 
 		$template->registerFilter(new Nette\Templating\Filters\Haml);
 		$template->registerFilter($this->latte);
-
 		$template->registerHelperLoader(array($this->helpers, 'loader'));
 
 		return $template;
@@ -53,6 +51,7 @@ class TemplateService extends Nette\Object
 	/**
 	 * Set latte engine
 	 * @param Nette\Latte\Engine
+	 * @return  this
 	 */
 	public function setLatte(Nette\Latte\Engine $latte)
 	{

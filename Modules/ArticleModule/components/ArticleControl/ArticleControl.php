@@ -50,9 +50,9 @@ class ArticleControl extends TextControl
 		if ($this->moduleParams->categories) {
 			$categoryList = $this->articleCategoryModel->fetchPairs('id', 'name');
 			$form->addMultiSelect('article_categories', 'Kategorie:', $categoryList)
+				->addRule(Form::FILLED, 'Vyberte aspoň jednu kategorii')
 				->setAttribute('data-placeholder', 'Vyberte jednu či více kategorií')
-				->setAttribute('class', 'chosen form-control')
-				->addRule(Form::FILLED, 'Vyberte aspoň jednu kategorii');
+				->setAttribute('class', 'chosen form-control');
 		}
 
 		if ($this->moduleParams->customAuthorName || $this->moduleParams->publishState || $this->moduleParams->accessToRoles) {
@@ -136,14 +136,15 @@ class ArticleControl extends TextControl
 			unset($values['article_categories']);
 		}
 
-
 		if ($this->moduleParams->accessToRoles) {
 			$values['access_to_roles'] = serialize($values['access_to_roles']);
 		}
 
 		if ($this->moduleParams->qr) {
 			if ($values['qr']) {
-				$this->qrModel->update(array('article_id' => $this->id), $values['qr']);
+				$this->qrModel->update(array(
+					'article_id' => $this->id
+				), $values['qr']);
 			}
 			unset($values['qr']);
 		}

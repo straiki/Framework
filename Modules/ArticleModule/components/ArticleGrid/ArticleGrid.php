@@ -15,15 +15,9 @@ class ArticleGrid extends Grid
 	public function build()
 	{
 		$this->addColumn('title', 'Název');
-		$this->addColumn('article_categories_name', 'Kategorie');
-
-		/*
-			 ->setRenderer(function ($row) {
-				return implode($row->article_categories_name, ', ');
-			});
+		if ($this->moduleParams->categories) {
+			$this->addColumn('id', 'Kategorie'); // hack
 		}
-		*/
-
 		$this->addColumn('edited', 'Upraveno');
 		$this->addColumn('user_id', 'Upravil');
 

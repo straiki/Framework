@@ -4,6 +4,7 @@ namespace Schmutzka\Http;
 
 use Nette;
 
+
 class Browser extends Nette\Object
 {
 	/** @var array */

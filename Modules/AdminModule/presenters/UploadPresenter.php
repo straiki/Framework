@@ -17,7 +17,7 @@ class UploadPresenter extends BasePresenter
 		$file = new FileUpload($_FILES['upload']);
 
 		$rawFilePath = '/images/uploads/' . time() . '_' . $file->getSanitizedName();
-		$filePath =	WWW_DIR . $rawFilePath;
+		$filePath =	$this->paramService->wwwDir . '/' . $rawFilePath;
 
 		if ( ! $file->isOk()) {
 			$message = 'No file uploaded.';
@@ -38,7 +38,7 @@ class UploadPresenter extends BasePresenter
 		}
 
 		$funcNum = $_GET['CKEditorFuncNum'] ;
-		echo '<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$filePath', '$message');</script>';
+		echo "<script type='text/javascript'>window.parent.CKEDITOR.tools.callFunction($funcNum, '$filePath', '$message');</script>";
 
 		$this->terminate();
 	}

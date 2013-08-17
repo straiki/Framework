@@ -198,7 +198,7 @@ abstract class TextControl extends Control
 	 */
 	public function handleDeleteAttachment($attachmentId)
 	{
-		$filePath = WWW_DIR . $this->fileModel->fetchSingle('name', $attachmentId);
+		$filePath = $this->paramService->wwwDir . $this->fileModel->fetchSingle('name', $attachmentId);
 		if (file_exists($filePath)) {
 			unlink($filePath);
 		}
@@ -214,7 +214,7 @@ abstract class TextControl extends Control
 	public function handleOpenAttachment($attachmentId)
 	{
 		$file = $this->fileModel->item($attachmentId);
-		$filePath = WWW_DIR . $file['name'];
+		$filePath = $this->paramService->wwwDir . $file['name'];
 		Filer::downloadAs($filePath, $file['name_origin']);
 	}
 

@@ -20,7 +20,7 @@ use Schmutzka\Utils\Arrays;
  */
 class RssControl extends Control
 {
-	/** @inject @var Schmutzka\Caching\Cache */
+	/** @inject @var Nette\Caching\Cache */
 	public $cache;
 
 	/** @var string */

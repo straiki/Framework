@@ -6,6 +6,7 @@ use Nette;
 use Schmutzka;
 use Schmutzka\Utils\Time;
 
+
 class Helpers extends Nette\Object
 {
 	/** @inject @var Nette\Http\IRequest */
@@ -42,17 +43,6 @@ class Helpers extends Nette\Object
 	public static function linkifyText($string, $linkName = NULL)
 	{
 		return Url::linkifyText($string, $linkName);
-	}
-
-
-	/**
-	 * Display link without 'http://'
-	 * @param string
-	 * @return string
-	 */
-	public static function displayUrl($url)
-	{
-		return ltrim($url, 'http://');
 	}
 
 
@@ -154,6 +144,7 @@ class Helpers extends Nette\Object
 		}
 
 		$now = time();
+		// @todo fix
 		$delta = self::diffInDays($date, $now);
 
 		if ($delta < 0) {
@@ -286,11 +277,12 @@ class Helpers extends Nette\Object
 	 * Joins two datetimes as term (from - to)
 	 * @param string/DateTime
 	 * @param string/DateTime
+	 * @return string
 	 */
 	public static function term($from, $to)
 	{
-		$from = new \Nette\DateTime($from);
-		$to = new \Nette\DateTime($to);
+		$from = new Nette\DateTime($from);
+		$to = new Nette\DateTime($to);
 
 		if ($from->format('Y-m-d H:i') == $to->format('Y-m-d H:i')) {
 			return $from;

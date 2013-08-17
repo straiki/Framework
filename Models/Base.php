@@ -65,17 +65,31 @@ abstract class Base extends Nette\Object
 
 
 	/**
+	 * @param  int|array
+	 * @return NotORM_Row|NULL
+	 */
+	public function fetch($key)
+	{
+		return $this->table($key)->fetch();
+	}
+
+
+	/**
 	 * @param array|int
 	 * @return array|NULL
+	 * @deprecatded
 	 */
 	public function item($key)
 	{
+		return $this->fetch($key);
+		/*
 		try {
 			return $this->table($key)->fetchRow();
 
 		} catch (\Exception $e) {
 			return FALSE;
 		}
+		*/
 	}
 
 

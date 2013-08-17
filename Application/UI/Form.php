@@ -92,7 +92,10 @@ class Form extends Nette\Application\UI\Form
 	 */
 	public function setDefaults($defaults, $erase = FALSE)
 	{
-		$defaults = is_object($defaults) ? get_object_vars($defaults) : $defaults;
+		if ($defaults instanceof NotORM_Row) {
+			$defaults = $defaults->toArray();
+		}
+
 		parent::setDefaults($defaults, $erase);
 
 		return $this;
@@ -105,7 +108,7 @@ class Form extends Nette\Application\UI\Form
 	 */
 	public function addError($message)
 	{
-		$this->valid = FALSE;
+		// $this->valid = FALSE;
 		$this->presenter->flashMessage($message, 'error');
 	}
 

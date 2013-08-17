@@ -27,11 +27,20 @@ class AdminMenuControl extends Control
 	{
 		$moduleParams = $this->paramService->getModuleParams($module);
 
-		$this->template->menu = $moduleParams->menu;
-		if (isset($moduleParams->menu->primaryAdminOnly) && $this->user->id != 1) {
-			return;
+		$items = array();
+		if (isset($moduleParams->menu->items)) {
+			foreach ($moduleParams->menu->items as $item) {
+				if ( ! isset($item->cond)) {
+					$items[] = $item;
+
+				} elseif ($moduleParams->{$item->cond}) {
+					$items[] = $item;
+				}
+			}
 		}
 
+		$this->template->icon = $moduleParams->menu->icon;
+		$this->template->items = $items;
 		$this->template->module = $module;
 		$this->template->title = $moduleParams->title;
 	}

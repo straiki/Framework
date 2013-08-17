@@ -41,10 +41,9 @@ class ParamService extends Nette\Object
 	{
 		if (isset($this->params->modules)) {
 			return $this->params->modules;
-
-		} else {
-			return NULL;
 		}
+
+		return NULL;
 	}
 
 

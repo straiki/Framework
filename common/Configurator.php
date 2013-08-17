@@ -73,12 +73,13 @@ class Configurator extends Nette\Configurator
 	{
 		$parameters = parent::getDefaultParameters();
 
-		$rootDir = realpath(__DIR__ . '/../../../');
-		$parameters['appDir'] = $rootDir . '/app/';
-		$parameters['libsDir'] =  $rootDir . '/libs/';
-		$parameters['logDir'] =  $rootDir . '/log/';
-		$parameters['wwwDir'] =  $rootDir . '/www/';
-		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/Modules/';
+		$rootDir = realpath(__DIR__ . '/../../..');
+		$parameters['appDir'] = $rootDir . '/app';
+		$parameters['libsDir'] =  $rootDir . '/libs';
+		$parameters['logDir'] =  $rootDir . '/log';
+		$parameters['wwwDir'] =  $rootDir . '/www';
+		$parameters['assetsDir'] =  $rootDir . '/libs/Schmutzka/assets';
+		$parameters['modulesDir'] =  $rootDir . '/libs/Schmutzka/Modules';
 
 		return $parameters;
 	}
@@ -92,13 +93,13 @@ class Configurator extends Nette\Configurator
 		$parameters = Neon::fromFile($this->parameters['appDir'] . '/config/config.neon', 'parameters');
 
 		if (isset($parameters['modules'])) {
-			$this->addConfig($this->parameters['modulesDir'] . 'AdminModule/config.neon');
+			$this->addConfig($this->parameters['modulesDir'] . '/AdminModule/config.neon');
 			foreach ($parameters['modules'] as $module) {
 				$moduleDirConfig = ucfirst($module) . 'Module/config.neon';
-				if (file_exists($config = $this->parameters['modulesDir'] . $moduleDirConfig)) {
+				if (file_exists($config = $this->parameters['modulesDir'] . '/' . $moduleDirConfig)) {
 					$this->addConfig($config);
 
-				} elseif (file_exists($config = $this->parameters['appDir'] . $moduleDirConfig)) {
+				} elseif (file_exists($config = $this->parameters['appDir'] . '/' . $moduleDirConfig)) {
 					$this->addConfig($config);
 				}
 			}

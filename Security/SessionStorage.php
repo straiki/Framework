@@ -2,17 +2,18 @@
 
 namespace Services;
 
-/**
- * SessionStorage
- *
- */
-class SessionStorage implements \Nette\Http\ISessionStorage
+use Nette\Http\ISessionStorage;
+
+
+class SessionStorage implements ISessionStorage
 {
-  /**
+
+    /**
      * Holds the database connection
      * @var \dibiConnection
      */
     private $conn = null;
+
 
     public  function open($savePath, $sessionName) {
         if (is_null($this->conn)) {
@@ -20,6 +21,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
          //   \dibi::activate(MainConnectionName);
         };
     }
+
 
     public  function read($id) {
         if (is_null($this->conn)) {
@@ -44,6 +46,7 @@ class SessionStorage implements \Nette\Http\ISessionStorage
         };
     }
 
+
     public  function write($id, $data) {
         if (is_null($this->conn)) {
             throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
@@ -55,7 +58,8 @@ class SessionStorage implements \Nette\Http\ISessionStorage
         $this->conn->commit();
     }
 
-    public  function destroy($id) {
+
+    public function destroy($id) {
         if (is_null($this->conn)) {
             throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
         };
@@ -76,8 +80,8 @@ class SessionStorage implements \Nette\Http\ISessionStorage
         $this->conn = null;
     }
 
-        public function remove($id) {
+    public function remove($id) {
 
-        }
+    }
 
 }

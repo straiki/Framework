@@ -24,6 +24,7 @@ parameters:
 					label: Přehled článků
 					link: Homepage:default
 				2:
+					cond: categories
 					label: Kategorie
 					link: Category:default
 

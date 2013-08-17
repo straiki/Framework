@@ -7,6 +7,7 @@ use Nette\Security\AuthenticationException as AE;
 use Nette\Utils\Strings;
 use NotORM;
 
+
 class UserManager extends Nette\Object implements Nette\Security\IAuthenticator
 {
 	/** @inject @var Schmutzka\Models\User */

@@ -31,7 +31,7 @@ class Control extends Schmutzka\Application\UI\Control
 			$this['form']->addSubmit('cancel', 'Zrušit')
 				->setValidationScope(FALSE);
 
-			$defaults = $this->model->item($this->id);
+			$defaults = $this->model->fetch($this->id);
 			$defaults = $this->preProcessDefaults($defaults);
 			$this['form']->setDefaults($defaults);
 		}

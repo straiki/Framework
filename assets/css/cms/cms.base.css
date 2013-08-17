@@ -1,9 +1,4 @@
-@blue: #51A351;
-
-.loggerDetail {
-	width: 100%; border: 5px solid #FFF;height:600px;
-}
-
+@blue: #0088CC;
 
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -41,31 +36,17 @@
 
 
 #newsletterForm {
-	.email_list {width:810px;height:50px}
+	.email_list {
+		width: 810px;
+		height: 50px;
+	}
 }
 
 
-#exerciseControl {
-	#addOption {
-		width: 400px;
-		margin-top: 6px;
-
-		.btn {
-			float: right;
-		}
-	}
-
-	.title {
-		padding:15px;
-
-		.checkbox label {
-			margin-left: -20px;
-		}
-	}
-
-	.text td {
-		border: none;
-	}
+.loggerDetail {
+	width: 100%;
+	border: 5px solid #FFF;
+	height: 600px;
 }
 
 
@@ -78,6 +59,7 @@
 	background: #333;
 	height: 7px;
 }
+
 
 textarea.wider {
 	width: 700px;
@@ -115,13 +97,11 @@ textarea.wider {
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-.move {cursor: move;}
-
-@blue: #0088CC;
+.move {
+	cursor: move;
+}
 
 #content {
-	margin-top: -25px;
-
 	table {
 		th, td {
 			.btn {
@@ -131,15 +111,14 @@ textarea.wider {
 	}
 
 	.newButton {
-		margin-bottom: 15px;
+		margin: -61px 0 40px 0;
 		.clearfix;
 		float: right;
 	}
 }
 
 #content-header {
-	border-bottom: 3px solid #EEE;
-	.ish;
+	border-bottom: 6px solid #DDD;
 }
 
 #article {
@@ -158,22 +137,24 @@ textarea.wider {
 	}
 }
 
+#galleryFileList {
+	.clearfix;
 
-#content.admin {
-	.leftMenu {
-		ul {margin-left:0px;
-			li {list-style-type:none;margin:3px 0;
-				a {display:block}
+	ul {
+		list-style-type: none;
+
+		li {
+			float: left;
+			text-align: center;
+			border:1px solid #DDD;
+			padding: 3px;
+			margin: 3px;
+			background: #FFF;
+
+			img { /* bug fix */
+				margin-left: 4px;
+				margin-top: 4px;
 			}
-		}
-	}
-	.rightContent {margin-top:-16px;}
-}
-
-#galleryFileList {.clearfix;
-	ul {list-style-type: none;
-		li {float:left;text-align:center;border:1px solid #DDD;padding: 3px; margin: 3px; background: #FFF;
-			img {margin-left:4px; margin-top: 4px;} /* bug fix */
 		}
 	}
 }
@@ -192,68 +173,81 @@ legend + .control-group {
 }
 
 
-#settingsForm {
-	fieldset {margin-bottom:10px}
-	.settingsFormActivactor {margin-top:-45px;margin-left:-15px;
-		.control-group {border:none}
-	}
-
-	#page_module, #article_module, #event_module, #gallery_module, #bulletin_module, #email_module, #user_module, #submit_group {
-		legend {display:none;}
-	}
-}
-
-
-#email {
-	#settingsForm {backround:red;
-		label {width:300px}
-		.btn {margin-left:121px}
-	}
-}
-
-
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ icos @see: .ico
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
+.addIco {
+	.ico(add)
+}
 
-.addIco {.ico(add)}
+.del {
+	.icoCms(del, 50%, 50%);
+}
+.delLeft {
+	.ico(del, 0%, 0%);
+}
 
-.del {.icoCms(del, 50%, 50%);}
-.delLeft {.ico(del, 0%, 0%);}
+a.del {
+	text-decoration:none;
+}
 
-a.del {text-decoration:none;}
+.edit {
+	.icoCms(edit, 50%, 50%)
+}
 
-.edit {.icoCms(edit, 50%, 50%)}
+.emailMe {
+	.ico(emailMe)
+}
 
-.emailMe {.ico(emailMe)}
+.copy {
+	.ico(copy, 50%, 50%)
+}
 
-.copy {.ico(copy, 50%, 50%)}
+.work {
+	.ico(work, 0%, 50%, 30px)
+}
+.user {
+	.ico(user, 0%, 50%, 30px)
+}
 
-.work {.ico(work, 0%, 50%, 30px)}
-.user {.ico(user, 0%, 50%, 30px)}
+th.time, .time {
+	.ico(time, 0%, 50%, 30px)
+}
 
-th.time, .time {.ico(time, 0%, 50%, 30px)}
+.logout {
+	.ico(logout, 50%, 65%)
+}
 
+.link {
+	.ico(link, 10px, 50%, 33px);
+}
 
-.logout {.ico(logout, 50%, 65%)}
+.email {
+	.ico(email, 10px, 50%, 33px);
+}
 
-.link {.ico(link, 10px, 50%, 33px);}
+.name {
+	.ico(user, 0, 50%, 33px);
+}
+.password {
+	.ico(password, 0, 50%, 33px);
+}
 
-.email {.ico(email, 10px, 50%, 33px);}
+.help {
+	.ico(help, 0, 50%, 33px);
+}
 
-.name {.ico(user, 0, 50%, 33px);}
-.password {.ico(password, 0, 50%, 33px);}
-
-.help {.ico(help, 0, 50%, 33px);}
-.activity {.ico(activity, 0, 50%, 33px);}
+.activity {
+	.ico(activity, 0, 50%, 33px);
+}
 
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ functions & shortucts (required to be at the same file, unless doesn't inherit functions)
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
-/* ico functions */
+
 .ico(@image, @x: 0px, @y: 50%, @l: 20px) {
 	background:url("../../images/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
 }

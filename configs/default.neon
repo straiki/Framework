@@ -6,7 +6,6 @@ php:
 
 parameters:
 	libsDir: %appDir%/../libs
-	assetsDir: %libsDir%/Schmutzka/assets
 	jQuery: 'jquery-1.10.1.min.js'
 	gaLink:
 	logUserActivity: FALSE
@@ -58,7 +57,6 @@ nette:
 		email: tomas.vot@gmail.com
 		strictMode: TRUE
 		showLocation: TRUE
-		strLen: 4000
 		bar:
 			- @cleanerPanel
 			- @dumpMailPanel
@@ -72,7 +70,7 @@ nette:
 
 
 services:
-	cache: Schmutzka\Caching\Cache(@cacheStorage, 'dataCache')
+	cache: Nette\Caching\Cache(@cacheStorage, 'dataCache')
 	lessFilter: Schmutzka\Components\WebLoader\Filter\LessFilter
 	pathFilter: Schmutzka\Components\WebLoader\Filter\PathFilter
 	routerFactory: RouterFactory
@@ -84,7 +82,7 @@ services:
 	- lessc
 	- Schmutzka\ParamService(@container::getParameters())
 	- Schmutzka\Templates\Helpers
-	#- Services\SessionStorage
+	- Services\SessionStorage
 
 
 factories:
@@ -94,7 +92,6 @@ factories:
 	flashMessageControl: Components\FlashMessageControl
 	gaControl: Components\GaControl
 	rssControl: Components\RssControl
-	systemSession: Nette\Http\Session::getSection('system')
 	titleControl: Components\TitleControl
 
 
