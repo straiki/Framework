@@ -4,6 +4,7 @@ namespace Schmutzka\Utils;
 
 use Nette;
 
+
 class Name extends Nette\Object
 {
 

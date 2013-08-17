@@ -10,6 +10,7 @@ use Nette\Utils\Strings;
 use Nette\Utils\Finder;
 use Nette\Image;
 
+
 class Filer extends Nette\Object
 {
 	/** @var array */
@@ -83,7 +84,7 @@ class Filer extends Nette\Object
 	 */
 	public static function checkFile(Nette\Http\FileUpload $file, $allowed, $image = FALSE)
 	{
-		if ($image && !$file->isImage()) {
+		if ($image && ! $file->isImage()) {
 			return FALSE;
 		}
 
@@ -119,6 +120,7 @@ class Filer extends Nette\Object
 	 */
 	public static function moveFile(Nette\Http\FileUpload $file, $dir, $keepUnique = TRUE, $oldFile = NULL, $alterImage = array(), $encryptName = FALSE)
 	{
+		// @todo fix
 		$hostDir = WWW_DIR . '/' . $dir;
 
 		if ($oldFile) {

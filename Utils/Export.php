@@ -4,9 +4,6 @@ namespace Schmutzka\Utils;
 
 use Nette;
 
-/**
- * cvs($fields, $data)
- */
 
 class Export extends Nette\Object
 {

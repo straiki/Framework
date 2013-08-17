@@ -12,13 +12,14 @@ class Arrays extends Nette\Object
 	 * Check if arrays has all keys
 	 * @param array
 	 * @param array
+	 * @param bool
 	 */
 	public static function hasAllKeys(array $array, array $requiredKeys)
 	{
 		if (self::hasMoreLevels($array)) {
 			foreach ($array as $value) {
 				foreach ($value as $key => $value2) {
-					if (!in_array($key, $requiredKeys)) {
+					if ( ! in_array($key, $requiredKeys)) {
 						return FALSE;
 					}
 				}
@@ -26,7 +27,7 @@ class Arrays extends Nette\Object
 
 		} else {
 			foreach ($requiredKeys as $key) {
-				if (!array_key_exists($key, $array)) {
+				if ( ! array_key_exists($key, $array)) {
 					return FALSE;
 				}
 			}
@@ -73,29 +74,6 @@ class Arrays extends Nette\Object
 
 
 	/**
-	 * Get 1 column into array
-	 * @param array
-	 * @param string
- 	 * @return array
-	 */
-	public static function extractKey($array, $key)
-	{
-		$result = array();
-		foreach ($array as $value) {
-			if (!is_array($value)) {
-				$value = iterator_to_array($value);
-			}
-
-			if (isset($value[$key]) || $value[$key] === NULL) {
-				$result[] = $value[$key];
-			}
-		}
-
-		return $result;
-	}
-
-
-	/**
 	 * Clear all empty values
 	 * @param array
 	 * @return array
@@ -105,7 +83,7 @@ class Arrays extends Nette\Object
 		$result = array();
 		foreach ($array as $key => $value) {
 			if ($value || $value === 0) {
-				if (!is_array($value)) {
+				if ( ! is_array($value)) {
 					$result[$key] = trim($value);
 
 				} elseif (count($value)) {
@@ -143,8 +121,9 @@ class Arrays extends Nette\Object
 
 	/**
 	 * Order array by subkey
-	 * @param mixed
-	 * @return array
+	 * @param array
+	 * @param string
+	 *
 	 */
 	public static function sortBySubKeyReverse(&$array, $subkey)
 	{
@@ -157,47 +136,11 @@ class Arrays extends Nette\Object
 	}
 
 
-	/**
-	 * Find row with specific key value
-	 * @param array
-	 * @param string
-	 * @param string
-	 * @return mixed
-	 */
-	public static function findByKeyValue(array $array, $key, $find, $returnArrayStrict = FALSE)
-	{
-		$return = array();
-
-		foreach ($array as $value) {
-			$compare = $value[$key];
-
-			if (is_array($compare)) {
-				while (is_array($compare)) {
-					$compare = array_shift($compare);
-				}
-			}
-
-			if ($compare == $find) {
-				$return[] = $value;
-			}
-		}
-
-		if ($returnArrayStrict || count($return) > 1) { // more results -> array
-			return $return;
-
-		} elseif (count($return) == 1) {
-			return $return[0];
-		}
-
-		return NULL;
-	}
-
-
 	/********************** helpers **********************/
 
 
 	/**
-	 * Determine, if is one level array or multiple level array
+	 * Determine if is one level array or multiple level array
 	 * @param array
 	 * @return bool
 	 */
