@@ -1,6 +1,6 @@
 /**
  * Unicorn Admin Template
- * Version 2.0
+ * Version 2.0.2
  * Diablo9983 -> diablo9983@gmail.com
 **/
 
@@ -62,7 +62,7 @@ a {
 	left: 7px;
 	color: #dddddd;
 	text-shadow: 0 1px 0 #000000;
-	z-index: 100 !important;
+	z-index: 1000 !important;
 	display: none;
 }
 .fixed #menu-trigger {
@@ -70,7 +70,6 @@ a {
 	top: auto;
 	bottom: 0;
 	left: 1px;
-	display: block;
 	padding: 11px 7px 9px 6px;
 	border-right: 1px solid #000;
 	box-shadow: 1px 0 0 0 #393939;
@@ -107,7 +106,6 @@ a {
 	font-size: 12px;
 	color: #ffffff;
 	opacity: 0.5;
-	// margin-top:;
 }
 #search button:hover i, #search button:active i {
 	opacity: 0.9;
@@ -150,8 +148,9 @@ a {
 	color: #ffffff;
 }
 #user-nav > ul > li > a > i {
-	vertical-align: middle;
-	margin-right: 2px;
+	font-size: 11px;
+	vertical-align: top;
+	margin-right: 4px;
 }
 
 #user-nav > ul > li > a > .label {
@@ -240,7 +239,7 @@ a {
 	margin-right: 10px;
 }
 
-#sidebar > ul > li.active > a{
+#sidebar > ul > li.active > a {
 	background: url("../img/menu-active.png") no-repeat scroll right center transparent !important;
 }
 #sidebar > ul > li > a > .label, #jPanelMenu-menu > ul > li > a > .label {
@@ -249,7 +248,23 @@ a {
 	padding: 3px 5px 2px;
 	box-shadow: 0 1px 2px rgba(0,0,0,0.5) inset, 0 1px 0 rgba(255,255,255,0.2);
 }
-
+#sidebar > ul > li > a .arrow, #jPanelMenu-menu > ul > li > a .arrow {
+	float: right;
+	margin: 4px 15px 0 -10px;
+	font-size: 10px;
+	-webkit-transition: 0.3s ease-in-out;
+	-moz-transition: 0.3s ease-in-out;
+	-ms-transition: 0.3s ease-in-out;
+	-o-transition: 0.3s ease-in-out;
+	transition: 0.3s ease-in-out;
+}
+#sidebar > ul > li.open > a .arrow, #jPanelMenu-menu > ul > li.open > a .arrow {
+	-webkit-transform: rotate(90deg);
+	-moz-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	transform: rotate(90deg);
+}
 #sidebar > ul ul, #jPanelMenu-menu > ul ul {
 	display: none;
 	margin: 0;
@@ -327,14 +342,16 @@ a {
     position: absolute;
     margin-top:-50px; /*FIX: Line up with the header correctly on > tablet size (will be removed below)*/
     box-shadow: 0 2px 3px rgba(0,0,0,0.1) inset;
+    background-color: rgba(0,0,0,0.035);
+    /*
     background-color: #ededed;
     background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#eaeaea), to(#ededed));
     background-image: -webkit-linear-gradient(#eaeaea, #ededed);
     background-image: -moz-linear-gradient(#eaeaea, #ededed);
     background-image: -ms-linear-gradient(#eaeaea, #ededed);
     background-image: -o-linear-gradient(#eaeaea, #ededed);
-    background-image: linear-gradient(#eaeaea, #ededed);
-    border-bottom: 1px solid rgba(255,255,255,0.6);
+    background-image: linear-gradient(#eaeaea, #ededed);*/
+    border-bottom: 1px solid rgba(255,255,255,0.65);
     border-radius: 5px;
 }
 
@@ -345,10 +362,10 @@ a {
 	border-radius: 0;
 }
 
-/******/
 #content-header .btn-group .btn {
-	font-size: 16px;
-	padding: 13px 14px 9px;
+	line-height: 18px;
+	font-size: 18px;
+	padding: 12px 16px;
 	color: rgba(0,0,0,0.5);
 	border-width: 0 1px 0 0;
 	border-style: solid;
@@ -361,15 +378,17 @@ a {
 	border-right: none !important;
 }
 #content-header .btn-group .btn .label {
+	font-size: 11px;
+	line-height: 12px;
 	position: absolute;
 	top: 4px;
 	right: 5px;
-	padding: 2px 4px;
+	padding: 2px 5px;
 }
 
 /* Breadcrumb */
 #breadcrumb {
-	background-color: #eeeeee;
+	background-color: #e4e2e7;
 	box-shadow: 0 0 1px #ffffff;
 	border-top: 1px solid #d6d6d6;
 	border-bottom: 1px solid #d6d6d6;
@@ -418,7 +437,7 @@ a {
 #style-switcher i {
 	display: block;
 	float: left;
-	margin: 6px 10px 0 10px;
+	margin: 8px 10px 0 10px;
 	color: #ffffff;
 }
 #style-switcher i:hover {
@@ -471,10 +490,10 @@ a {
     background-color: #F6F6F6;
 	background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#F9F9F9), to(#EDEDED));
 	background-image: -webkit-linear-gradient(top, #F9F9F9 0%, #EDEDED 100%);
-    background-image: -moz-linear-gradient(top, #F9F9F9 0%, #EDEDED 100%);
+    background-image: -moz-linear-gradient(top, #F9F9F9 0%, #edebf4 100%);
     background-image: -ms-linear-gradient(top, #F9F9F9 0%, #EDEDED 100%);
     background-image: -o-linear-gradient(top, #F9F9F9 0%, #EDEDED 100%);
-    background-image: linear-gradient(top, #F9F9F9 0%, #EDEDED 100%);
+    background-image: linear-gradient(top, #F9F9F9 0%, #edebf4 100%);
     border: 1px solid #d5d5d5;
     border-radius: 4px 4px 4px 4px;
     box-shadow: 0 1px 0 0 #FFFFFF inset, 0 1px 0 rgba(255,255,255,0.4);
@@ -763,7 +782,7 @@ a {
     margin-bottom: 16px;
     position: relative;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    border-radius: 4px;
+    border-radius: 6px;
 }
 .widget-box.widget-calendar, .widget-box.widget-chat {
     overflow:hidden !important;
@@ -793,7 +812,7 @@ a {
     box-shadow: 0 1px 0 #ffffff inset;
     border-bottom: 1px solid #CDCDCD;
     height: 36px;
-    border-radius: 4px 4px 0 0;
+    border-radius: 6px 6px 0 0;
 }
 div.dataTables_wrapper .ui-widget-header {
 	background-color: #f2f2f2;
@@ -839,6 +858,7 @@ div.dataTables_wrapper .ui-widget-header {
 }
 .widget-title span.icon {
 	border-right: 1px solid #cdcdcd;
+	box-shadow: 1px 0 0 0 #ffffff;
 	padding: 9px 10px 7px 11px;
 	float: left;
 	opacity: .7;
@@ -859,31 +879,38 @@ div.dataTables_wrapper .ui-widget-header {
 }
 .widget-title .buttons .btn {
 	padding: 9px 10px 6px;
-	color: #000000;
+	color: #555555;
 	border-radius: 0;
 	border-left: 1px solid #dddddd;
 	text-shadow: 0 1px 0 #ffffff;
 	font-size: 12px;
 	line-height: 17px;
 	margin: 0;
+	box-shadow: 1px 0 0 0 rgba(255,255,255,0.8) inset;
 }
 .flat .widget-title .buttons .btn {
 	border-left: 1px solid #cccccc;
 }
-.widget-title .buttons .btn:hover {
+.widget-title .buttons .btn:last-child {
+	border-radius: 0 6px 0 0;
+}
+.widget-title .buttons .btn:hover, .widget-title .buttons .btn:active {
 	background-color: #fdfdfd;
 	background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#fdfdfd), to(#f3f3f3));
 	background-image: -webkit-linear-gradient(#fdfdfd, #f3f3f3);
-	background-image: -moz-linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: -moz-linear-gradient(center top , #f8f4fc 0%, #f4f1f7 100%);
 	background-image: -ms-linear-gradient(#fdfdfd, #f3f3f3);
 	background-image: -o-linear-gradient(#fdfdfd, #f3f3f3);
-	background-image: linear-gradient(#fdfdfd, #f3f3f3);
+	background-image: linear-gradient(center top , #f8f4fc 0%, #f4f1f7 100%);
 	border-width: 0 1px;
 	border-color: transparent transparent transparent #dddddd;
 	padding: 9px 10px 6px;
 	line-height: 19px;
+	box-shadow: 1px 1px 0 0 #ffffff inset;
 }
-
+.widget-title .buttons .btn:active {
+	box-shadow: 0 1px 3px rgba(0,0,0,0.1) inset;
+}
 .flat .widget-title .buttons .btn:hover {
 	background-color: #eeeeee;
 	background-image: none;
@@ -1774,6 +1801,14 @@ form {
 .has-warning .help-inline, .has-warning .help-block {
 	color: #C09853;
 }
+[class*="icheckbox_"] .help-inline {
+	margin-top: 1px;
+	margin-left: 30px;
+	position: absolute;
+	float: left;
+	min-width: 200px;
+	width: auto;
+}
 /** Select2 modifications */
 .select2-result-label {
 	white-space: nowrap;
@@ -1926,25 +1961,23 @@ form {
 	border-radius: 0;
 }
 .btn-inverse {
-    background-color: #dddddd;
-    border-color: #dddddd;
-    color: #666666;
+    background-color: #555555;
+    border-color: #444444;
 }
 .btn-inverse:hover {
-	background-color: #cccccc;
-	border-color: #bbbbbb;
-	color: #333333;
+	background-color: #444444;
+	border-color: #333333;
 }
-.btn-inverse .caret {
-	border-top-color: #666666;
+.btn-inverse, .btn-inverse:hover, .btn-inverse:active, .btn-inverse:focus, .btn-inverse:visited {
+	color: #ffffff;
 }
-.btn-inverse:hover .caret {
-	border-top-color: #333333;
+.btn-inverse .caret, .btn-inverse:hover .caret {
+	border-top-color: #ffffff;
 }
 .btn-group > [class*=" tip"], .btn-group > [class*=" tip"]:hover {
 	border-right: 0 !important;
 }
-.btn-mini {
+.btn-xs {
 	font-size: 10.5px;
 	padding: 3px 8px;
 }
@@ -1954,7 +1987,36 @@ form {
 #jPanelMenu-menu > ul {
 	display: block !important;
 }
-
+.jqstooltip{
+   width: auto !important;
+   height: auto !important;
+   padding: 2px 6px !important;
+   background-color: rgba(0,0,0,0.7) !important;
+   border: 0 !important;
+   border-radius: 3px;
+}
+.the-icons a {
+	color: #333333;
+	display: block;
+	padding: 5px 10px;
+	height: 42px;
+	line-height: 32px;
+}
+.the-icons a i {
+	font-size: 16px;
+	margin-right: 10px;
+	text-align: right;
+	width: 32px;
+	display: inline-block;
+	vertical-align: middle;
+}
+.the-icons a:hover {
+	background-color: #eeeeee;
+	vertical-align: middle;
+}
+.the-icons a:hover i {
+	font-size: 30px;
+}
 /* Responsive design */
 @media (max-width: 480px) {
 	body {
@@ -1989,9 +2051,9 @@ form {
 	}
 	#user-nav {
 		position: relative;
-		left: auto;
-		right: auto;
-		width: 100%;
+		left: 10%;
+		right: 10%;
+		width: 80%;
 		margin-top: -39px;
 		margin-bottom: 15px;
 		text-align: center;
@@ -2006,6 +2068,7 @@ form {
 		position: fixed;
 		margin: 0;
 		width: auto;
+		left: auto;
 		right: 10px;
 	}
 	.fixed[data-menu-position="open"] #user-nav {
@@ -2085,12 +2148,16 @@ form {
     }
     .widget-title .buttons {
     	float: left;
-    	border-right: 1px solid #cccccc;
+    	border-right: 1px solid rgba(255,255,255,0.7);
     }
 	.widget-title .buttons > .btn {
 		white-space: nowrap;
 		overflow: hidden;
 		padding: 9px 3px 6px 10px !important;
+	}
+	.widget-title .buttons > .btn:last-child  {
+		padding: 9px 6px 6px 10px !important;
+		border-right: 1px solid #dddddd;
 	}
 	.widget-title .buttons > .btn .text {
 		display: none;
@@ -2130,6 +2197,9 @@ form {
 		box-shadow: 0 1px 5px rgba(0,0,0,0.9);
 		border-radius: 5px;
 		list-style: none;
+	}
+	#sidebar .arrow {
+		display: none;
 	}
 	#sidebar > ul ul li a {
 		white-space: nowrap;
@@ -2186,7 +2256,6 @@ form {
 		min-width: auto;
 		width: auto;
 	}
-
 }
 @media (max-width: 768px) {
 	body {

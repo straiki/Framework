@@ -2,6 +2,6 @@ parameters:
 	loggerModule:
 		title: Logger
 		menu:
-			icon: glyphicon-fire
+			icon: icon-fire
 			primaryAdminOnly: TRUE
 

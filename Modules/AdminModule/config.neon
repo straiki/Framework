@@ -22,7 +22,7 @@ webloader:
 		admin:
 			files:
 				- %assetsDir%/css/bootstrap.min.css
-				- %assetsDir%/css/bootstrap-glyphicons.css
+				- %assetsDir%/css/font-awesome.min.css
 				- %assetsDir%/css/jquery/jquery-ui.css
 				- %assetsDir%/css/jquery/chosen/chosen.css
 				- %assetsDir%/css/unicorn/unicorn.main.css
@@ -36,7 +36,7 @@ webloader:
 		adminLogin:
 			files:
 				- %assetsDir%/css/bootstrap.min.css
-				- %assetsDir%/css/bootstrap-glyphicons.css
+				- %assetsDir%/css/font-awesome.min.css
 				- %assetsDir%/css/unicorn/unicorn.login.css
 				- %assetsDir%/css/cms/cms.login.css
 

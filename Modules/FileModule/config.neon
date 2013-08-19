@@ -4,7 +4,7 @@ parameters:
 		type: single # multi
 		attachToUser: FALSE
 		menu:
-			icon: glyphicon-file
+			icon: icon-file
 			items:
 				[
 					label: Přehled souborů

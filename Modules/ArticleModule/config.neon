@@ -18,7 +18,7 @@ parameters:
 		qr: FALSE
 		customAuthorName: FALSE
 		menu:
-			icon: glyphicon-file
+			icon: icon-file
 			items:
 				1:
 					label: Přehled článků

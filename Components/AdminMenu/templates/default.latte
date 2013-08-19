@@ -1,7 +1,7 @@
 {if count($items) >= 2}
 	<li n:class="submenu, $presenter->module == $module ? 'active open'">
 		<a href="#">
-			<i n:class="glyphicon, $icon"></i>
+			<i n:class="$icon"></i>
 			{$title}
 		</a>
 		%ul
@@ -18,7 +18,7 @@
 	<li n:class="topmenu, $presenter->module == $module ? 'active'">
 		{var $link = ":" . $module . ":Homepage:default"}
 		<a href="{plink $link}">
-			<i n:class="glyphicon, $icon"></i>
+			<i n:class="$icon"></i>
 			{$title}
 		</a>
 	</li>

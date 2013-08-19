@@ -4,7 +4,7 @@ parameters:
 		newsletter: FALSE
 		title: Emaily
 		menu:
-			icon: glyphicon-envelope
+			icon: icon-envelope
 			items:
 				1:
 					label: Šablony emailů

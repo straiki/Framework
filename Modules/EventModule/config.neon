@@ -9,7 +9,7 @@ parameters:
 		news: FALSE
 		link: FALSE
 		menu:
-			icon: glyphicon-user
+			icon: icon-user
 			items:
 				1:
 					label: Přehled akcí

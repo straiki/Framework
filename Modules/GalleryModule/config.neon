@@ -11,7 +11,7 @@ parameters:
 				width: 80
 		description: FALSE
 		menu:
-			icon: glyphicon-picture
+			icon: icon-picture
 			items:
 				[
 					label: Přehled

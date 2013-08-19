@@ -2,7 +2,7 @@ parameters:
 	menuModule:
 		title: Menu
 		menu:
-			baseIcon: glyphicon-list-alt
+			baseIcon: icon-list-alt
 
 services:
 	- Schmutzka\Models\Menu

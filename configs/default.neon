@@ -47,7 +47,6 @@ parameters:
 nette:
 	session:
 		autoStart: smart
-		expiration: 14 days
 		debugger: TRUE
 
 	container:
@@ -75,6 +74,11 @@ services:
 	pathFilter: Schmutzka\Components\WebLoader\Filter\PathFilter
 	routerFactory: RouterFactory
 	router: @routerFactory::createRouter
+	session:
+		setup:
+	# 		- setStorage(@sessionStorage)
+			- setExpiration(+ 14 days)
+	sessionStorage: Schmutzka\Http\SessionStorage
 	template:
 		class: Schmutzka\Templates\TemplateService
 		setup:
@@ -82,7 +86,6 @@ services:
 	- lessc
 	- Schmutzka\ParamService(@container::getParameters())
 	- Schmutzka\Templates\Helpers
-	- Services\SessionStorage
 
 
 factories:
@@ -96,8 +99,8 @@ factories:
 
 
 extensions:
-	bootstrapRenderer: Kdyby\BootstrapFormRenderer\DI\RendererExtension
-	replicator: Kdyby\Replicator\DI\ReplicatorExtension
+	- Kdyby\BootstrapFormRenderer\DI\RendererExtension
+	- Kdyby\Replicator\DI\ReplicatorExtension
 	webloader: WebLoader\Nette\Extension
 
 

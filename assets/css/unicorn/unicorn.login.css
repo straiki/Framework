@@ -1,6 +1,6 @@
 /**
  * Unicorn Admin Template
- * Version 2.0
+ * Version 2.0.2
  * Diablo9983 -> diablo9983@gmail.com
 **/
 
@@ -45,7 +45,7 @@ body {
     display: block;
 }
 #loginbox {
-    height: 230px;
+    height: 255px;
 	background: #ffffff;
     box-shadow: 0 0 4px #000000;
     border-radius: 7px;
@@ -106,7 +106,58 @@ body {
 }
 
 .row {
-    margin: 0 5px;
+    margin: 0 15px;
+}
+.row.or-login {
+    margin: 0;
+    position: relative;
+}
+.row.or-login:before {
+    border-top: 1px dotted #ddd;
+    content: "";
+    display: block;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 55%;
+    z-index: -1;
+}
+.row.or-login span {
+    background-color: #fff;
+    padding: 0 5px;
+}
+.btn-social .btn i {
+    border-right: 1px solid #ffffff;
+    padding: 10px 10px 9px 10px;
+    margin-left:-10px;
+    margin-right: 8px;
+}
+.btn-social .btn.btn-primary i {
+    border-right-color: #357EBD;
+} 
+.btn-social .btn.btn-primary:hover i,
+.btn-social .btn.btn-primary:focus i,
+.btn-social .btn.btn-primary:active i,
+.btn-social .btn.btn-primary.active i {
+    border-right-color: #285E8E;
+}
+.btn-social .btn.btn-info i {
+    border-right-color: #46B8DA;
+} 
+.btn-social .btn.btn-info:hover i,
+.btn-social .btn.btn-info:focus i,
+.btn-social .btn.btn-info:active i,
+.btn-social .btn.btn-info.active i {
+    border-right-color: #269ABC;
+}
+.btn-social .btn.btn-danger i {
+    border-right-color: #D43F3A;
+} 
+.btn-social .btn.btn-danger:hover i,
+.btn-social .btn.btn-danger:focus i,
+.btn-social .btn.btn-danger:active i,
+.btn-social .btn.btn-danger.active i {
+    border-right-color: #AC2925;
 }
 hr {
     margin: 8px 0 -5px;

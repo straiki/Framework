@@ -1,7 +1,7 @@
 parameters:
 	title: Číselník
 	menu:
-		icon: glyphicon-file
+		icon: icon-file
 		items:
 			[
 				label: Přehled čísledníků

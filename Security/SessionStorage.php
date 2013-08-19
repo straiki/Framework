@@ -1,87 +1,137 @@
 <?php
 
-namespace Services;
+namespace Schmutzka\Http;
 
+use Nette;
 use Nette\Http\ISessionStorage;
+use NotORM;
 
 
+/**
+ * @lock see: http://forum.nette.org/cs/12874-ukladani-sesion-dp-databaze-je-to-dobry-napad
+ */
 class SessionStorage implements ISessionStorage
 {
-
-    /**
-     * Holds the database connection
-     * @var \dibiConnection
-     */
-    private $conn = null;
+	/** @var NotORM */
+	private $database;
 
 
-    public  function open($savePath, $sessionName) {
-        if (is_null($this->conn)) {
-            $this->conn = \dibi::connect(array('driver' => 'sqlite', 'database' => $savePath));
-         //   \dibi::activate(MainConnectionName);
-        };
-    }
+	public function __construct(NotORM $database)
+	{
+		$this->database = $database;
+	}
 
 
-    public  function read($id) {
-        if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
-        };
+	/**
+	 * @param  string
+	 * @param  string
+	 * @return bool
+	 */
+	public function open($savePath, $sessionName)
+	{
+		if ($this->database) {
+			return TRUE;
+		}
 
-        $query = '
-            SELECT
-                [data]
-            FROM [session]
-            WHERE
-                [id] = %s';
-        try {
-            $result = $this->conn->query($query, $id);
-            return $result->fetchSingle();
-        } catch (\Exception $e) {
+		return FALSE;
 
-            $this->conn->query('CREATE TABLE [session] ([id] varchar(32) not null primary key, [timestamp] timestamp not null, [data] text)');
-            $this->conn->query('CREATE INDEX [session_by_timestamp] ON [session] ([timestamp])');
-
-            return '';
-        };
-    }
+		/*
+		$id = session_id();
+        while(!$this->database->query("SELECT IS_FREE_LOCK('session_$id') AS lo")->fetch()->lo);
+        $this->database->exec("SELECT GET_LOCK('session_$id', 160)");
+		*/
+	}
 
 
-    public  function write($id, $data) {
-        if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
-        };
-
-        $this->conn->begin();
-        $this->conn->query('DELETE FROM [session] WHERE [id] = %s', $id);
-        $this->conn->query('INSERT INTO [session] VALUES(%s, %s, %s)', $id, time(), $data);
-        $this->conn->commit();
-    }
+	public function close()
+	{
+		/*
+		$id = session_id();
+        $this->database->exec("SELECT RELEASE_LOCK('session_$id')");
+        return true;
+		*/
+	}
 
 
-    public function destroy($id) {
-        if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
-        };
+	/**
+	 * @param  string
+	 * @return string
+	 */
+	public function read($id)
+	{
+		$data = $this->database->session->where('id', $id)
+			->fetch('data');
 
-        $this->conn->query('DELETE FROM [session] WHERE [id] = %s', $id);
-    }
+		if ($data) {
+			return $data;
+		}
 
-    public  function clean($max) {
-        if (is_null($this->conn)) {
-            throw new \Nette\InvalidStateException('The connection to database for session storage is not open!');
-        };
+		return '';
+	}
 
-        $old = (time() - $max);
-        $this->conn->query('DELETE FROM [session] WHERE [timestamp] < %s', $old);
-    }
 
-    public  function close() {
-        $this->conn = null;
-    }
+	/**
+	 * @param  string
+	 * @param  string
+	 */
+	public function write($id, $data)
+	{
+		$this->database->session->where('id', $id)
+			->delete();
 
-    public function remove($id) {
+		$record = array(
+			'id' => $id,
+			'time' => time(),
+			'data' => $data
+		);
 
-    }
+		$this->database->session->insert($record);
+	}
+
+
+	/**
+	 * @param  string
+	 * @param  bool
+	 */
+	public function destroy($id)
+	{
+		return $this->database->session->where('id', $id)
+			->delete();
+	}
+
+
+	/**
+	 * @param  int
+	 * @return  bool
+	 */
+	public function clean($maxlifetime)
+	{
+		return $this->database->session->where('time < ?', (time() - $max))
+			->delete();
+	}
+
+
+
+
+
+	/**
+	 * @param  string
+	 */
+	public function remove($id)
+	{
+		$this->database->session->where('id', $id)
+			->delete();
+	}
+
+
+	/********************** helpers **********************/
+
+
+	private function checkStorageAccess()
+	{
+		if ($this->database == NULL) {
+			throw new Nette\InvalidStateException('The connection to database for session storage is not open!');
+		}
+	}
 
 }

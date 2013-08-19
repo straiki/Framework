@@ -56,10 +56,16 @@ class AdminMenuControl extends Control
 
 		if ($view == 'add') {
 			$link = substr($this->presenter->name, strlen($module) + 1);
-			foreach ($moduleParams->menu->items as $item) {
-				if (Strings::contains($item->link, $link)) {
-					$title = $item->label;
+
+			if (isset($moduleParams->menu->items)) {
+				foreach ($moduleParams->menu->items as $item) {
+					if (Strings::contains($item->link, $link)) {
+						$title = $item->label;
+					}
 				}
+
+			} else {
+				$title = $moduleParams->title;
 			}
 
 			$title .= ' - nová položka';

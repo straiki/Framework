@@ -8,7 +8,7 @@ parameters:
 		adminNote: FALSE
 		contentHistory: FALSE
 		menu:
-			icon: glyphicon-file
+			icon: icon-file
 
 services:
 	- Schmutzka\Models\Page

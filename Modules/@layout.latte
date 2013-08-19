@@ -17,29 +17,29 @@
 		#header
 			%h1
 				<a id="menu-trigger" href="#">
-					%i.glyphicon.glyphicon-align-justify
+					%i.icon-align-justify
 				</a>
 
 		#user-nav
 			%ul.btn-group
 				{if $user->loggedIn}
 					%li.btn
-						<a n:href="logout!">
-							%i.glyphicon.glyphicon-user
-							%span.text {_"Odhlásit se"}
+						<a n:href=":Front:Homepage:">
+							%i.icon-home
+							%span.text {_"Zpět na web"}
 						</a>
 
-					<li n:class="btn, $presenter->isLinkCurrent(':Admin:Homepage:settings') ? 'active'">
+					<li n:class="btn, $presenter->isLinkCurrent(':Admin:Homepage:settings') ? open">
 						<a n:href=":Admin:Homepage:settings">
-							%i.glyphicon.glyphicon-cog
+							%i.icon-cog
 							%span.text {_"Nastavení"}
 						</a>
 					</li>
 
 					%li.btn
-						<a n:href=":Front:Homepage:">
-							%i.glyphicon.glyphicon-home
-							%span.text {_"Zpět na web"}
+						<a n:href="logout!">
+							%i.icon-share-alt
+							%span.text {_"Odhlásit se"}
 						</a>
 				{/}
 
@@ -47,7 +47,7 @@
 			%ul
 				<li n:class="$presenter->isLinkCurrent(':Admin:Homepage:default') ? active">
 					<a n:href=":Admin:Homepage:default">
-						%i.glyphicon.glyphicon-home
+						%i.icon-home
 						Domů
 					</a>
 				</li>
@@ -60,7 +60,7 @@
 				{else}
 					%li.active
 						<a n:href=":Admin:Homepage:default">
-							%i.glyphicon.glyphicon-cog
+							%i.icon-cog
 							Přihlášení
 						</a>
 				{/}
@@ -87,5 +87,5 @@
 
 			.container-fluid
 				.row
-					.col-12.center
+					.col-xs-12.center
 						{include #content}
