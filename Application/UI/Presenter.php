@@ -35,7 +35,7 @@ abstract class Presenter extends Nette\Application\UI\Presenter
 	protected $translator;
 
 	/** @var array|callable[] */
-	protected $helpersCallbacks = array();
+	public $helpersCallbacks = array();
 
 
 	public function injectTranslator(Nette\Localization\ITranslator $translator = NULL)

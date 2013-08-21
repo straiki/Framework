@@ -19,7 +19,7 @@ class Browser extends Nette\Object
 	{
 		$userAgent = strtolower($_SERVER['HTTP_USER_AGENT']);
 		foreach (self::$browsers as $_browser) {
-			if (preg_match('/($_browser)[\/ ]?([0-9.]*)/', $userAgent, $match)) {
+			if (preg_match("/($_browser)[\/ ]?([0-9.]*)/", $userAgent, $match)) {
 				$browser['name'] = $match[1];
 				$browser['version'] = $match[2];
 				@list($browser['majorver'], $browser['minorver'], $browser['build']) = explode('.', $browser['version']);

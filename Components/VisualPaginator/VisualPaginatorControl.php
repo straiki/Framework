@@ -29,7 +29,7 @@ class VisualPaginator extends Control
 	}
 
 
-	public function renderDefault()
+	public function render()
 	{
 		$paginator = $this->getPaginator();
 		$page = $paginator->page;

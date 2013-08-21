@@ -77,9 +77,12 @@ class SmtpMailer extends Nette\Mail\SmtpMailer
 	 */
 	public function getCustomTemplate($uid, array $values = array(), $includeSubject = FALSE)
 	{
-		$customEmail = $this->customEmailModel->item(array('uid' => $uid));
+		$customEmail = $this->customEmailModel->item(array(
+			'uid' => $uid
+		));
+
 		if (!$customEmail) {
-			throw new \Exception('Record with uid $uid doesn't exist.');
+			throw new \Exception("Record with uid $uid doesn't exist.");
 		}
 		$this->customEmailId = $customEmail['id'];
 

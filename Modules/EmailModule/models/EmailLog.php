@@ -2,7 +2,8 @@
 
 namespace Schmutzka\Models;
 
-class NewsletterLog extends Base
+
+class EmailLog extends Base
 {
 
 }

@@ -207,6 +207,7 @@ textarea, select, input {
 
 form {
 	.description {color:#999;padding-left:5px}
+}
 
 .responsiveBackground(@url) {
 	background: url(@url)  no-repeat center center fixed;
@@ -223,5 +224,12 @@ form {
 	-o-background-size: cover;
 	background-size: cover;
 }
-}
 
+
+.aun {
+	text-decoration: underline;
+
+	&:hover {
+		text-decoration: none;
+	}
+}

@@ -2,9 +2,6 @@
 
 namespace PageModule\Components;
 
-use Nette;
-use NiftyGrid;
-use Schmutzka;
 use Schmutzka\Application\UI\Module\Grid;
 
 

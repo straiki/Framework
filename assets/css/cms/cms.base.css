@@ -160,19 +160,6 @@ textarea.wider {
 	}
 }
 
-legend {
-	font-size:1em;
-	margin-bottom:0px;
-	font-weight:bold;
-	border:none;
-	padding-left:15px;
-	background:#F5F5F5;
-}
-
-legend + .control-group {
-	margin-top: 0px;
-}
-
 
 /*	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	~ icos @see: .ico
@@ -249,10 +236,35 @@ th.time, .time {
 	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
 
 
-.ico(@image, @x: 0px, @y: 50%, @l: 20px) {
-	background:url("../../images/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
+#ui-datepicker-div {
+	float: left;
+	z-index: 20;
+	display: none;
+	font-size: 1em;
 }
 
+
+#ui-helper-clearfix {
+	margin-left: 18em;
+}
+
+
+legend {
+	line-height: 2em;
+	border-top: 1px solid #FFF;
+	padding-left: 20px;
+	background: #FFF;
+	font-size: 1.5em;
+}
+
+
+.ico(@image, @x: 0px, @y: 50%, @l: 20px) {
+	background: url("../../images/ico/@{image}.png") @x @y no-repeat;
+	padding-left: @l;
+}
+
+
 .icoCms(@image, @x: 0px, @y: 50%, @l: 20px) {
-	background:url("../../images/cms/ico/@{image}.png") @x @y no-repeat;padding-left:@l;
+	background: url("../../images/cms/ico/@{image}.png") @x @y no-repeat;
+	padding-left: @l;
 }

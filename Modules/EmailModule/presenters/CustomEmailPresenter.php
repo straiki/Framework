@@ -2,9 +2,10 @@
 
 namespace EmailModule;
 
-use Schmutzka;
+use Schmutzka\Application\UI\Module\Presenter;
 
-class CustomEmailPresenter extends Schmutzka\Application\UI\Module\Presenter
+
+class CustomEmailPresenter extends Presenter
 {
 	/** @inject @var Schmutzka\Models\CustomEmail */
 	public $customEmailModel;

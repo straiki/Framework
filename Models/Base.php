@@ -6,6 +6,7 @@ use Schmutzka\Utils\Name;
 use Nette;
 use NotORM;
 
+
 abstract class Base extends Nette\Object
 {
 	/** @inject @var NotORM */

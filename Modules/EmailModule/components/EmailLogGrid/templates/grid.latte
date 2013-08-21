@@ -1,0 +1,25 @@
+{extends $moduleGridTemplate}
+
+
+{define body-cell-type}
+	<td>
+		{if $value == 'spec_mail'}
+			Konkrétní adresy
+
+		{elseif $value} {* @todo in newsletter sending *}
+			Skupině: {$value}
+		{/}
+	</td>
+{/}
+
+
+{define body-cell-custom_email_id}
+	<td>
+		{if $value}
+			{$value['name']}
+
+		{else}
+			{$record['subject']}
+		{/}
+	</td>
+{/}

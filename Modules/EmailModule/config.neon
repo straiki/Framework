@@ -1,8 +1,11 @@
 parameters:
 	emailModule:
+		title: Emaily
 		useLogger: FALSE
 		newsletter: FALSE
-		title: Emaily
+		senderName:
+		infoEmail:
+		noReplyEmail:
 		menu:
 			icon: icon-envelope
 			items:
@@ -10,21 +13,20 @@ parameters:
 					label: Šablony emailů
 					link: CustomEmail:default
 				2:
-					label: Nastavení
-					link: Settings:default
-				3:
+					cond: newsletter
 					label: Newsletter
 					link: Newsletter:default
-				4:
+				3:
+					cond: useLogger
 					label: Log
-					link: Newslette:log
+					link: Newsletter:log
 
 services:
 	- Schmutzka\Models\CustomEmail
 	- Schmutzka\Models\EmailLog
-	- Schmutzka\Models\EmailSettings
 
 factories:
 	customEmailGrid: EmailModule\Components\CustomEmailGrid
 	customEmailControl: EmailModule\Components\CustomEmailControl
-	emailSettingsControl: EmailModule\Components\EmailSettingsControl
+	emailLogGrid: EmailModule\Components\EmailLogGrid
+	newsletterControl: EmailModule\Components\NewsletterControl

@@ -34,7 +34,7 @@ abstract class Control extends Nette\Application\UI\Control
 				$view = 'default';
 
 			} else {
-				$view = strtolower(substr($name, 6));
+				$view = lcfirst(substr($name, 6));
 			}
 
 			// setup template file
@@ -63,6 +63,10 @@ abstract class Control extends Nette\Application\UI\Control
 	{
 		$template = parent::createTemplate($class);
 		$this->templateService->configure($template);
+
+		foreach ($this->presenter->helpersCallbacks as $helpersCallback) {
+			$template->registerHelperLoader($helpersCallback);
+		}
 
 		return $template;
 	}

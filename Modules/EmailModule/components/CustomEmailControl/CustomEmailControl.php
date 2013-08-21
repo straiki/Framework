@@ -6,6 +6,7 @@ use Nette;
 use Schmutzka\Application\UI\Form;
 use Schmutzka\Application\UI\Module\Control;
 
+
 class CustomEmailControl extends Control
 {
 	/** @inject @var Schmutzka\Models\CustomEmail */

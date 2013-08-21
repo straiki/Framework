@@ -1,6 +1,14 @@
 {extends $defaultTemplate}
 
 
+{define body-cell-datetime}
+	<td style="width:16%">
+		{$value|date: "j. n. Y"} -
+		<strong>{$value|date: "H:i"}</strong>
+	</td>
+{/}
+
+
 {define body-cell-edited}
 	<td style="width:12%">
 		{$value|date: "j. n. Y"}
@@ -11,6 +19,28 @@
 {define body-cell-user_id}
 	<td style="width:12%">
 		{$value['login']}
+	</td>
+{/}
+
+
+{define body-cell-rank}
+	<td style="width:60px">
+		{$value}
+	</td>
+{/}
+
+
+{define body-cell-public_state}
+	<td width="100px">
+		{if $value == 2}
+			v přípravě
+
+		{elseif $value == 1}
+			zveřejněno
+
+		{elseif $value == 0}
+			skryto
+		{/}
 	</td>
 {/}
 

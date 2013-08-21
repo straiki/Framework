@@ -8,7 +8,7 @@ class HomepagePresenter extends BasePresenter
 
 	public function renderDefault()
 	{
-		if ($this->paramService->gaLink) {
+		if (isset($this->paramService->gaLink) && $this->paramService->gaLink) {
 			$this->template->gaLink = $this->paramService->gaLink;
 		}
 	}

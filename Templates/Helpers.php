@@ -242,7 +242,7 @@ class Helpers extends Nette\Object
 	 * @param string
 	 * @return string
 	 */
-	public function secureMail($email, $node = NULL, $clickable = TRUE, $class = NULL)
+	public function email($email, $node = NULL, $clickable = TRUE, $class = NULL)
 	{
 		$return = NULL;
 		for ($i=0, $j=strlen($email); $i < $j; $i++) {
