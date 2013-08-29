@@ -50,9 +50,15 @@
 						progress + '%'
 					);
 				},
+				
+				stop: function() {
+		            console.log('Finally stopped!');
+		            location.reload();
+                },
 
 				complete: function () {
-					location.reload();
+					console.log('Upload done!');
+					//location.reload();
 				}
 			});
 		});
